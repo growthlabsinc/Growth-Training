@@ -1,0 +1,18 @@
+//
+//  Debug.xcconfig
+//  Growth
+//
+//  Debug build configuration
+//
+
+// Base configuration
+#include "firebase-dependencies.xcconfig"
+
+// Debug specific settings
+SWIFT_OPTIMIZATION_LEVEL = -Onone
+ENABLE_TESTABILITY = YES
+SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG
+GCC_PREPROCESSOR_DEFINITIONS = DEBUG=1 $(inherited)
+MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE
+DEBUG_INFORMATION_FORMAT = dwarf
+ENABLE_DEBUG_DYLIB = YES

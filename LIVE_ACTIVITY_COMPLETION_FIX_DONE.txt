@@ -1,0 +1,7 @@
+Live Activity completion fixes completed. Changes include:
+- Fixed race condition in timer completion
+- Fixed completion state display 
+- Fixed 5-minute dismissal behavior
+- Fixed dismiss button for completed activities
+
+The changes are ready to be committed when git is working properly.

@@ -1,0 +1,20 @@
+{
+  "name": "vertex-ai-integration",
+  "version": "1.0.0",
+  "description": "Cloud Functions for Vertex AI Search integration in Growth app",
+  "main": "index.js",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy": "gcloud functions deploy searchVertexAI --runtime nodejs16 --trigger-http --allow-unauthenticated"
+  },
+  "author": "Growth App Team",
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "@google-cloud/discoveryengine": "^1.0.0",
+    "dotenv": "^16.0.0"
+  }
+} 

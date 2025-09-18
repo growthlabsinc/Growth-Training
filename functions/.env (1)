@@ -1,0 +1,7 @@
+# APNs Configuration for Live Activities
+# All APNs config is now stored as Firebase secrets:
+# - APNS_AUTH_KEY: The .p8 private key content (Updated: 2025-01-20)
+# - APNS_KEY_ID: DQ46FN4PQU (Production key for TestFlight/App Store)
+# - APNS_TEAM_ID: 62T6J77P6R
+# - APNS_TOPIC: com.growthlabs.growthmethod.push-type.liveactivity
+# - APNS_HOST: api.development.push.apple.com (Sandbox environment)

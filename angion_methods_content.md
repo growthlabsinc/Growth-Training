@@ -1,0 +1,141 @@
+# Angion Methods (COMPLETE LIST)
+
+Author: JanusBifronz
+Score: 134
+Comments: 191
+
+---
+
+# Angion Methods (COMPLETE LIST)
+
+In this post, I will be going over the various stages of the Angion Method and hallmarks of progression.
+
+&amp;#x200B;
+
+**(IMPORTANT NOTE: DO NOT PERFORM THE ANGION METHODS WHILE IN A SEATED POSITION AS IT WILL STEM BLOOD FLOW. THESE EXERCISES SHOULD ONLY BE PERFORMED WHILE LYING DOWN.)**
+
+# STAGE ONE: ANGIO PUMPING (E CLASS)
+
+\-If you are a male that presents with non-compliant Erectile Dysfunction. As in you are unable to achieve an erection on your own or without the aid of vaso-active drugs—*this is your starting point.* If you are able to obtain an erection on your own, you can skip this first step. As a safety precaution, males that have experienced prolonged and (non-compliant)severe Erectile Dysfunction would be wise to have either an ultrasound or Doplar done on the arteries feeding their sexual organs to check for calcification or blockage.
+
+**ANGIO PUMPING TECHNIQUE:**
+
+Unlike traditional pumping strategies that relies on high pressures and time under tension, Angio Pumping uses a penis pump in a manner similar to an iron lung in that it relies on fluctuating pressure to literally force tissue perfusion and Bulbo-Dorsal Circuit activation. The second important difference being that it relies solely on lower pressure based forces. In fact,  there is no need whatsoever to go beyond about 4hg. Ideally, no higher than 3hg.
+
+In order to properly and safely perform Angio-Pumping, it is imperative that you have a penis pump with a quick release valve, ideally a button release mechanism. The next important function is a pressure gauge. Towards that end, I did a product search on Amazon and found this nifty pump by california exotics that fit the bill perfectly. If you do not have a penis pump with a quick release valve, you can look this [model](https://www.amazon.com/California-Exotics-Master-Gauge-Penis/dp/B001BNZ636) up on Amazon.
+
+The next item you will need to ensure an Angio Pumping session goes smoothly is a humble roll of elastic ACE bandage wraps to stave off edema and increase the rate of fluid exchange between the arterial and venous vascular networks found within the male member.
+
+Once you have obtained a penis pump with a button release valve and an elastic ACE bandage wrap, here is how to use them to perform Angio Pumping.
+
+The first step in the process of Angio Pumping is to remove the rubber sleeve at the bottom of the pump and place it over your member. Once in place, wrap your member snugly in the ACE elastic bandage wrap. Then, with the bandage wraps in place, slide the penile pump back into its rubber sleeve.
+
+Once everything is in position and sealed, pump until the dial hits 3hg. Most likely, your member will have already begun to expand. Now, slowly release the pressure. As you do this, you will most likely be able to feel blood literally rushing from your member through your Deep Dorsal Vein and Superficial Vein. Congratulations! You just mechanically forced Bulbo-Dorsal Circuit activation. Now time for the real fun.
+
+We are going to be taking the exact same steps I just went over, but now we are going to speed things up. Remember, as the rate of flow increases, so too does shear based stimulation, one of the key players in vascular based growth.
+
+Begin rapidly pumping until the dial reaches 3hg and then releasing the pressure to mechanically force your penile tissues to breath and exchange fluid between your arterial and venous networks.
+
+As an added safety precaution, I would strongly encourage beginners to keep sessions short. At the high end, no more than 10 minutes. This amount of time will be more than enough to kickstart the growth process, but also not so much that overtraining becomes an issue. In time, aim for a full 30 minute workout.  But don’t rush yourself! It may take several session spanning a few weeks to reach this point. You can graduate and move on to the next level once you are able to maintain an erection for at least 15 minutes without the use of devices or vaso-active substances.
+
+# STAGE TWO: ANGION METHOD 1.0 (D CLASS)
+
+\-If you are a male that can obtain an erection without the use of devices or vaso-active substances, but cannot yet take your pulse on your dorsal arteries(or the pulse is weak, or difficult to detect)--*this is your starting point.*
+
+Unlike the higher stages of the Angion Methods, 1.0 utilizes hand techniques to manipulate the venous side of the Bulbo-Dorsal Circuit(picture link).
+
+**ANGION METHOD 1.0 TECHNIQUE:**
+
+Obtain an erection, and apply either a non-paraben(or non methyl paraben) water based lubricant or silicone based lubricant(ideal) along the dorsal side of your member(the portion you see when looking down) right along the middle line. So long as a male’s member does not present with extreme curvature, the Deep Dorsal and Superficial Dorsal Veins should exist along the center line of the shaft. In the event of extreme curvature, gently squeeze your member with your hand and kegel blood into the erectile chambers, and then visually inspect your shaft. So long as a male does not present with severe arterial insufficiency/underdevelopment, the Deep Dorsal Vein at the very least should be visible to the naked eye. Once located, note its position and place lubricant over the area.
+
+Once the area over and around your Deep Dorsal Vein is sufficiently lubricated, hold your member between your hands in such a way that you are able to place both of your thumbs along the dorsal side of your member. Once your hands are in position, place one of your thumbs just below the glans on your shaft. Depress the vein cluster(Deep Dorsal and Superficial Dorsal Vein—the the latter will most likely not yet be large enough to be visible) along the middle line or where noted in the case of curvature, and then drag your thumb downwardly towards the base of your member.
+
+Congratulations! You have just successfully manipulated the venous portion of your Bulbo-Dorsal Circuit!
+
+Now to begin the workout. Once more, place your thumb just below your glans along the center line or where you noted the vein in the case of curvature, and begin stroking downwardly. As your first thumb is finishing its downward stroke, begin another downward stroke with your other thumb. Start slowly, but aim to pick up your pace as the workout progresses.
+
+**IMPORTANT NOTES:**
+
+Do not be surprised if you lose your erection several times during an Angion Method 1.0 session. This is an extremely common side effect of arterial insufficiency. As your level of arterial development improves, this will eventually stop occurring. You can graduate from Angion Method 1.0 and move onto Angion Method 2.0 once you are able to maintain an erection for the full duration of a 30 minute Angion Method 1.0 session *and* are able to easily palpate a pulse in your dorsal arteries located on either side of your dorsal veins.
+
+# STAGE THREE: ANGION METHOD 2.0 (C CLASS)
+
+\-If you are a male that can easily achieve an erection without the need of devices or vaso-active substances and can easily palpate a pulse in your dorsal arteries—*this is your starting point.*
+
+Angion Method 2.0 represents a turning point where all of the techniques beyond this level focus entirely on manipulating the arterial side of the Bulbo-Dorsal Circuit.
+
+**ANGION METHOD 2.0 TECHNIQUE:**
+
+Obtain an erection, and lightly grip the lower of your shaft with your thumb and first two digits. With your other hand, hold your glans with your thumb and first two digits. Apply a gentle squeeze with the hand gripping the shaft, and push blood into your glans causing them to swell. Lessen the grip placed on your shaft, and then squeeze your glans with the other hand. You should feel blood rush through your Deep Dorsal and Superficial Dorsal Veins.
+
+Congratulations! You just successfully manipulated the arterial side of your Bulbo-Dorsal Circuit!
+
+Now to begin the workout. Just like before, place one hand on your shaft and the other on your glans, only this time, repeat the sequence of motions in rapid succession to more powerfully stimulate the vascular networks feeding your sexual organs. It will take time and practice to develop good rhythm.
+
+**IMPORTANT NOTES:**
+
+The leap from taken from Angion Method 1.0 to Angion Method 2.0 is very large. Do not be surprised if you continually experience a flattened Corpora Spongiosum and shriveled glans in the beginning. As your arterial development improves, this will cease to occur.
+
+A second important aspect of Angion Method 2.0 exercise sessions is that this technique is best performed without the use of kegeling due to the risk of pelvic floor overtraining. If a male relies too heavily on his pelvic floor to push blood into his glans, he will quickly overstimulate the muscles in the area and notice a sharp drop in EQ and an increased difficulty in obtaining in an erection; or the erections will become thinner and hard. So, when at all possible—AVOID ABUSING YOUR PELVIC FLOOR MUSCLES TO COMPLETE A REP!
+
+# STAGE 2.5: ANGION METHOD 2.5 (JELQ 2.0) (B CLASS)
+
+If you are a male that has already obtained a superior level of arterial development, but are simply unable to properly perform the Vascion(Angion Method 3.0) due to your Corpora Spongiosum going flat-*this is your starting point.*
+
+Jelq 2.0 is an intermediary stage designed to bridge the enormous gap that exists between Angion Method 2.0 and the final expression of the Angion Methods.
+
+**JELQ 2.0 TECHNIQUE:**
+
+Unlike a traditional jelq that relies on fully encircling the shaft with your hand, Jelq 2.0 relies on a partial grip the places the brunt of the force along the Corpora Spongiosum.
+
+First, obtain an erection and then apply either a non-paraben(or non methyl paraben) water based lubricant or silicone based lubricant liberally to your member. Once your shaft and glans are well lubricated, rotate your hand so your thumb is facing downwardly. Then, using your first two digits, depress your corpora spongiosum and allow the dorsal side of your shaft to rest lightly against your palm. Now, further rotate your hand so that the first two digits of your hands dig more into your corpora spongiosum and more pressure is taken off the dorsal aspect of your shaft. Once your hand is in this position, pull your hand upwardly.
+
+If you performed the technique correctly, you should feel your glans powerfully swell and feel blood rush from your member through the Dorsal Veins. If this has occurred, congratulations! You have taken your first real steps toward unlocking the Final Angion.
+
+Unlike the lower forms of the Angion Method, Jelq 2.0 relies entirely on Corpora Spongiosum stimulation and therefore calls for a specialized approach. The key to using Jelq 2.0 to achieve the level of development required for the final stage in your training centers entirely around stroke speed. At the start of your workouts, you should keep your strokes slow so as to gently encourage vaso-dilation. However, as your workout progresses and the local vascular networks reach peak dilation, you can begin safely increasing the rate of your strokes.
+
+**IMPORTANT NOTE:**
+
+For many, this intermediary stage can last quite some time, or barely be considered a speed bump in your climb to 3.0. The only way to truly gauge if you are ready for the final stage is to continually try and perform the motions of 3.0. If you can manage to achieve as little as five minutes of a 3.0 session—you are ready for graduation and should focus exclusively on 3.0 from that point on.
+
+# STAGE 3: VASCION(Scion of Blood Vessels) (A CLASS)
+
+If you have reached this level of development, allow me(Janus Bifrons) as the creator of the Angion Methods the honor of formally congratulating you for your achievements. Extremely few men naturally possess the level of vascular development necessary to begin this level of training. The vast majority will only be able to unlock this final expression through hard work and dedication. I can be contacted here: r/JanusBifronz .
+
+**VASCION TECHNIQUE:**
+
+The Vascion’s technique is extremely(perhaps even deceptively) simple. Lay on your back and begin liberally applying either a non paraben(or non methyl paraben) water based lubricant or silicone based lubricant(IDEAL) along the length of your Corpora Spongiosum. Once fully lubricated, extend your middle fingers and depress your Corpora Spongiosum while stroking upwardly in an alternating fashion. If properly performed, your glans should swell, you should feel blood rush through your dorsal veins, and in time your member will become quite large. Supra-physiological levels of engorgement are very common at this level of training. Furthermore, short lived priapisms are a common side effect experienced post session. An ideal session should last no more than 30 minutes.
+
+**IMPORTANT NOTE:**
+
+Whenever first beginning Vascion training, its extremely common for your Corpora Spongiosum to go flat, forcing you to stop and start a session. Much like the other stages of progression, as your development improves, this will cease to be a problem.
+
+***AN INVITATION...***
+
+In the event you are able to consistently complete a full 30 minutes of Vascion training, I would like to personally invite you to the final frontier of vascular development; what I have dubbed *S CLASS.*
+
+# STAGE 4: ANGIO-WHEEL (S CLASS)
+
+The Angio-Wheel is a device that I personally invented and perfected--*all in the name of knowing my own limitations.* By utilizing this device, a male can achieve a supra-physiological level of vascular development unlike anything ever before seen in the realms of PE or even medical literature. So far as I am aware, there exists no form of therapy, intervention, surgery, drug, or exercise regimen capable of mimicking the localized effects brought about by Angio-Wheel use outside of the Angion Methods themselves—*and even they pale in comparison.* Less than 30 men in the entire world can claim they have reached this level training.
+
+So I’ve only got one question.
+
+***Do you have what it takes?***
+
+Angio-Wheels can be purchased here:
+
+[https://www.etsy.com/listing/703688637/angio-wheel-v3?ref=shop\_home\_active\_1&amp;crt=1](https://www.etsy.com/listing/703688637/angio-wheel-v3?ref=shop_home_active_1&amp;crt=1)
+
+# Stage 5: LMC MkII ( SUPER S CLASS)
+
+**The LMC MkII is a purpose built monster of a research tool. It stands as the current pinnacle of my fluid displacement based vascular growth research.**
+
+**Currently(as of 4/1/2022) it is only being sold to** [Patreon](https://www.patreon.com/AngionMethod) **Members. If you wish to aquire one for yourself, you will need to contact me through Patreon.** Unlike standard model Angio-Wheels, the MkII is designed to be operated exclusively with high torque low RPM drills. Each MkII is machined from high grade plastics and each caster wheel comes equipped with dual in-set bearings for improved performance at high rotation. In addition to these upgrades, the MkII emphasizes a high rate of fluid displacement via a higher angle of incidence through the reduction of caster wheel number to a total of 9. Lastly, all MkII's come standard with a custom built manuevering handle for improved in-session control and comfort.
+
+# EXERCISE SESSION TIMES AND DURATION
+
+In general, men should aim for 20-30 minutes for an ideal Angion Method session time at each of the given levels unless otherwise specified. However, whenever a male first begins using the Angion Methods or moves up into a higher stimulation bracket, it is not uncommon to be unable to complete a full 20-30 minutes of an Angion Method workout. In many cases, this time amount will need to be a long term goal.
+
+&amp;#x200B;
+
+In terms of frequency, the best results from Angion Method use generally center around a 1on1off schedule, with more of less becoming degrees of over or under stimulation. Few instances exist where a 2on1off routine is ideal. Most of these cases center around the time a male is about to transition to a higher stimulation bracket and is attempting to bridge the stimulation gap by doubling down on the less stimulating exercise variation. As an artery develops in size, its internal diameter will markedly increase in an attempt to lessen shear at a given rate of flow. In order to make an artery become larger, it is imperative to clear the shear threshold. Whenever the body grows and adapts to a given rate of flow, there does exist a small window in which it will remain responsive to a lower (but more frequently applied) application of shear, but this window soon closes as the level of development progresses further. In such an event however, the male in question should be more than ready for the next stage of progression and benefit from returning to a 1on1off routine schedule.

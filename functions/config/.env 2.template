@@ -1,0 +1,29 @@
+# App Store Connect API Configuration Template
+# Copy this file to .env and fill in your actual values
+
+# App Store Connect API Credentials
+APPSTORE_KEY_ID=YOUR_KEY_ID_HERE
+APPSTORE_ISSUER_ID=YOUR_ISSUER_ID_HERE
+APPSTORE_BUNDLE_ID=com.growth
+APPSTORE_TEAM_ID=YOUR_TEAM_ID_HERE
+
+# App Store Shared Secret for Webhooks
+APPSTORE_SHARED_SECRET=YOUR_SHARED_SECRET_HERE
+
+# Environment Configuration
+FIREBASE_ENV=development
+APPSTORE_USE_SANDBOX=true
+
+# Monitoring Configuration
+SLACK_WEBHOOK_URL=YOUR_SLACK_WEBHOOK_URL
+MONITORING_EMAIL=alerts@growth.app
+
+# Security Configuration
+CREDENTIAL_ENCRYPTION_KEY=YOUR_ENCRYPTION_KEY_HERE
+RATE_LIMIT_REQUESTS=100
+RATE_LIMIT_WINDOW_MS=60000
+
+# Cache Configuration
+CACHE_VALID_DURATION_HOURS=24
+CACHE_INVALID_DURATION_HOURS=1
+CACHE_PENDING_DURATION_MINUTES=5

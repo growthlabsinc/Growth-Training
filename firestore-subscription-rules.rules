@@ -1,0 +1,145 @@
+// Firestore Security Rules - Subscription Data Extensions
+// These rules should be integrated into the existing firestore.rules file
+
+// Additional rules for subscription-related collections
+
+// Users collection - subscription field access rules
+match /users/{userId} {
+  // Allow users to read their own subscription status
+  allow read: if request.auth != null && request.auth.uid == userId;
+  
+  // Only allow users to update non-subscription fields
+  // Subscription fields can only be updated by server-side functions
+  allow update: if request.auth != null 
+    && request.auth.uid == userId
+    && !isUpdatingSubscriptionFields(request.resource.data, resource.data);
+    
+  function isUpdatingSubscriptionFields(newData, oldData) {
+    return newData.diff(oldData).affectedKeys().hasAny([
+      'currentSubscriptionTier',
+      'subscriptionStatus', 
+      'subscriptionExpirationDate',
+      'subscriptionTransactionId',
+      'subscriptionAutoRenew',
+      'subscriptionStartDate',
+      'subscriptionPlan',
+      'lastValidated',
+      'subscriptionRegion',
+      'lastPaymentDate',
+      'paymentFailureCount',
+      'gracePeriodEnd',
+      'hasAdvancedFeatures',
+      'hasCoachingAccess',
+      'hasPremiumContent'
+    ]);
+  }
+}
+
+// Subscription validation logs - admin read only
+match /subscriptionValidationLogs/{logId} {
+  // Only allow server-side functions to write
+  allow write: if false;
+  
+  // Allow admins to read for debugging/audit purposes
+  allow read: if isAdmin();
+  
+  function isAdmin() {
+    return request.auth != null 
+      && request.auth.token.admin == true;
+  }
+}
+
+// App Store notification logs - admin read only  
+match /appStoreNotificationLogs/{logId} {
+  // Only allow server-side functions to write
+  allow write: if false;
+  
+  // Allow admins to read for debugging/audit purposes  
+  allow read: if isAdmin();
+  
+  function isAdmin() {
+    return request.auth != null 
+      && request.auth.token.admin == true;
+  }
+}
+
+// Subscription cache - server functions only
+match /subscriptionCache/{userId} {
+  // Only server-side functions can read/write cache
+  allow read, write: if false;
+}
+
+// Failed webhooks - admin read only
+match /failedWebhooks/{webhookId} {
+  // Only allow server-side functions to write
+  allow write: if false;
+  
+  // Allow admins to read for debugging purposes
+  allow read: if isAdmin();
+  
+  function isAdmin() {
+    return request.auth != null 
+      && request.auth.token.admin == true;
+  }
+}
+
+// Subscription products - public read, admin write
+match /subscriptionProducts/{productId} {
+  // Allow all authenticated users to read product configurations
+  allow read: if request.auth != null;
+  
+  // Only admins can modify product configurations
+  allow write: if isAdmin();
+  
+  function isAdmin() {
+    return request.auth != null 
+      && request.auth.token.admin == true;
+  }
+}
+
+// Additional helper functions for subscription-based access control
+function hasActiveSubscription() {
+  return request.auth != null 
+    && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.subscriptionStatus == 'active'
+    && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.subscriptionExpirationDate > request.time;
+}
+
+function hasSubscriptionTier(tier) {
+  return hasActiveSubscription()
+    && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.currentSubscriptionTier == tier;
+}
+
+function hasMinimumSubscriptionTier(minTier) {
+  let userTier = get(/databases/$(database)/documents/users/$(request.auth.uid)).data.currentSubscriptionTier;
+  
+  // Define tier hierarchy: none < basic < premium < elite
+  let tierRank = userTier == 'elite' ? 3 
+    : userTier == 'premium' ? 2 
+    : userTier == 'basic' ? 1 
+    : 0;
+    
+  let minTierRank = minTier == 'elite' ? 3 
+    : minTier == 'premium' ? 2 
+    : minTier == 'basic' ? 1 
+    : 0;
+    
+  return hasActiveSubscription() && tierRank >= minTierRank;
+}
+
+// Example usage of subscription-based access control:
+// 
+// Premium content access:
+// match /premiumContent/{contentId} {
+//   allow read: if hasMinimumSubscriptionTier('premium');
+// }
+//
+// Elite-only features:
+// match /eliteFeatures/{featureId} {
+//   allow read: if hasSubscriptionTier('elite');
+// }
+//
+// AI coaching access:
+// match /aiCoachingSessions/{sessionId} {
+//   allow read, write: if hasMinimumSubscriptionTier('premium') 
+//     && request.auth.uid == resource.data.userId;
+// }

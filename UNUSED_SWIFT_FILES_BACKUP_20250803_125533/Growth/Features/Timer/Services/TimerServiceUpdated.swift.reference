@@ -1,0 +1,216 @@
+//
+//  TimerServiceUpdated.swift
+//  Growth
+//
+//  Updated to use LiveActivityManagerSimplified
+//
+
+import Foundation
+import UIKit
+import Combine
+import AVFoundation
+import ActivityKit
+import FirebaseAuth
+import FirebaseFirestore
+
+// This file shows the key changes needed in TimerService.swift
+// Only the modified methods are shown here
+
+extension TimerService {
+    
+    // MARK: - Darwin Notification Setup (NEW)
+    
+    private func registerForDarwinNotifications() {
+        // Pause notification
+        CFNotificationCenterAddObserver(
+            CFNotificationCenterGetDarwinNotifyCenter(),
+            Unmanaged.passUnretained(self).toOpaque(),
+            { _, observer, name, _, _ in
+                guard let observer = observer else { return }
+                let service = Unmanaged<TimerService>.fromOpaque(observer).takeUnretainedValue()
+                Task { @MainActor in
+                    await service.handleDarwinNotification(name: name)
+                }
+            },
+            "com.growthlabs.growthmethod.liveactivity.pause" as CFString,
+            nil,
+            .deliverImmediately
+        )
+        
+        // Resume notification
+        CFNotificationCenterAddObserver(
+            CFNotificationCenterGetDarwinNotifyCenter(),
+            Unmanaged.passUnretained(self).toOpaque(),
+            { _, observer, name, _, _ in
+                guard let observer = observer else { return }
+                let service = Unmanaged<TimerService>.fromOpaque(observer).takeUnretainedValue()
+                Task { @MainActor in
+                    await service.handleDarwinNotification(name: name)
+                }
+            },
+            "com.growthlabs.growthmethod.liveactivity.resume" as CFString,
+            nil,
+            .deliverImmediately
+        )
+        
+        // Stop notification
+        CFNotificationCenterAddObserver(
+            CFNotificationCenterGetDarwinNotifyCenter(),
+            Unmanaged.passUnretained(self).toOpaque(),
+            { _, observer, name, _, _ in
+                guard let observer = observer else { return }
+                let service = Unmanaged<TimerService>.fromOpaque(observer).takeUnretainedValue()
+                Task { @MainActor in
+                    await service.handleDarwinNotification(name: name)
+                }
+            },
+            "com.growthlabs.growthmethod.liveactivity.stop" as CFString,
+            nil,
+            .deliverImmediately
+        )
+    }
+    
+    private func unregisterFromDarwinNotifications() {
+        CFNotificationCenterRemoveEveryObserver(
+            CFNotificationCenterGetDarwinNotifyCenter(),
+            Unmanaged.passUnretained(self).toOpaque()
+        )
+    }
+    
+    @MainActor
+    private func handleDarwinNotification(name: CFNotificationName?) async {
+        guard let name = name else { return }
+        let nameString = name.rawValue as String
+        
+        print("🔔 TimerService: Received Darwin notification: \(nameString)")
+        
+        // Check if we should handle the action based on App Group data
+        if let fileAction = AppGroupFileManager.shared.readTimerAction() {
+            print("  - File action: \(fileAction.action)")
+            print("  - Timer type: \(fileAction.timerType)")
+            
+            // Only handle if it's for the correct timer type
+            if fileAction.timerType != (isQuickPracticeTimer ? "quick" : "main") {
+                print("  - Ignoring action for different timer type")
+                return
+            }
+        }
+        
+        switch nameString {
+        case "com.growthlabs.growthmethod.liveactivity.pause":
+            if timerState == .running {
+                pause()
+            }
+        case "com.growthlabs.growthmethod.liveactivity.resume":
+            if timerState == .paused {
+                resume()
+            }
+        case "com.growthlabs.growthmethod.liveactivity.stop":
+            if timerState != .stopped {
+                stop()
+            }
+        default:
+            break
+        }
+    }
+    
+    // MARK: - Updated Start Method
+    
+    func startUpdated() {
+        // ... existing start logic ...
+        
+        // Replace Live Activity start with simplified version
+        if #available(iOS 16.1, *) {
+            // If we're resuming from paused, just update the existing activity
+            if wasPausedState && LiveActivityManagerSimplified.shared.currentActivity != nil {
+                print("  📱 Resuming Live Activity")
+                Task {
+                    await LiveActivityManagerSimplified.shared.resumeTimer()
+                }
+            } else {
+                // Otherwise start a new Live Activity
+                print("  📱 Starting new Live Activity")
+                let sessionType: TimerActivityAttributes.ContentState.SessionType = 
+                    currentTimerMode == .countdown ? .countdown : .countup
+                
+                LiveActivityManagerSimplified.shared.startTimerActivity(
+                    methodId: currentMethodId ?? "",
+                    methodName: currentMethodName ?? "Timer",
+                    duration: targetDurationValue,
+                    sessionType: sessionType,
+                    timerType: isQuickPracticeTimer ? "quick" : "main"
+                )
+            }
+        }
+        
+        // ... rest of existing start logic ...
+    }
+    
+    // MARK: - Updated Pause Method
+    
+    func pauseUpdated() {
+        // ... existing pause logic ...
+        
+        // Update Live Activity
+        if #available(iOS 16.1, *) {
+            Task {
+                await LiveActivityManagerSimplified.shared.pauseTimer()
+            }
+        }
+        
+        // ... rest of existing pause logic ...
+    }
+    
+    // MARK: - Updated Resume Method
+    
+    func resumeUpdated() {
+        // ... existing resume logic ...
+        
+        // Update Live Activity
+        if #available(iOS 16.1, *) {
+            Task {
+                await LiveActivityManagerSimplified.shared.resumeTimer()
+            }
+        }
+        
+        // ... rest of existing resume logic ...
+    }
+    
+    // MARK: - Updated Stop Method
+    
+    func stopUpdated() {
+        // ... existing stop logic ...
+        
+        // End Live Activity
+        if #available(iOS 16.1, *) {
+            Task {
+                await LiveActivityManagerSimplified.shared.stopTimer()
+            }
+        }
+        
+        // ... rest of existing stop logic ...
+    }
+    
+    // MARK: - Updated Complete Method
+    
+    private func completeTimerUpdated() {
+        // ... existing complete logic ...
+        
+        // Complete Live Activity
+        if #available(iOS 16.1, *) {
+            Task { @MainActor in
+                await LiveActivityManagerSimplified.shared.completeTimer()
+                
+                // Show session completion notification
+                let methodName = currentMethodName ?? "Training"
+                let duration = elapsedTime
+                NotificationService.shared.showSessionCompletionNotification(
+                    methodName: methodName,
+                    duration: duration
+                )
+            }
+        }
+        
+        // ... rest of existing complete logic ...
+    }
+}

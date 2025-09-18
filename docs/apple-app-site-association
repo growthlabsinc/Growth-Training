@@ -1,0 +1,14 @@
+{
+    "webcredentials": {
+        "apps": ["62T6J77P6R.com.growthtraining.Growth"]
+    },
+    "applinks": {
+        "apps": [],
+        "details": [
+            {
+                "appID": "62T6J77P6R.com.growthtraining.Growth",
+                "paths": ["*"]
+            }
+        ]
+    }
+}

@@ -1,0 +1,27 @@
+# Scripts directory gitignore
+
+# Rate limit and progress caches
+.unsplash-rate-limit.json
+.unsplash-rate-limit-bg.json
+.image-replacement-progress.json
+
+# Downloaded images (but keep attributions)
+downloaded-images/*.jpg
+downloaded-images/*.png
+downloaded-images/*.jpeg
+
+# Staging directory (but keep metadata)
+image-staging/*.jpg
+image-staging/*.png
+image-staging/*.jpeg
+image-staging/*.log
+image-staging/downloader.pid
+image-staging/output.log
+
+# Applied images (but keep attributions)
+applied-images/*.jpg
+applied-images/*.png
+applied-images/*.jpeg
+
+# Analysis reports (generated)
+placeholder-analysis-report.md

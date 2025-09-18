@@ -1,0 +1,11 @@
+Bundle ID Update Plan:
+========================
+
+./Growth 2.xcodeproj/project.pbxproj
+./Growth.xcodeproj/project.pbxproj
+./GrowthTimerWidget/AppGroupConstants.swift
+./GrowthTimerWidget/GrowthTimerWidget.entitlements
+./Growth/Growth.entitlements
+./Growth/Core/Models/SubscriptionProduct.swift
+./Growth/Core/Utilities/AppGroupConstants.swift
+./Growth/Core/Utilities/EnvironmentDetector.swift

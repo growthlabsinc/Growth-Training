@@ -1,0 +1,22 @@
+Live Activity completion fixes
+
+- Fix Live Activity showing 00:00 with spinner on completion
+- Implement immediate dismissal when timer completes  
+- Remove completion push update complexity
+- Add local notification for session completion
+- Fix timer sending pause action instead of stop at completion
+- Update APNs authentication key (KD9A39PBA7)
+- Refactor Firebase functions to avoid deployment timeouts
+- Prevent state sync when timer is already stopped
+
+Key changes:
+- TimerService.swift: Add checks to prevent sync when timer is stopped
+- LiveActivityManager.swift: Implement immediate dismissal policy
+- NotificationService.swift: Add session completion notification
+- functions/liveActivityUpdatesSimple.js: New simplified version
+- functions/index.js: Use simplified Live Activity functions
+- functions/.env: Updated APNs key
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>

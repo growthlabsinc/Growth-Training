@@ -1,0 +1,28 @@
+# Ignore everything by default
+**
+
+# Include only what's needed
+!*.js
+!package.json
+!package-lock.json
+!.env.production
+
+# Include subdirectories
+!src/**
+!vertexAiProxy/**
+
+# Exclude test files and backups
+test-*.js
+*-backup.js
+*-temp.js
+index-*.js
+!index.js
+
+# Exclude build artifacts
+*.log
+*.zip
+node_modules_old/
+.DS_Store
+
+# Exclude APNs key from deployment (should use Firebase config)
+AuthKey_*.p8

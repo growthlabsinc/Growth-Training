@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Complete documentation and support for Growth: Method - The ultimate iOS app for personal development and timer-based training.">
+    <title>Growth: Method - Complete Documentation & Support</title>
+    
+    <style>
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5568d3;
+            --secondary: #764ba2;
+            --success: #4CAF50;
+            --warning: #FF9800;
+            --danger: #f44336;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --text: #333;
+            --text-muted: #666;
+            --border: #e0e0e0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        /* Navigation */
+        .nav-container {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .nav-wrapper {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+        
+        /* Main Container */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            gap: 30px;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: white;
+            border-radius: 20px;
+            padding: 30px 20px;
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .sidebar h3 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+        
+        .sidebar-section {
+            margin-bottom: 30px;
+        }
+        
+        .sidebar-links {
+            list-style: none;
+        }
+        
+        .sidebar-links li {
+            margin-bottom: 12px;
+        }
+        
+        .sidebar-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .sidebar-links a:hover {
+            background: var(--light);
+            color: var(--primary);
+            transform: translateX(5px);
+        }
+        
+        .sidebar-links a.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+        
+        /* Content Area */
+        .content {
+            flex: 1;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .content h1 {
+            color: var(--dark);
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+        
+        .content .subtitle {
+            color: var(--text-muted);
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+        
+        .section {
+            margin-bottom: 50px;
+            scroll-margin-top: 100px;
+        }
+        
+        .section h2 {
+            color: var(--primary);
+            font-size: 28px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border);
+        }
+        
+        .section h3 {
+            color: var(--dark);
+            font-size: 20px;
+            margin: 25px 0 15px;
+        }
+        
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .feature-card {
+            background: var(--light);
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 4px solid var(--primary);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.2);
+        }
+        
+        .feature-card h4 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .feature-card .icon {
+            font-size: 24px;
+        }
+        
+        /* Info Boxes */
+        .info-box {
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .info-box.tip {
+            background: #e8f5e9;
+            border-left: 4px solid var(--success);
+        }
+        
+        .info-box.warning {
+            background: #fff3e0;
+            border-left: 4px solid var(--warning);
+        }
+        
+        .info-box.danger {
+            background: #ffebee;
+            border-left: 4px solid var(--danger);
+        }
+        
+        .info-box.info {
+            background: #e3f2fd;
+            border-left: 4px solid #2196F3;
+        }
+        
+        .info-box strong {
+            display: block;
+            margin-bottom: 8px;
+        }
+        
+        /* Code Blocks */
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+        }
+        
+        /* Steps */
+        .steps {
+            counter-reset: step-counter;
+            margin: 20px 0;
+        }
+        
+        .step {
+            position: relative;
+            padding-left: 50px;
+            margin-bottom: 25px;
+            counter-increment: step-counter;
+        }
+        
+        .step::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        /* FAQ Accordion */
+        .faq-item {
+            margin-bottom: 15px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .faq-question {
+            padding: 20px;
+            background: var(--light);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        .faq-question:hover {
+            background: #e8eaf6;
+        }
+        
+        .faq-question::after {
+            content: '+';
+            font-size: 24px;
+            color: var(--primary);
+            transition: transform 0.3s;
+        }
+        
+        .faq-item.active .faq-question::after {
+            transform: rotate(45deg);
+        }
+        
+        .faq-answer {
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s, padding 0.3s;
+        }
+        
+        .faq-item.active .faq-answer {
+            padding: 20px;
+            max-height: 500px;
+        }
+        
+        /* Tables */
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        th {
+            background: var(--light);
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-secondary {
+            background: var(--light);
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* Mobile Responsive */
+        .mobile-menu {
+            display: none;
+            cursor: pointer;
+        }
+        
+        @media (max-width: 1024px) {
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                position: static;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .mobile-menu {
+                display: block;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .content h1 {
+                font-size: 28px;
+            }
+            
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Version Badge */
+        .version-badge {
+            display: inline-block;
+            background: var(--success);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+        
+        /* Quick Actions */
+        .quick-actions {
+            display: flex;
+            gap: 15px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .quick-action {
+            flex: 1;
+            min-width: 200px;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 15px;
+            text-align: center;
+            text-decoration: none;
+            transition: transform 0.3s;
+        }
+        
+        .quick-action:hover {
+            transform: translateY(-5px);
+        }
+        
+        .quick-action i {
+            font-size: 32px;
+            margin-bottom: 10px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav-container">
+        <div class="nav-wrapper">
+            <div class="logo">Growth: Method</div>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#getting-started">Get Started</a></li>
+                <li><a href="#faq">FAQ</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <div class="mobile-menu">☰</div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h3>📱 Getting Started</h3>
+                <ul class="sidebar-links">
+                    <li><a href="#installation">Installation</a></li>
+                    <li><a href="#first-launch">First Launch</a></li>
+                    <li><a href="#account-setup">Account Setup</a></li>
+                    <li><a href="#onboarding">Onboarding Tour</a></li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3>⚡ Core Features</h3>
+                <ul class="sidebar-links">
+                    <li><a href="#timer-system">Timer System</a></li>
+                    <li><a href="#live-activities">Live Activities</a></li>
+                    <li><a href="#routines">Daily Routines</a></li>
+                    <li><a href="#ai-coach">AI Coach</a></li>
+                    <li><a href="#progress-tracking">Progress Tracking</a></li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3>🎯 Training Methods</h3>
+                <ul class="sidebar-links">
+                    <li><a href="#growth-methods">Growth Methods</a></li>
+                    <li><a href="#practice-sessions">Practice Sessions</a></li>
+                    <li><a href="#goals">Goals & Targets</a></li>
+                    <li><a href="#badges">Achievements</a></li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3>⚙️ Settings & Support</h3>
+                <ul class="sidebar-links">
+                    <li><a href="#notifications">Notifications</a></li>
+                    <li><a href="#subscription">Subscription</a></li>
+                    <li><a href="#privacy">Privacy & Security</a></li>
+                    <li><a href="#troubleshooting">Troubleshooting</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Content Area -->
+        <main class="content">
+            <h1>Growth: Method Documentation <span class="version-badge">v1.0.4</span></h1>
+            <p class="subtitle">Complete guide to mastering your personal development journey</p>
+            
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <a href="#quick-start" class="quick-action">
+                    <i>🚀</i>
+                    <strong>Quick Start</strong>
+                </a>
+                <a href="#video-tutorials" class="quick-action">
+                    <i>📹</i>
+                    <strong>Video Tutorials</strong>
+                </a>
+                <a href="#faq" class="quick-action">
+                    <i>❓</i>
+                    <strong>Common Questions</strong>
+                </a>
+                <a href="#contact" class="quick-action">
+                    <i>💬</i>
+                    <strong>Get Support</strong>
+                </a>
+            </div>
+
+            <!-- Features Overview -->
+            <section id="features" class="section">
+                <h2>🌟 Features Overview</h2>
+                <p>Growth: Method is a comprehensive iOS app designed to help you achieve personal development through structured timer-based training, habit tracking, and AI-powered coaching.</p>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4><span class="icon">⏱️</span> Advanced Timer System</h4>
+                        <p>Three timer modes: Stopwatch, Countdown, and Interval. Perfect for various training methodologies with pause/resume support.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h4><span class="icon">🏝️</span> Live Activities</h4>
+                        <p>Track your sessions directly from the Lock Screen and Dynamic Island (iPhone 14 Pro+). Real-time updates without opening the app.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h4><span class="icon">🤖</span> AI Coach</h4>
+                        <p>Powered by advanced AI, get personalized guidance, answer questions, and receive tailored recommendations for your journey.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h4><span class="icon">📊</span> Progress Analytics</h4>
+                        <p>Comprehensive tracking with charts, streaks, and detailed statistics. Monitor your improvement over time.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h4><span class="icon">🎯</span> Goal Setting</h4>
+                        <p>Set and track personal goals with milestone celebrations and achievement badges.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h4><span class="icon">🔐</span> Privacy First</h4>
+                        <p>Face ID/Touch ID protection, encrypted data storage, and GDPR compliance. Your data stays secure.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h4><span class="icon">📚</span> Educational Resources</h4>
+                        <p>Built-in library of methods, techniques, and educational content to support your growth journey.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h4><span class="icon">🔄</span> Daily Routines</h4>
+                        <p>Create custom routines with scheduled sessions. Build consistency with automated reminders.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h4><span class="icon">🏆</span> Gamification</h4>
+                        <p>Earn badges, maintain streaks, and unlock achievements as you progress through your training.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Getting Started -->
+            <section id="getting-started" class="section">
+                <h2>🚀 Getting Started</h2>
+                
+                <div id="installation">
+                    <h3>Installation</h3>
+                    <div class="steps">
+                        <div class="step">
+                            <strong>Download from App Store</strong>
+                            <p>Search for "Growth: Method" on the App Store or use the direct link from our website.</p>
+                        </div>
+                        <div class="step">
+                            <strong>System Requirements</strong>
+                            <p>Requires iOS 16.0 or later. Compatible with iPhone and iPad. Optimized for iPhone 14 Pro and later for Dynamic Island features.</p>
+                        </div>
+                        <div class="step">
+                            <strong>Grant Permissions</strong>
+                            <p>Allow notifications for reminders and Live Activity updates. Optional: Face ID/Touch ID for app security.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="first-launch">
+                    <h3>First Launch Setup</h3>
+                    <div class="info-box tip">
+                        <strong>💡 Pro Tip:</strong>
+                        Take your time during the onboarding process. The app will guide you through personalizing your experience based on your goals.
+                    </div>
+                    
+                    <div class="steps">
+                        <div class="step">
+                            <strong>Welcome Screen</strong>
+                            <p>You'll be greeted with an introduction to Growth: Method's core features.</p>
+                        </div>
+                        <div class="step">
+                            <strong>Account Creation</strong>
+                            <p>Choose between Email/Password, Google Sign-In, or continue as a guest. We recommend creating an account to sync your data across devices.</p>
+                        </div>
+                        <div class="step">
+                            <strong>Select Your Goals</strong>
+                            <p>Choose your primary development areas. This helps customize your experience and AI Coach recommendations.</p>
+                        </div>
+                        <div class="step">
+                            <strong>Configure Notifications</strong>
+                            <p>Set up your preferred reminder times for daily practice sessions.</p>
+                        </div>
+                        <div class="step">
+                            <strong>Choose Your First Method</strong>
+                            <p>Browse through available training methods and select one to start with. You can always add more later.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Timer System -->
+            <section id="timer-system" class="section">
+                <h2>⏱️ Timer System</h2>
+                <p>The heart of Growth: Method is our advanced timer system, designed to support various training methodologies.</p>
+                
+                <h3>Timer Modes</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Mode</th>
+                                <th>Description</th>
+                                <th>Best For</th>
+                                <th>Features</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Stopwatch</strong></td>
+                                <td>Count up from zero</td>
+                                <td>Open-ended sessions, endurance training</td>
+                                <td>Pause/Resume, Lap tracking</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Countdown</strong></td>
+                                <td>Count down from set time</td>
+                                <td>Timed exercises, focused work sessions</td>
+                                <td>Custom duration, Alert on completion</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Interval</strong></td>
+                                <td>Alternating work/rest periods</td>
+                                <td>HIIT, Pomodoro, Circuit training</td>
+                                <td>Custom intervals, Round tracking</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Using the Timer</h3>
+                <div class="info-box info">
+                    <strong>ℹ️ Background Support:</strong>
+                    The timer continues running when you leave the app. You'll see updates in Live Activities and receive notifications for important events.
+                </div>
+
+                <div class="steps">
+                    <div class="step">
+                        <strong>Select Timer Mode</strong>
+                        <p>From the main timer screen, tap the mode selector at the top to choose between Stopwatch, Countdown, or Interval.</p>
+                    </div>
+                    <div class="step">
+                        <strong>Configure Settings</strong>
+                        <p>For Countdown: Set your target duration. For Interval: Configure work time, rest time, and number of rounds.</p>
+                    </div>
+                    <div class="step">
+                        <strong>Start Session</strong>
+                        <p>Tap the start button to begin. The timer will automatically create a Live Activity if enabled.</p>
+                    </div>
+                    <div class="step">
+                        <strong>Control Options</strong>
+                        <p>Use pause/resume as needed. Long-press the stop button to end the session and save your progress.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Live Activities -->
+            <section id="live-activities" class="section">
+                <h2>🏝️ Live Activities & Dynamic Island</h2>
+                <p>Keep track of your training sessions without constantly opening the app.</p>
+                
+                <h3>What are Live Activities?</h3>
+                <p>Live Activities display real-time timer information on your Lock Screen and in the Dynamic Island (iPhone 14 Pro and later). They update automatically and provide quick access to timer controls.</p>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>Lock Screen Display</h4>
+                        <p>See your timer progress, current round, and controls directly on the Lock Screen.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>Dynamic Island</h4>
+                        <p>Compact and expanded views in the Dynamic Island for iPhone 14 Pro+ users.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>Real-time Updates</h4>
+                        <p>Timer counts in real-time without draining battery using native iOS features.</p>
+                    </div>
+                </div>
+
+                <h3>Enabling Live Activities</h3>
+                <div class="info-box warning">
+                    <strong>⚠️ Requirements:</strong>
+                    Live Activities require iOS 16.1+ and must be enabled in Settings → Growth → Live Activities.
+                </div>
+
+                <div class="steps">
+                    <div class="step">
+                        <strong>Check iOS Settings</strong>
+                        <p>Go to Settings → Growth → ensure "Live Activities" is enabled.</p>
+                    </div>
+                    <div class="step">
+                        <strong>Enable in App</strong>
+                        <p>In Growth app, go to Settings → Notifications → toggle "Live Activities" on.</p>
+                    </div>
+                    <div class="step">
+                        <strong>Start a Timer</strong>
+                        <p>Live Activities automatically appear when you start a timer session.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- AI Coach -->
+            <section id="ai-coach" class="section">
+                <h2>🤖 AI Coach</h2>
+                <p>Your personal AI-powered assistant for guidance, motivation, and personalized recommendations.</p>
+                
+                <h3>Capabilities</h3>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>Personalized Advice</h4>
+                        <p>Get recommendations based on your goals, progress, and training history.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>Technique Guidance</h4>
+                        <p>Ask questions about proper form, methods, and best practices.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>Progress Analysis</h4>
+                        <p>Receive insights about your performance trends and areas for improvement.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>Motivation Support</h4>
+                        <p>Get encouragement and tips to stay consistent with your practice.</p>
+                    </div>
+                </div>
+
+                <h3>Using AI Coach</h3>
+                <div class="steps">
+                    <div class="step">
+                        <strong>Access AI Coach</strong>
+                        <p>Tap the AI Coach tab in the bottom navigation or the chat icon from any screen.</p>
+                    </div>
+                    <div class="step">
+                        <strong>Ask Your Question</strong>
+                        <p>Type or use voice input to ask questions about your training, techniques, or goals.</p>
+                    </div>
+                    <div class="step">
+                        <strong>Follow Recommendations</strong>
+                        <p>The AI Coach provides actionable advice. You can save responses for later reference.</p>
+                    </div>
+                </div>
+
+                <div class="info-box tip">
+                    <strong>💡 Best Practices:</strong>
+                    Be specific with your questions. Instead of "How do I improve?", try "What exercises can help me improve my endurance for 30-minute sessions?"
+                </div>
+            </section>
+
+            <!-- Daily Routines -->
+            <section id="routines" class="section">
+                <h2>🔄 Daily Routines</h2>
+                <p>Build consistency with structured daily practice sessions.</p>
+                
+                <h3>Creating a Routine</h3>
+                <div class="steps">
+                    <div class="step">
+                        <strong>Navigate to Routines</strong>
+                        <p>Tap the Routines tab and select "Create New Routine".</p>
+                    </div>
+                    <div class="step">
+                        <strong>Add Sessions</strong>
+                        <p>Add multiple timer sessions with different configurations for each.</p>
+                    </div>
+                    <div class="step">
+                        <strong>Set Schedule</strong>
+                        <p>Choose days of the week and preferred time for reminders.</p>
+                    </div>
+                    <div class="step">
+                        <strong>Customize Settings</strong>
+                        <p>Add rest periods between sessions, set completion goals, and enable notifications.</p>
+                    </div>
+                </div>
+
+                <h3>Pre-built Routines</h3>
+                <p>Choose from expertly designed routines for different goals:</p>
+                <ul>
+                    <li><strong>Beginner's Journey:</strong> 5-10 minute sessions to build consistency</li>
+                    <li><strong>Intermediate Challenge:</strong> 15-20 minute focused training</li>
+                    <li><strong>Advanced Mastery:</strong> 30+ minute comprehensive sessions</li>
+                    <li><strong>Quick Practice:</strong> 5-minute micro-sessions for busy days</li>
+                </ul>
+            </section>
+
+            <!-- Progress Tracking -->
+            <section id="progress-tracking" class="section">
+                <h2>📊 Progress Tracking</h2>
+                <p>Monitor your improvement with detailed analytics and insights.</p>
+                
+                <h3>Available Metrics</h3>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>Session Duration</h4>
+                        <p>Track total time spent, average session length, and consistency over time.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>Streak Tracking</h4>
+                        <p>Maintain daily, weekly, and monthly streaks. Get notifications to keep streaks alive.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>Performance Trends</h4>
+                        <p>Visualize improvement with charts showing progress over days, weeks, and months.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>Goal Completion</h4>
+                        <p>Track progress toward personal goals with percentage completion and milestones.</p>
+                    </div>
+                </div>
+
+                <h3>Viewing Your Stats</h3>
+                <p>Access comprehensive statistics from the Progress tab:</p>
+                <ul>
+                    <li><strong>Dashboard View:</strong> Quick overview of key metrics</li>
+                    <li><strong>Detailed Analytics:</strong> Deep dive into specific time periods</li>
+                    <li><strong>Comparison Mode:</strong> Compare current performance with past periods</li>
+                    <li><strong>Export Data:</strong> Download your data for external analysis</li>
+                </ul>
+            </section>
+
+            <!-- Troubleshooting -->
+            <section id="troubleshooting" class="section">
+                <h2>🔧 Troubleshooting</h2>
+                
+                <h3>Common Issues</h3>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        Live Activities not appearing
+                    </div>
+                    <div class="faq-answer">
+                        <ol>
+                            <li>Check iOS Settings → Growth → Live Activities is enabled</li>
+                            <li>Ensure you're on iOS 16.1 or later</li>
+                            <li>Restart your iPhone if the setting was recently changed</li>
+                            <li>Check that Do Not Disturb isn't blocking Live Activities</li>
+                        </ol>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        Timer stops when app is in background
+                    </div>
+                    <div class="faq-answer">
+                        <p>This usually happens due to iOS battery optimization:</p>
+                        <ol>
+                            <li>Go to Settings → Growth → Background App Refresh → Enable</li>
+                            <li>Check Settings → Battery → ensure Growth isn't in Low Power Mode restrictions</li>
+                            <li>The timer should continue even in background with Live Activities enabled</li>
+                        </ol>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        Notifications not working
+                    </div>
+                    <div class="faq-answer">
+                        <ol>
+                            <li>Check Settings → Notifications → Growth → Allow Notifications is on</li>
+                            <li>Ensure notification settings in the app match your iOS settings</li>
+                            <li>Check Focus modes aren't blocking Growth notifications</li>
+                            <li>Try toggling notifications off and on in both iOS Settings and the app</li>
+                        </ol>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        AI Coach not responding
+                    </div>
+                    <div class="faq-answer">
+                        <p>If the AI Coach isn't working properly:</p>
+                        <ol>
+                            <li>Check your internet connection</li>
+                            <li>Ensure you're signed in to your account</li>
+                            <li>Try force-closing and reopening the app</li>
+                            <li>Check Settings → AI Coach → ensure it's enabled</li>
+                            <li>Contact support if the issue persists</li>
+                        </ol>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        Data not syncing across devices
+                    </div>
+                    <div class="faq-answer">
+                        <ol>
+                            <li>Ensure you're logged in with the same account on all devices</li>
+                            <li>Check internet connectivity on both devices</li>
+                            <li>Go to Settings → Account → tap "Sync Now"</li>
+                            <li>Allow up to 5 minutes for sync to complete</li>
+                            <li>Try logging out and back in if sync issues persist</li>
+                        </ol>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Privacy & Security -->
+            <section id="privacy" class="section">
+                <h2>🔐 Privacy & Security</h2>
+                
+                <h3>Data Protection</h3>
+                <div class="info-box info">
+                    <strong>🔒 Your Privacy Matters:</strong>
+                    All personal data is encrypted both in transit and at rest. We never share your information with third parties without explicit consent.
+                </div>
+                
+                <h3>Security Features</h3>
+                <ul>
+                    <li><strong>Biometric Authentication:</strong> Use Face ID or Touch ID to protect app access</li>
+                    <li><strong>End-to-End Encryption:</strong> All data synced between devices is encrypted</li>
+                    <li><strong>Local Storage Option:</strong> Choose to keep data only on your device</li>
+                    <li><strong>GDPR Compliance:</strong> Full compliance with data protection regulations</li>
+                    <li><strong>Data Export:</strong> Export all your data at any time</li>
+                    <li><strong>Account Deletion:</strong> Permanently delete account and all associated data</li>
+                </ul>
+
+                <h3>Managing Your Data</h3>
+                <div class="steps">
+                    <div class="step">
+                        <strong>Access Privacy Settings</strong>
+                        <p>Go to Settings → Privacy & Security in the app.</p>
+                    </div>
+                    <div class="step">
+                        <strong>Review Data Usage</strong>
+                        <p>See what data is collected and how it's used.</p>
+                    </div>
+                    <div class="step">
+                        <strong>Configure Preferences</strong>
+                        <p>Choose what data to share and what to keep private.</p>
+                    </div>
+                    <div class="step">
+                        <strong>Export or Delete</strong>
+                        <p>Download your data or request complete deletion.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Subscription -->
+            <section id="subscription" class="section">
+                <h2>💎 Subscription & Premium Features</h2>
+                
+                <h3>Free vs Premium</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Free</th>
+                                <th>Premium</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Basic Timer Modes</td>
+                                <td>✅</td>
+                                <td>✅</td>
+                            </tr>
+                            <tr>
+                                <td>Live Activities</td>
+                                <td>✅</td>
+                                <td>✅</td>
+                            </tr>
+                            <tr>
+                                <td>Basic Progress Tracking</td>
+                                <td>✅</td>
+                                <td>✅</td>
+                            </tr>
+                            <tr>
+                                <td>Unlimited Custom Routines</td>
+                                <td>3 routines</td>
+                                <td>Unlimited</td>
+                            </tr>
+                            <tr>
+                                <td>AI Coach Access</td>
+                                <td>5 queries/day</td>
+                                <td>Unlimited</td>
+                            </tr>
+                            <tr>
+                                <td>Advanced Analytics</td>
+                                <td>❌</td>
+                                <td>✅</td>
+                            </tr>
+                            <tr>
+                                <td>Custom Themes</td>
+                                <td>❌</td>
+                                <td>✅</td>
+                            </tr>
+                            <tr>
+                                <td>Priority Support</td>
+                                <td>❌</td>
+                                <td>✅</td>
+                            </tr>
+                            <tr>
+                                <td>Data Export</td>
+                                <td>❌</td>
+                                <td>✅</td>
+                            </tr>
+                            <tr>
+                                <td>Multiple Device Sync</td>
+                                <td>2 devices</td>
+                                <td>Unlimited</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Managing Your Subscription</h3>
+                <div class="info-box warning">
+                    <strong>⚠️ Important:</strong>
+                    Subscriptions are managed through the App Store. Changes made there will reflect in the app.
+                </div>
+                
+                <p>To manage your subscription:</p>
+                <ol>
+                    <li>Open Settings on your iPhone</li>
+                    <li>Tap your name at the top</li>
+                    <li>Select "Subscriptions"</li>
+                    <li>Find "Growth: Method" and tap it</li>
+                    <li>Manage, upgrade, or cancel your subscription</li>
+                </ol>
+            </section>
+
+            <!-- FAQ -->
+            <section id="faq" class="section">
+                <h2>❓ Frequently Asked Questions</h2>
+                
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        What makes Growth: Method different from other timer apps?
+                    </div>
+                    <div class="faq-answer">
+                        <p>Growth: Method is specifically designed for personal development and training methodologies. Unlike generic timer apps, we offer:</p>
+                        <ul>
+                            <li>Specialized timer modes for various training methods</li>
+                            <li>AI-powered coaching and personalized recommendations</li>
+                            <li>Comprehensive progress tracking and analytics</li>
+                            <li>Live Activities and Dynamic Island support</li>
+                            <li>Educational resources and structured programs</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        Can I use the app offline?
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes! Core features work offline including:</p>
+                        <ul>
+                            <li>All timer functions</li>
+                            <li>Saved routines and sessions</li>
+                            <li>Local progress tracking</li>
+                            <li>Downloaded educational content</li>
+                        </ul>
+                        <p>You'll need internet for: AI Coach, data sync, and downloading new content.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        How accurate is the timer?
+                    </div>
+                    <div class="faq-answer">
+                        <p>Our timer system is highly accurate, using iOS's native timing mechanisms. The timer continues running accurately even when the app is in the background or the phone is locked. Live Activities update in real-time without affecting battery life significantly.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        Can I export my data?
+                    </div>
+                    <div class="faq-answer">
+                        <p>Premium users can export their data in multiple formats:</p>
+                        <ul>
+                            <li>CSV for spreadsheet analysis</li>
+                            <li>JSON for developer use</li>
+                            <li>PDF reports for records</li>
+                        </ul>
+                        <p>Go to Settings → Privacy → Export Data to download your information.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        Is my data backed up?
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes, if you're signed in with an account, your data is automatically backed up to our secure cloud servers. You can also enable iCloud backup for additional redundancy. Local-only users should regularly export their data for backup.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Contact & Support -->
+            <section id="contact" class="section">
+                <h2>💬 Contact & Support</h2>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>📧 Email Support</h4>
+                        <p>General inquiries and support</p>
+                        <a href="mailto:support@growthlabs.coach" class="btn btn-secondary">support@growthlabs.coach</a>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h4>🐛 Bug Reports</h4>
+                        <p>Help us improve the app</p>
+                        <a href="mailto:bugs@growthlabs.coach" class="btn btn-secondary">bugs@growthlabs.coach</a>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h4>💼 Business Inquiries</h4>
+                        <p>Partnerships and opportunities</p>
+                        <a href="mailto:business@growthlabs.coach" class="btn btn-secondary">business@growthlabs.coach</a>
+                    </div>
+                </div>
+                
+                <div class="info-box tip">
+                    <strong>💡 Response Times:</strong>
+                    <ul>
+                        <li>Premium Support: Within 24 hours</li>
+                        <li>General Support: 24-48 hours</li>
+                        <li>Bug Reports: 48-72 hours</li>
+                    </ul>
+                </div>
+
+                <h3>Before Contacting Support</h3>
+                <p>Please try these steps:</p>
+                <ol>
+                    <li>Check the FAQ section above</li>
+                    <li>Review the troubleshooting guide</li>
+                    <li>Ensure you're on the latest app version</li>
+                    <li>Restart the app and your device</li>
+                </ol>
+
+                <h3>Information to Include</h3>
+                <p>When contacting support, please provide:</p>
+                <ul>
+                    <li>Your device model and iOS version</li>
+                    <li>App version (found in Settings → About)</li>
+                    <li>Description of the issue</li>
+                    <li>Steps to reproduce the problem</li>
+                    <li>Screenshots if applicable</li>
+                </ul>
+            </section>
+
+            <!-- Footer -->
+            <section class="section">
+                <div style="text-align: center; padding: 40px 0; border-top: 2px solid var(--border);">
+                    <p style="color: var(--text-muted); margin-bottom: 20px;">
+                        © 2025 Growth Labs. All rights reserved.
+                    </p>
+                    <p style="margin-bottom: 20px;">
+                        <a href="/" class="btn btn-primary">Back to Home</a>
+                    </p>
+                    <p style="color: var(--text-muted); font-size: 14px;">
+                        Growth: Method v1.0.4 | Requires iOS 16.0+ | 
+                        <a href="/privacy" style="color: var(--primary);">Privacy Policy</a> | 
+                        <a href="/terms" style="color: var(--primary);">Terms of Service</a>
+                    </p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // FAQ Toggle
+        function toggleFaq(element) {
+            const parent = element.parentElement;
+            parent.classList.toggle('active');
+        }
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Active sidebar link highlighting
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('.section');
+            const sidebarLinks = document.querySelectorAll('.sidebar-links a');
+            
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (scrollY >= (sectionTop - 150)) {
+                    current = section.getAttribute('id');
+                }
+            });
+            
+            sidebarLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+        
+        // Mobile menu toggle
+        document.querySelector('.mobile-menu').addEventListener('click', function() {
+            const navLinks = document.querySelector('.nav-links');
+            navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+        });
+    </script>
+</body>
+</html>

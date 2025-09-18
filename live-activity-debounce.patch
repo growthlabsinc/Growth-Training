@@ -1,0 +1,70 @@
+--- a/Growth/Features/Timer/Services/LiveActivityManagerSimplified.swift
++++ b/Growth/Features/Timer/Services/LiveActivityManagerSimplified.swift
+@@ -15,6 +15,10 @@ class LiveActivityManagerSimplified: ObservableObject {
+     
+     @Published private(set) var currentActivity: Activity<TimerActivityAttributes>?
+     
++    // Debouncing properties to prevent race conditions
++    private static let updateQueue = DispatchQueue(label: "com.growth.liveactivity.update", qos: .userInitiated)
++    private static var activeUpdateTask: Task<Void, Never>?
++    
+     // MARK: - Start Timer
+     
+     func startTimerActivity(
+@@ -130,6 +134,11 @@ class LiveActivityManagerSimplified: ObservableObject {
+         // Update locally for immediate feedback
+         await updateActivity(with: pausedState)
+         
++        // Add delay to ensure local update completes before sending push
++        // This prevents the race condition where multiple updates conflict
++        Logger.info("📱 pauseTimer: Waiting before sending push update...")
++        try? await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds
++        
+         // Send push update
+         await sendPushUpdate(contentState: pausedState, action: "pause")
+     }
+@@ -366,8 +375,18 @@ class LiveActivityManagerSimplified: ObservableObject {
+     // MARK: - Push Updates
+     
+     private func sendPushUpdate(contentState: TimerActivityAttributes.ContentState, action: String) async {
++        // Cancel any existing update task to prevent concurrent calls
++        Self.activeUpdateTask?.cancel()
++        
++        // Create new task with debouncing
++        Self.activeUpdateTask = Task {
++            await performPushUpdate(contentState: contentState, action: action)
++        }
++        
++        await Self.activeUpdateTask?.value
++    }
++    
++    private func performPushUpdate(contentState: TimerActivityAttributes.ContentState, action: String) async {
+         guard let activity = currentActivity else { return }
+         
+         // Store state in Firestore
+@@ -376,6 +395,16 @@ class LiveActivityManagerSimplified: ObservableObject {
+             contentState: contentState,
+             action: action
+         )
+         
++        // Wait for Firestore write to complete
++        try? await Task.sleep(nanoseconds: 300_000_000) // 0.3 seconds
++        
++        // Check if task was cancelled
++        guard !Task.isCancelled else {
++            Logger.info("⏭️ Update cancelled before Firebase function call")
++            return
++        }
++        
+         // Trigger push via Firebase Function
+         guard let userId = Auth.auth().currentUser?.uid else { return }
+         
+@@ -387,7 +416,7 @@ class LiveActivityManagerSimplified: ObservableObject {
+         
+         do {
+             _ = try await functions.httpsCallable("updateLiveActivitySimplified").call(data)
+-            Logger.info("✅ Push update sent")
++            Logger.info("✅ Push update sent for action: \(action)")
+         } catch {
+             Logger.error("❌ Failed to send push update: \(error)")
+         }

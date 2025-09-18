@@ -1,0 +1,47 @@
+# Firebase Integration Fixes for iOS App
+
+## Overview
+This project aims to fix various Firebase-related issues in the Growth iOS app. These include compilation errors in UI components, Firebase initialization errors related to invalid API keys, and addressing Firebase warnings in the console logs.
+
+## Requirements
+
+### Fix UI Component Compilation Errors
+- Resolve compilation errors in GrowthButton and GrowthTextField components
+- Fix property name conflicts and deprecated APIs
+- Properly implement type annotations in registerForTraitChanges closures
+
+### Update Firebase Configuration Files
+- Update GoogleService-Info.plist files with properly formatted API keys (starting with 'A' and 39 characters long)
+- Correct bundle identifiers to match the app's actual bundle ID (com.growthtraining.Growth)
+- Ensure proper configuration for each environment (development, staging, production)
+
+### Address Firebase Warning Messages
+- Fix Firebase Messaging method swizzling warnings by adding FirebaseAppDelegateProxyEnabled=NO to Info.plist
+- Enable required Firebase APIs in Firebase Console:
+  - Firebase In-App Messaging API
+  - Configure APNs environment entitlement for push notifications
+- Document any remaining warnings that are informational/simulator-specific
+
+### Testing and Validation
+- Verify all compilation errors are resolved
+- Confirm Firebase initializes successfully on app launch
+- Test push notification configuration (if applicable)
+- Validate proper operation of Firebase Analytics and other enabled services
+
+## Non-Requirements
+- Major architectural changes to the Firebase implementation
+- Implementation of new Firebase features
+- Changes to non-Firebase related components 
+
+## Additional Focus: Story 1.4 - Style Guide Implementation with Figma Design
+- Revisit the previously implemented Style Guide components to ensure alignment with the Figma design
+- Reference the Figma design at: https://www.figma.com/design/7KW2CPstr0dgseeVWptqyi/UX-Pilot--AI-UI-Generator---AI-Wireframe-Generator--Community-?node-id=0-1&t=TkpuCrLxyAKmJA12-1
+- Ensure all UI components match the visual specifications in the Figma design:
+  - Color values (primary colors, secondary colors, accent colors)
+  - Typography (fonts, sizes, weights, line heights)
+  - Component measurements (heights, corner radii)
+  - Spacing system
+- Update any existing components that don't match the design
+- Document any discrepancies between the style guide and Figma design, prioritizing the style guide guidance
+- Create a StyleGuideViewController that showcases all implemented components according to the Figma design
+- Update the ui-ux-spec.md file to properly reference the Figma design 

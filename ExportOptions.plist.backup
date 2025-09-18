@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>method</key>
+    <string>app-store</string>
+    <key>teamID</key>
+    <string>62T6J77P6R</string>
+    <key>signingStyle</key>
+    <string>manual</string>
+    <key>signingCertificate</key>
+    <string>Apple Distribution</string>
+    <key>provisioningProfiles</key>
+    <dict>
+        <key>com.growthlabs.growthmethod</key>
+        <string>Growth App Store Distribution</string>
+        <key>group.com.growthlabs.growthmethod.GrowthTimerWidget</key>
+        <string>Growth Timer Widget App Store</string>
+    </dict>
+    <key>uploadBitcode</key>
+    <false/>
+    <key>uploadSymbols</key>
+    <true/>
+    <key>compileBitcode</key>
+    <false/>
+    <key>stripSwiftSymbols</key>
+    <true/>
+    <key>thinning</key>
+    <string>&lt;thin-for-all-variants&gt;</string>
+    <key>generateAppStoreInformation</key>
+    <true/>
+    <key>manageAppVersionAndBuildNumber</key>
+    <true/>
+</dict>
+</plist>

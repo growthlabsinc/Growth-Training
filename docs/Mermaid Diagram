@@ -1,0 +1,62 @@
+graph TD
+    subgraph "iOS Application (Client)"
+        UserInterface["Growth Coach UI (SwiftUI)"]
+        FirebaseSDK["Firebase SDK (Auth, Functions)"]
+    end
+
+    subgraph "Google Cloud Platform (GCP) - EU Region"
+        subgraph "Firebase"
+            Auth["Firebase Authentication"]
+            AppCheck["Firebase App Check"]
+            Functions["Cloud Functions (HTTPS Callable - RAG Orchestrator)"]
+            FirestoreKB["Firestore (Knowledge Base - Growth Methods, Articles)"]
+            FirestoreHistory["Firestore (Conversation History - User-centric)"]
+            FirestoreTriggers["Firestore Triggers (for KB updates)"]
+        end
+
+        subgraph "Vertex AI"
+            AISearch["Vertex AI Search (Knowledge Index)"]
+            GeminiLLM["Vertex AI - Gemini LLM (e.g., Gemini 2.0 Flash-Lite)"]
+        end
+
+        subgraph "Security & Compliance"
+            IAM["Cloud IAM (Least Privilege)"]
+            CloudDLP["Cloud DLP API (for Secure Logging)"]
+            VPCSC["VPC Service Controls (Recommended)"]
+            AuditLogging["Cloud Audit Logging"]
+        end
+
+        DataIngestFunction["Cloud Function (KB Ingestion/Update - Triggered)"]
+    end
+
+    UserInterface -- "User Query (via FirebaseSDK)" --> Functions
+    Functions -- "Validate Token" --> Auth
+    Functions -- "Validate App" --> AppCheck
+    Functions -- "Retrieve/Store History" --> FirestoreHistory
+    Functions -- "Query Knowledge Base" --> AISearch
+    AISearch -- "Retrieved Context" --> Functions
+    Functions -- "Generate Response (Prompt + Context)" --> GeminiLLM
+    GeminiLLM -- "AI Response" --> Functions
+    Functions -- "Return Response (via FirebaseSDK)" --> UserInterface
+
+    FirestoreKB -- "Triggers Update" --> FirestoreTriggers
+    FirestoreTriggers -- "Invoke" --> DataIngestFunction
+    DataIngestFunction -- "Update Index" --> AISearch
+
+    Functions -- "Log Securely (via CloudDLP)" --> AuditLogging
+
+    %% Interactions with Security Services
+    Functions -- "Uses IAM Service Account" --> IAM
+    FirestoreKB -- "Protected by IAM/Rules" --> IAM
+    FirestoreHistory -- "Protected by IAM/Rules" --> IAM
+    AISearch -- "Protected by IAM" --> IAM
+    GeminiLLM -- "Protected by IAM" --> IAM
+    DataIngestFunction -- "Uses IAM Service Account" --> IAM
+
+    %% VPC Service Controls perimeter (conceptual)
+    Functions <--> VPCSC
+    FirestoreKB <--> VPCSC
+    FirestoreHistory <--> VPCSC
+    AISearch <--> VPCSC
+    GeminiLLM <--> VPCSC
+    CloudDLP <--> VPCSC

@@ -1,0 +1,24 @@
+fix: Implement push-driven Live Activity architecture to prevent 30-second timer pause
+
+- Remove automatic timer pause when iOS background task expires after 30 seconds
+- Add server-side push updates that trigger on both timer start and resume actions  
+- Update LiveActivityPushService to use userId instead of activityId for Firestore documents
+- Configure APNs authentication for Live Activity push notifications
+- Update Firebase Function to handle missing push tokens gracefully
+- Add extensive logging throughout the push update system
+
+The timer now continues running indefinitely via server-side push notifications,
+even when the app is backgrounded or terminated. The Firebase Function sends
+updates every second to keep the Live Activity timer running.
+
+Changes made:
+- TimerService.swift: Removed pause() call when background task expires
+- LiveActivityPushService.swift: Fixed document ID to use userId, added resume trigger
+- LiveActivityManager.swift: Added local update before push for immediate feedback
+- manageLiveActivityUpdates.js: Fixed to use userId for document access, handle missing tokens
+- firestore.rules: Added permissions for activeTimers and liveActivityTokens collections
+- index.js: Commented out missing test-simple module reference
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>

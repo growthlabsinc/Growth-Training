@@ -1,0 +1,35 @@
+GIT COMMIT COMMANDS - CHECKPOINT FOR WORKING TIMER DISPLAY
+==========================================================
+
+Run these commands in your terminal:
+
+1. Stage all changes:
+   git add -A
+
+2. Create the checkpoint commit:
+   git commit -m "Fix Live Activity timer display showing correct duration
+
+CHECKPOINT: Timer now displays actual session duration instead of always showing 1:00:00
+
+Key fixes:
+- Detect and convert NSDate reference timestamps (seconds since 2001) to Unix timestamps
+- Handle timestamp validation properly in widget extension
+- Add proper fallbacks using remainingTimeAtLastUpdate for invalid timestamps
+- Fix timestamp conversion for all date fields (startTime, endTime, lastUpdateTime, lastKnownGoodUpdate)
+- Update TimerStateSync to include proper initial values for elapsedTimeAtLastUpdate and remainingTimeAtLastUpdate
+- Remove unused variable warnings
+
+Known issues (to be fixed next):
+- Pause button still causes Live Activity to dismiss
+- Unable to decode content state errors persist
+
+This commit serves as a checkpoint for a working timer display before addressing the pause functionality.
+
+🤖 Generated with Claude Code
+
+Co-Authored-By: Claude <noreply@anthropic.com>"
+
+3. Push to remote (optional):
+   git push origin main
+
+This creates a checkpoint you can return to if needed while working on the pause button fix.

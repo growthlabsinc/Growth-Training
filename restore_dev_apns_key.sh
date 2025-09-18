@@ -1,0 +1,48 @@
+#!/bin/bash
+
+echo "🔑 Restoring Development APNs Key Configuration"
+echo "=============================================="
+echo ""
+
+# Check current configuration
+echo "📊 Current Configuration:"
+echo "------------------------"
+CURRENT_KEY_ID=$(gcloud secrets versions access latest --secret="APNS_KEY_ID" 2>/dev/null || echo "Error reading secret")
+echo "Current APNS_KEY_ID: $CURRENT_KEY_ID"
+echo ""
+
+echo "⚠️  Issue: The dev key 55LZB28UY2 file is missing!"
+echo ""
+echo "📋 To fix this, you need to:"
+echo ""
+echo "1. Download the AuthKey_55LZB28UY2.p8 file from Apple Developer Portal:"
+echo "   - Go to: https://developer.apple.com/account/resources/authkeys/list"
+echo "   - Find the key with ID: 55LZB28UY2"
+echo "   - Download the .p8 file"
+echo ""
+echo "2. Place the file in the functions directory:"
+echo "   cp ~/Downloads/AuthKey_55LZB28UY2.p8 ./functions/"
+echo ""
+echo "3. Run this command to update the secret:"
+echo "   gcloud secrets versions add APNS_KEY_ID --data-file=<(echo '55LZB28UY2')"
+echo ""
+echo "4. Update the APNS_AUTH_KEY secret with the key content:"
+echo "   gcloud secrets versions add APNS_AUTH_KEY --data-file=./functions/AuthKey_55LZB28UY2.p8"
+echo ""
+echo "5. Redeploy the function:"
+echo "   firebase deploy --only functions:updateLiveActivitySimplified"
+echo ""
+echo "🎯 Alternative: If 55LZB28UY2 doesn't exist in Apple Developer Portal"
+echo "----------------------------------------------------------------"
+echo "The key might have been revoked or deleted. In that case:"
+echo ""
+echo "1. Use the existing 3G84L8G52R key for development:"
+echo "   gcloud secrets versions add APNS_KEY_ID --data-file=<(echo '3G84L8G52R')"
+echo "   gcloud secrets versions add APNS_AUTH_KEY --data-file=./functions/AuthKey_3G84L8G52R.p8"
+echo ""
+echo "2. Or continue using 66LQV834DU if it's configured for both dev and prod"
+echo ""
+
+# Show available keys
+echo "📁 Available APNs Keys in Project:"
+ls -la functions/AuthKey_*.p8 2>/dev/null || echo "No keys found"

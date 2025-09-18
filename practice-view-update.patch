@@ -1,0 +1,156 @@
+diff --git a/Growth/Core/Extensions/NotificationName+Extensions.swift b/Growth/Core/Extensions/NotificationName+Extensions.swift
+index 1234567..abcdefg 100644
+--- a/Growth/Core/Extensions/NotificationName+Extensions.swift
++++ b/Growth/Core/Extensions/NotificationName+Extensions.swift
+@@ -7,6 +7,7 @@ extension Notification.Name {
+     // MARK: - Progress Updates
+     static let methodProgressionCompleted = Notification.Name("methodProgressionCompleted")
+     static let routineProgressReset = Notification.Name("routineProgressReset")
++    static let routineChanged = Notification.Name("routineChanged")
+     static let methodCompleted = Notification.Name("methodCompleted")
+     static let sessionLogged = Notification.Name("sessionLogged")
+     static let sessionDismissedWithoutLogging = Notification.Name("sessionDismissedWithoutLogging")
+diff --git a/Growth/Features/Practice/ViewModels/PracticeTabViewModel.swift b/Growth/Features/Practice/ViewModels/PracticeTabViewModel.swift
+index 1234567..abcdefg 100644
+--- a/Growth/Features/Practice/ViewModels/PracticeTabViewModel.swift
++++ b/Growth/Features/Practice/ViewModels/PracticeTabViewModel.swift
+@@ -143,11 +143,23 @@ class PracticeTabViewModel: ObservableObject {
+     private func setupSubscriptions() {
+         // Listen to routines changes
+         routinesViewModel.$selectedRoutineId
+             .combineLatest(routinesViewModel.$routines)
+-            .sink { [weak self] _, _ in
+-                // Refresh state when routine changes
+-                self?.loadCurrentRoutineDay()
+-                self?.objectWillChange.send()
++            .sink { [weak self] selectedId, routines in
++                guard let self = self else { return }
++                
++                // Debug logging
++                print("PracticeTabViewModel: Routine changed to: \(selectedId ?? "nil")")
++                
++                // Reset all session tracking when routine changes
++                self.resetSessionTracking()
++                
++                // Clear current schedule and progress to force full refresh
++                self.currentDaySchedule = nil
++                self.currentProgress = nil
++                
++                // Force immediate UI update
++                self.objectWillChange.send()
++                
++                // Then load the new routine data
++                self.loadCurrentRoutineDay()
+             }
+             .store(in: &cancellables)
+     }
+@@ -180,10 +192,33 @@ class PracticeTabViewModel: ObservableObject {
+             }
+             .store(in: &cancellables)
++        
++        // Listen for routine changes
++        NotificationCenter.default.publisher(for: .routineChanged)
++            .sink { [weak self] notification in
++                guard let self = self else { return }
++                print("PracticeTabViewModel: Received routineChanged notification")
++                
++                // Reset session tracking and reload immediately
++                self.resetSessionTracking()
++                self.currentDaySchedule = nil
++                self.currentProgress = nil
++                
++                // Force immediate UI update
++                self.objectWillChange.send()
++                
++                // Load the new routine data
++                self.loadCurrentRoutineDay()
++            }
++            .store(in: &cancellables)
+     }
+     
+     private func loadCurrentRoutineDay() {
+         guard let userId = currentUserID,
+               let routineId = routinesViewModel.selectedRoutineId,
+               let routine = routinesViewModel.routines.first(where: { $0.id == routineId }) else {
+             // No user/routine found
++            print("PracticeTabViewModel: No routine found for id: \(routinesViewModel.selectedRoutineId ?? "nil")")
+             currentDaySchedule = nil
+             currentProgress = nil
+             // Reset session tracking when no routine
+             resetSessionTracking()
++            // Force UI update even when clearing
++            DispatchQueue.main.async { [weak self] in
++                self?.objectWillChange.send()
++            }
+             return
+         }
+         
++        print("PracticeTabViewModel: Loading routine day for: \(routine.name)")
++        
+         // Store previous day schedule to detect day changes
+         let previousDaySchedule = currentDaySchedule
+         
+@@ -202,6 +238,10 @@ class PracticeTabViewModel: ObservableObject {
+             // Now fetch the current day
+             RoutineProgressService.shared.getCurrentRoutineDay(userId: userId, routine: routine) { daySchedule, progress in
+                 DispatchQueue.main.async {
++                    guard let self = self else { return }
++                    
++                    print("PracticeTabViewModel: Loaded day \(daySchedule?.dayNumber ?? 0) for routine: \(routine.name)")
++                    
+                     // Received progress update
+                     self?.currentDaySchedule = daySchedule
+                     self?.currentProgress = progress
+diff --git a/Growth/Features/Practice/Views/PracticeTabView.swift b/Growth/Features/Practice/Views/PracticeTabView.swift
+index 1234567..abcdefg 100644
+--- a/Growth/Features/Practice/Views/PracticeTabView.swift
++++ b/Growth/Features/Practice/Views/PracticeTabView.swift
+@@ -88,11 +88,13 @@ struct PracticeTabView: View {
+                             } else if let todaySchedule = viewModel.getTodaySchedule() {
+                                 // Show daily routine view
++                                // Use the routine ID as part of the view's identity to force recreation when routine changes
+                                 DailyRoutineView(schedule: todaySchedule, routinesViewModel: routinesViewModel, isEmbedded: true, onExit: {
+                                     // Handle exit - could navigate to home or show a message
+                                     // For now, we'll just print since we can't actually navigate from embedded view
+                                     print("Exit practice requested")
+                                 })
++                                    .id("\(routinesViewModel.selectedRoutineId ?? "none")_\(todaySchedule.dayNumber)")
+                                     .transition(.identity) // Prevent transition animations
+                             }
+                         }
+@@ -195,6 +197,12 @@ struct PracticeTabView: View {
+                 updateProgressCache()
+             }
+         }
++        .onChange(of: routinesViewModel.selectedRoutineId) { oldValue, newValue in
++            print("PracticeTabView: Routine changed from \(oldValue ?? "nil") to \(newValue ?? "nil")")
++            // Force view model to refresh when routine changes
++            viewModel.refreshProgress()
++            updateProgressCache()
++        }
+         .onChange(of: startGuided) { oldValue, newValue in
+             // If startGuided becomes true, automatically start guided practice
+             if newValue {
+diff --git a/Growth/Features/Routines/ViewModels/RoutinesViewModel.swift b/Growth/Features/Routines/ViewModels/RoutinesViewModel.swift
+index 1234567..abcdefg 100644
+--- a/Growth/Features/Routines/ViewModels/RoutinesViewModel.swift
++++ b/Growth/Features/Routines/ViewModels/RoutinesViewModel.swift
+@@ -197,6 +197,8 @@ class RoutinesViewModel: ObservableObject {
+     @Published var pendingRoutineName: String?
+     
+     func selectRoutine(_ routineId: String?) {
++        print("RoutinesViewModel: Selecting routine: \(routineId ?? "nil")")
++        
+         // Store the previous routine ID before changing
+         let previousRoutineId = selectedRoutineId
+         
+@@ -205,6 +207,9 @@ class RoutinesViewModel: ObservableObject {
+         // Clear current progress immediately to prevent showing old routine's progress
+         routineProgress = nil
+         
++        // Post notification to update practice view immediately
++        NotificationCenter.default.post(name: .routineChanged, object: nil, userInfo: ["routineId": routineId ?? ""])
++        
+         // Reset progress for the previous routine if switching to a different routine
+         if let previousId = previousRoutineId, 
+            let newId = routineId,

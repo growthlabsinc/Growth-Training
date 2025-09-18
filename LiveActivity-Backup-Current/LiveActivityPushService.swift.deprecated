@@ -1,0 +1,426 @@
+//
+//  LiveActivityPushService.swift
+//  Growth
+//
+//  Created by Assistant on current date.
+//
+
+import Foundation
+import FirebaseFirestore
+import FirebaseAuth
+import FirebaseFunctions
+import ActivityKit
+
+/// Service that handles sending push updates to Live Activities via Firebase Functions
+@available(iOS 16.1, *)
+class LiveActivityPushService {
+    static let shared = LiveActivityPushService()
+    
+    private let db = Firestore.firestore()
+    private let functions = Functions.functions()
+    private var updateTimer: Timer?
+    private var currentActivityId: String?
+    
+    // Push updates are now enabled with APNs configured
+    // APNs Team ID: 62T6J77P6R
+    // APNs Key ID: 3G84L8G52R
+    private let pushUpdatesEnabled = true
+    
+    // Retry configuration
+    private let maxRetryAttempts = 2 // Reasonable retries with APNs configured
+    private let retryDelayBase: UInt64 = 1_000_000_000 // 1 second in nanoseconds
+    
+    private init() {}
+    
+    // MARK: - Retry Logic
+    
+    /// Generic retry function for Firebase Function calls
+    private func callFunctionWithRetry(_ functionName: String, data: [String: Any]) async throws -> HTTPSCallableResult {
+        var lastError: Error?
+        
+        for attempt in 1...maxRetryAttempts {
+            do {
+                print("📤 LiveActivityPushService: Attempting \(functionName) call (attempt \(attempt)/\(maxRetryAttempts))")
+                let result = try await functions.httpsCallable(functionName).call(data)
+                return result
+            } catch {
+                lastError = error
+                print("⚠️ LiveActivityPushService: \(functionName) failed on attempt \(attempt): \(error)")
+                
+                // Don't retry if it's an authentication error
+                if let nsError = error as NSError?, 
+                   nsError.domain == FunctionsErrorDomain {
+                    let code = FunctionsErrorCode(rawValue: nsError.code) ?? .internal
+                    switch code {
+                    case .unauthenticated, .permissionDenied:
+                        print("❌ LiveActivityPushService: Authentication error, not retrying")
+                        throw error
+                    default:
+                        break
+                    }
+                }
+                
+                // If not the last attempt, wait before retrying
+                if attempt < maxRetryAttempts {
+                    let delay = retryDelayBase * UInt64(attempt) // Exponential backoff
+                    print("⏳ LiveActivityPushService: Waiting \(Double(delay) / 1_000_000_000) seconds before retry...")
+                    try await Task.sleep(nanoseconds: delay)
+                }
+            }
+        }
+        
+        print("❌ LiveActivityPushService: All retry attempts failed for \(functionName)")
+        throw lastError ?? NSError(domain: FunctionsErrorDomain, 
+                                  code: FunctionsErrorCode.internal.rawValue,
+                                  userInfo: ["NSLocalizedDescriptionKey": "Unknown error"])
+    }
+    
+    /// Start sending periodic push updates for a Live Activity
+    func startPushUpdates(for activity: Activity<TimerActivityAttributes>, interval: TimeInterval = 1.0) {
+        print("🚀 LiveActivityPushService: startPushUpdates called for activity \(activity.id)")
+        stopPushUpdates()
+        
+        currentActivityId = activity.id
+        
+        // Store initial timer state in Firestore for server-side management
+        Task {
+            print("🚀 LiveActivityPushService: Storing initial timer state with action .start")
+            await storeTimerStateInFirestore(for: activity, action: .start)
+        }
+        
+        // The actual periodic updates will be handled by Firebase Functions
+        // This local timer is just a backup to ensure Firestore stays updated
+        updateTimer = Timer.scheduledTimer(withTimeInterval: 30.0, repeats: true) { [weak self] _ in
+            Task {
+                guard let activityId = self?.currentActivityId,
+                      let activity = Activity<TimerActivityAttributes>.activities.first(where: { $0.id == activityId }) else {
+                    return
+                }
+                await self?.storeTimerStateInFirestore(for: activity, action: .update)
+            }
+        }
+    }
+    
+    /// Stop sending push updates
+    func stopPushUpdates() {
+        updateTimer?.invalidate()
+        updateTimer = nil
+        
+        // Notify server to stop push updates
+        if let activityId = currentActivityId {
+            Task {
+                await stopServerSidePushUpdates(activityId: activityId)
+            }
+        }
+        
+        currentActivityId = nil
+    }
+    
+    /// Send a single push update to the Live Activity
+    func sendPushUpdate(for activity: Activity<TimerActivityAttributes>) async {
+        guard activity.activityState == .active else {
+            print("⚠️ LiveActivityPushService: Activity is not active, stopping updates")
+            stopPushUpdates()
+            return
+        }
+        
+        // For push updates, we don't need to modify the state
+        // Just forward the current state since the widget handles timer display
+        let state = activity.content.state
+        let updatedState = state
+        
+        // Send push update via Firebase Function
+        await callPushUpdateFunction(
+            activityId: activity.id,
+            contentState: updatedState,
+            pushToken: nil // Will be fetched from Firestore by the function
+        )
+    }
+    
+    /// Send a state change update (pause/resume/stop)
+    func sendStateChangeUpdate(
+        for activity: Activity<TimerActivityAttributes>,
+        isPaused: Bool
+    ) async {
+        print("📤 LiveActivityPushService: sendStateChangeUpdate called - isPaused: \(isPaused)")
+        let state = activity.content.state
+        let now = Date()
+        
+        // Create updated state with simple timestamp approach
+        var updatedState = state
+        if isPaused {
+            updatedState.pausedAt = now
+        } else {
+            // When resuming, adjust end time for countdown timers
+            if let pausedAt = state.pausedAt,
+               state.sessionType == .countdown,
+               let endTime = state.endTime {
+                let pauseDuration = now.timeIntervalSince(pausedAt)
+                updatedState.endTime = endTime.addingTimeInterval(pauseDuration)
+            }
+            updatedState.pausedAt = nil
+        }
+        
+        // No need to adjust timestamps anymore - simple pausedAt approach handles everything
+        
+        // Store the state change in Firestore
+        let action: TimerAction = isPaused ? .pause : .resume
+        await storeTimerStateInFirestore(for: activity, action: action)
+        
+        // If resuming, ensure server-side push updates are started
+        if action == .resume && currentActivityId != activity.id {
+            print("🚀 LiveActivityPushService: Resuming timer - starting push updates")
+            startPushUpdates(for: activity)
+        }
+        
+        // Send push update
+        await callPushUpdateFunction(
+            activityId: activity.id,
+            contentState: updatedState,
+            pushToken: nil
+        )
+    }
+    
+    /// Call the Firebase Function to send push update
+    private func callPushUpdateFunction(
+        activityId: String,
+        contentState: TimerActivityAttributes.ContentState,
+        pushToken: String?
+    ) async {
+        // Skip push updates if disabled
+        guard pushUpdatesEnabled else {
+            print("⏸️ LiveActivityPushService: Push updates temporarily disabled. Using local updates only.")
+            return
+        }
+        
+        let data: [String: Any] = [
+            "activityId": activityId,
+            "contentState": [
+                "startedAt": ISO8601DateFormatter().string(from: contentState.startedAt),
+                "pausedAt": contentState.pausedAt != nil ? ISO8601DateFormatter().string(from: contentState.pausedAt!) : nil,
+                "endTime": contentState.endTime != nil ? ISO8601DateFormatter().string(from: contentState.endTime!) : nil,
+                "methodName": contentState.methodName,
+                "sessionType": contentState.sessionType.rawValue,
+                "isCompleted": contentState.isCompleted,
+                "completionMessage": contentState.completionMessage as Any
+            ],
+                "pushToken": pushToken as Any
+            ]
+            
+        do {
+            print("📤 LiveActivityPushService: Calling updateLiveActivity function")
+            let result = try await callFunctionWithRetry("updateLiveActivity", data: data)
+            
+            if let resultData = result.data as? [String: Any],
+               let success = resultData["success"] as? Bool,
+               success {
+                print("✅ LiveActivityPushService: Push update sent successfully")
+            } else {
+                print("❌ LiveActivityPushService: Push update failed")
+            }
+        } catch {
+            print("❌ LiveActivityPushService: Error calling function - \(error)")
+            // Log specific error details for debugging
+            if let nsError = error as NSError?,
+               nsError.domain == FunctionsErrorDomain {
+                let code = FunctionsErrorCode(rawValue: nsError.code) ?? .internal
+                print("  - Error code: \(code)")
+                print("  - Error details: \(nsError.userInfo)")
+                
+                // If it's an INTERNAL error, it's likely due to missing APNs configuration
+                if code == .internal {
+                    print("⚠️ LiveActivityPushService: APNs configuration may be missing. Continuing with local updates only.")
+                }
+            }
+            
+            // Don't throw the error - allow the app to continue with local updates
+            print("ℹ️ LiveActivityPushService: Continuing without push updates. Live Activity will still update locally.")
+        }
+    }
+    
+    /// Send push-to-start for a new Live Activity
+    func sendPushToStart(
+        methodId: String,
+        methodName: String,
+        duration: TimeInterval,
+        sessionType: TimerActivityAttributes.ContentState.SessionType,
+        userId: String
+    ) async {
+        let now = Date()
+        let endTime = now.addingTimeInterval(duration)
+        
+        let data: [String: Any] = [
+            "userId": userId,
+            "attributes": [
+                "methodId": methodId,
+                "totalDuration": duration
+            ],
+            "contentState": [
+                "startedAt": ISO8601DateFormatter().string(from: now),
+                "pausedAt": nil,
+                "endTime": sessionType == .countdown ? ISO8601DateFormatter().string(from: endTime) : nil,
+                "methodName": methodName,
+                "sessionType": sessionType.rawValue,
+                "isCompleted": false,
+                "completionMessage": nil
+            ]
+        ]
+        
+        do {
+            print("📤 LiveActivityPushService: Calling startLiveActivity function")
+            let result = try await callFunctionWithRetry("startLiveActivity", data: data)            
+            if let resultData = result.data as? [String: Any],
+               let success = resultData["success"] as? Bool,
+               success {
+                print("✅ LiveActivityPushService: Push-to-start sent successfully")
+            } else {
+                print("❌ LiveActivityPushService: Push-to-start failed")
+            }
+        } catch {
+            print("❌ LiveActivityPushService: Error starting Live Activity - \(error)")
+            if let nsError = error as NSError?,
+               nsError.domain == FunctionsErrorDomain {
+                let code = FunctionsErrorCode(rawValue: nsError.code) ?? .internal
+                print("  - Error code: \(code)")
+                print("  - Error details: \(nsError.userInfo)")
+            }
+        }
+    }
+    
+    // MARK: - Private Methods
+    
+    /// Action type for timer state updates
+    private enum TimerAction: String {
+        case start = "start"
+        case pause = "pause"
+        case resume = "resume"
+        case stop = "stop"
+        case update = "update"
+    }
+    
+    /// Store timer state in Firestore for server-side management
+    private func storeTimerStateInFirestore(for activity: Activity<TimerActivityAttributes>, action: TimerAction = .update) async {
+        guard let userId = Auth.auth().currentUser?.uid else {
+            print("❌ LiveActivityPushService: No authenticated user to store timer state")
+            return
+        }
+        
+        let state = activity.content.state
+        
+        let timerData: [String: Any] = [
+            "activityId": activity.id,
+            "userId": userId,
+            "methodId": activity.attributes.methodId,
+            "methodName": state.methodName,
+            "sessionType": state.sessionType.rawValue,
+            "totalDuration": activity.attributes.totalDuration,
+            "startedAt": ISO8601DateFormatter().string(from: state.startedAt),
+            "pausedAt": state.pausedAt != nil ? ISO8601DateFormatter().string(from: state.pausedAt!) : NSNull(),
+            "endTime": state.endTime != nil ? ISO8601DateFormatter().string(from: state.endTime!) : NSNull(),
+            "isPaused": state.pausedAt != nil,
+            "action": action.rawValue,
+            "platform": "ios",
+            "updatedAt": FieldValue.serverTimestamp()
+        ]
+        
+        do {
+            print("📤 LiveActivityPushService: Storing timer state (\(action.rawValue)) in Firestore")
+            try await db.collection("activeTimers").document(userId).setData(timerData)
+            print("✅ LiveActivityPushService: Timer state stored successfully")
+            
+            // If this is a start or resume action, trigger the Firebase Function to begin push updates
+            if action == .start || action == .resume {
+                print("🚀 LiveActivityPushService: Action is .\(action.rawValue), triggering server-side push updates")
+                await triggerServerSidePushUpdates(activityId: activity.id, userId: userId)
+            } else {
+                print("ℹ️ LiveActivityPushService: Action is .\(action.rawValue), not triggering server-side updates")
+            }
+        } catch {
+            print("❌ LiveActivityPushService: Failed to store timer state - \(error)")
+        }
+    }
+    
+    /// Trigger server-side push updates via Firebase Function
+    private func triggerServerSidePushUpdates(activityId: String, userId: String) async {
+        // Skip if push updates are disabled
+        guard pushUpdatesEnabled else {
+            print("⏸️ LiveActivityPushService: Push updates temporarily disabled. Skipping server-side trigger.")
+            return
+        }
+        
+        do {
+            let data: [String: Any] = [
+                "activityId": activityId,
+                "userId": userId,
+                "action": "startPushUpdates"
+            ]
+            
+            print("📤 LiveActivityPushService: Triggering server-side push updates")
+            print("  - Activity ID: \(activityId)")
+            print("  - User ID: \(userId)")
+            let result = try await callFunctionWithRetry("manageLiveActivityUpdates", data: data)            
+            if let resultData = result.data as? [String: Any],
+               let success = resultData["success"] as? Bool,
+               success {
+                print("✅ LiveActivityPushService: Server-side push updates started successfully")
+                print("  - Result: \(resultData)")
+            } else {
+                print("❌ LiveActivityPushService: Failed to start server-side updates")
+                print("  - Result: \(result.data as? [String: Any] ?? [:])")
+            }
+        } catch {
+            print("❌ LiveActivityPushService: Error triggering server updates - \(error)")
+            if let nsError = error as NSError?,
+               nsError.domain == FunctionsErrorDomain {
+                let code = FunctionsErrorCode(rawValue: nsError.code) ?? .internal
+                print("  - Error code: \(code)")
+                print("  - Error details: \(nsError.userInfo)")
+            }
+        }
+    }
+    
+    /// Stop server-side push updates via Firebase Function
+    private func stopServerSidePushUpdates(activityId: String) async {
+        // Skip if push updates are disabled
+        guard pushUpdatesEnabled else {
+            print("⏸️ LiveActivityPushService: Push updates temporarily disabled. Skipping server-side stop.")
+            return
+        }
+        
+        guard let userId = Auth.auth().currentUser?.uid else {
+            print("❌ LiveActivityPushService: No authenticated user to stop timer")
+            return
+        }
+        
+        do {
+            let data: [String: Any] = [
+                "activityId": activityId,
+                "userId": userId,
+                "action": "stopPushUpdates"
+            ]
+            
+            print("📤 LiveActivityPushService: Stopping server-side push updates")
+            let result = try await callFunctionWithRetry("manageLiveActivityUpdates", data: data)            
+            if let resultData = result.data as? [String: Any],
+               let success = resultData["success"] as? Bool,
+               success {
+                print("✅ LiveActivityPushService: Server-side push updates stopped")
+            } else {
+                print("❌ LiveActivityPushService: Failed to stop server-side updates")
+            }
+            
+            // Also update the timer state to mark it as stopped
+            if let activity = Activity<TimerActivityAttributes>.activities.first(where: { $0.id == activityId }) {
+                await storeTimerStateInFirestore(for: activity, action: .stop)
+            }
+        } catch {
+            print("❌ LiveActivityPushService: Error stopping server updates - \(error)")
+            if let nsError = error as NSError?,
+               nsError.domain == FunctionsErrorDomain {
+                let code = FunctionsErrorCode(rawValue: nsError.code) ?? .internal
+                print("  - Error code: \(code)")
+                print("  - Error details: \(nsError.userInfo)")
+            }
+        }
+    }
+}

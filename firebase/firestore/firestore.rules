@@ -1,0 +1,355 @@
+rules_version = '2';
+service cloud.firestore {
+    match /databases/{database}/documents {
+      // Helper functions
+      function isSignedIn() {
+        return request.auth != null;
+      }
+      
+      function isOwner(userId) {
+        return isSignedIn() && request.auth.uid == userId;
+      }
+      
+      function isBanned() {
+        // Check if user is banned from their user document
+        return exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+               get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isBanned == true;
+      }
+      
+      function isAdmin() {
+        // Check if user is an admin
+        return exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+               get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+      }
+      
+      // User data - users can read their own data and do limited queries for username checks
+      match /users/{userId} {
+        // Allow reading own data OR allow list operation for username availability check
+        allow read: if isOwner(userId);
+        // Allow list operation (query) for authenticated users to check username availability
+        allow list: if isSignedIn();
+        
+        allow create: if isOwner(userId);
+        allow update: if isOwner(userId) && (
+          // Allow all updates that don't change username
+          !request.resource.data.diff(resource.data).affectedKeys().hasAny(['username']) ||
+          // Allow username update if the user doesn't have one yet
+          (resource.data.username == null || !('username' in resource.data)) ||
+          // Allow username update if it's the same as current (no actual change)
+          (request.resource.data.username == resource.data.username)
+        );
+        allow delete: if isOwner(userId);
+        
+        // Allow the user's nested stats documents (e.g., streak data)
+        match /stats/{statsDoc} {
+          allow read, write: if request.auth != null && request.auth.uid == userId;
+          allow delete: if request.auth != null && request.auth.uid == userId;
+        }
+        
+        // Custom routines subcollection
+        match /customRoutines/{routineId} {
+          allow read, write: if request.auth != null && request.auth.uid == userId;
+          allow delete: if request.auth != null && request.auth.uid == userId;
+        }
+        
+        // Routine progress subcollection
+        match /routineProgress/{progressId} {
+          allow read, write: if request.auth != null && request.auth.uid == userId;
+          allow delete: if request.auth != null && request.auth.uid == userId;
+        }
+        
+        // Device tokens subcollection
+        match /deviceTokens/{tokenId} {
+          allow read, write: if request.auth != null && request.auth.uid == userId;
+          allow delete: if request.auth != null && request.auth.uid == userId;
+        }
+        
+        // Settings subcollection - users can only access their own settings
+        match /settings/{settingDoc} {
+          allow read, write: if request.auth != null && request.auth.uid == userId;
+          allow delete: if request.auth != null && request.auth.uid == userId;
+        }
+        
+        // Webhook updates subcollection
+        match /webhookUpdates/{updateId} {
+          allow read: if request.auth != null && request.auth.uid == userId;
+          allow list: if request.auth != null && request.auth.uid == userId;
+          allow write: if false; // Only server can write webhook updates
+        }
+        
+        // Allow deletion of all subcollections
+        match /{document=**} {
+          allow delete: if request.auth != null && request.auth.uid == userId;
+        }
+      }
+      
+      // Growth methods (public read)
+      match /growthMethods/{methodId} {
+        allow read: if request.auth != null;
+        allow write: if false;
+      }
+      
+      // Routines - community sharing enabled
+      match /routines/{routineId} {
+        allow read: if isSignedIn();
+        
+        // Temporarily simplified for debugging - just check basic requirements
+        allow create: if isSignedIn() 
+          && request.resource.data.createdBy == request.auth.uid
+          && request.resource.data.isCustom == true
+          && request.resource.data.shareWithCommunity == true;
+        
+        // Allow updates only by creator
+        allow update: if isSignedIn()
+          && resource.data.createdBy == request.auth.uid;
+        
+        // Allow deletion only by creator
+        allow delete: if isSignedIn() && resource.data.createdBy == request.auth.uid;
+      }
+      
+      // Session logs - users can only access their own logs
+      match /sessionLogs/{logId} {
+        allow read, write: if request.auth != null && resource.data.userId == request.auth.uid;
+        allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+        allow delete: if request.auth != null && resource.data.userId == request.auth.uid;
+      }
+      
+      // Goals - users can only access their own goal documents
+      match /goals/{goalId} {
+        allow read, write: if request.auth != null && (
+          (request.method == 'create' && request.resource.data.userId == request.auth.uid) ||
+          (request.method != 'create' && resource.data.userId == request.auth.uid)
+        );
+        allow delete: if request.auth != null && resource.data.userId == request.auth.uid;
+      }
+      
+      // Alternative for user-specific session logs if stored as subcollection
+      match /users/{userId}/sessionLogs/{logId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+        allow delete: if request.auth != null && request.auth.uid == userId;
+      }
+      
+      // Educational resources - read-only for authenticated users
+      match /educationalResources/{resourceId} {
+        allow read: if request.auth != null;
+        allow write: if false;
+      }
+
+      // Allow the connectivity check (even without auth for startup checks)
+      match /connection_test/{docId} {
+        allow read: if true;
+        allow create: if true;
+        allow update: if true;
+        allow delete: if true;
+      }
+      
+      // Live Activity push tokens - users can only access their own tokens
+      match /liveActivityTokens/{activityId} {
+        allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+        allow write: if request.auth != null && (
+          (request.method == 'create' && request.resource.data.userId == request.auth.uid) ||
+          (request.method == 'update' && resource.data.userId == request.auth.uid) ||
+          (request.method == 'delete' && resource.data.userId == request.auth.uid)
+        );
+      }
+      
+      // Live Activity timer states - users can only access their own timer states
+      match /liveActivityTimerStates/{activityId} {
+        allow read: if request.auth != null && (
+          (resource != null && resource.data.userId == request.auth.uid) ||
+          (request.resource != null && request.resource.data.userId == request.auth.uid)
+        );
+        allow write: if request.auth != null && (
+          (request.method == 'create' && request.resource.data.userId == request.auth.uid) ||
+          (request.method == 'update' && resource.data.userId == request.auth.uid) ||
+          (request.method == 'delete' && resource.data.userId == request.auth.uid)
+        );
+      }
+      
+      // Active timers - users can only access their own timer state
+      match /activeTimers/{docId} {
+        allow read: if request.auth != null && (
+          docId == request.auth.uid ||
+          (resource != null && resource.data.userId == request.auth.uid)
+        );
+        allow write: if request.auth != null && (
+          docId == request.auth.uid ||
+          (request.method == 'create' && request.resource.data.userId == request.auth.uid) ||
+          (request.method != 'create' && resource.data.userId == request.auth.uid)
+        );
+        allow delete: if request.auth != null && (
+          docId == request.auth.uid ||
+          (resource != null && resource.data.userId == request.auth.uid)
+        );
+      }
+      
+      // Routine progress - users can only access their own progress
+      match /routineProgress/{progressId} {
+        allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+        allow write: if request.auth != null && (
+          (request.method == 'create' && request.resource.data.userId == request.auth.uid) ||
+          (request.method != 'create' && resource.data.userId == request.auth.uid)
+        );
+      }
+      
+      // Device tokens - users can only access their own tokens
+      match /deviceTokens/{tokenId} {
+        allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+        allow write: if request.auth != null && (
+          (request.method == 'create' && request.resource.data.userId == request.auth.uid) ||
+          (request.method != 'create' && resource.data.userId == request.auth.uid)
+        );
+      }
+      
+      // Gains entries - users can only access their own entries
+      match /gains_entries/{entryId} {
+        allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+        allow write: if request.auth != null && (
+          (request.method == 'create' && request.resource.data.userId == request.auth.uid) ||
+          (request.method != 'create' && resource.data.userId == request.auth.uid)
+        );
+        allow delete: if request.auth != null && resource.data.userId == request.auth.uid;
+      }
+      
+      // Custom routines - users can only access their own custom routines
+      match /customRoutines/{routineId} {
+        allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+        allow write: if request.auth != null && (
+          (request.method == 'create' && request.resource.data.userId == request.auth.uid) ||
+          (request.method != 'create' && resource.data.userId == request.auth.uid)
+        );
+      }
+      
+      // User preferences - users can only access their own preferences
+      match /userPreferences/{userId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+      
+      // Activity logs - users can only access their own logs
+      match /activityLogs/{logId} {
+        allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+        allow write: if request.auth != null && (
+          (request.method == 'create' && request.resource.data.userId == request.auth.uid) ||
+          (request.method != 'create' && resource.data.userId == request.auth.uid)
+        );
+      }
+      
+      // Method progress - users can only access their own progress
+      match /methodProgress/{progressId} {
+        allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+        allow write: if request.auth != null && (
+          (request.method == 'create' && request.resource.data.userId == request.auth.uid) ||
+          (request.method != 'create' && resource.data.userId == request.auth.uid)
+        );
+      }
+      
+      // Subscriptions - users can only access their own subscription data
+      match /subscriptions/{userId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+      
+      // Achievements - users can only access their own achievements
+      match /achievements/{achievementId} {
+        allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+        allow write: if request.auth != null && (
+          (request.method == 'create' && request.resource.data.userId == request.auth.uid) ||
+          (request.method != 'create' && resource.data.userId == request.auth.uid)
+        );
+      }
+      
+      // Progression events - users can only access their own progression events
+      match /progressionEvents/{eventId} {
+        allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+        allow write: if request.auth != null && (
+          (request.method == 'create' && request.resource.data.userId == request.auth.uid) ||
+          (request.method != 'create' && resource.data.userId == request.auth.uid)
+        );
+        allow delete: if request.auth != null && resource.data.userId == request.auth.uid;
+      }
+      
+      // Reminder settings - users can only access their own settings
+      match /reminderSettings/{userId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+      
+      // AI chat sessions - users can only access their own chat sessions
+      match /aiChatSessions/{sessionId} {
+        allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+        allow write: if request.auth != null && (
+          (request.method == 'create' && request.resource.data.userId == request.auth.uid) ||
+          (request.method != 'create' && resource.data.userId == request.auth.uid)
+        );
+      }
+      
+      // Progress snapshots - users can only access their own snapshots
+      match /progressSnapshots/{snapshotId} {
+        allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+        allow write: if request.auth != null && (
+          (request.method == 'create' && request.resource.data.userId == request.auth.uid) ||
+          (request.method != 'create' && resource.data.userId == request.auth.uid)
+        );
+      }
+      
+      
+      // Moderation collection - admin write, users can check if banned
+      match /moderation/bannedUsers/{userId} {
+        // Allow users to check if they are banned
+        allow read: if isSignedIn() && request.auth.uid == userId;
+        // Only admins can write
+        allow write: if request.auth.token.admin == true;
+      }
+      
+      // Other moderation documents - admin only
+      match /moderation/{document} {
+        allow read, write: if request.auth.token.admin == true;
+      }
+      
+      // Community stats - read only
+      match /communityStats/{document} {
+        allow read: if isSignedIn();
+        allow write: if false;
+      }
+
+      // Reports - users can create reports, admins can read and update
+      match /reports/{reportId} {
+        allow read: if isSignedIn() && (isAdmin() || resource.data.reporterId == request.auth.uid);
+        allow create: if isSignedIn() && !isBanned() && 
+          request.resource.data.reporterId == request.auth.uid &&
+          request.resource.data.status == 'pending';
+        allow update: if isSignedIn() && isAdmin();
+        allow delete: if false; // Reports should never be deleted
+      }
+      
+      // Legal documents - public read access for privacy policy, terms, etc.
+      match /legalDocuments/{docId} {
+        allow read: if true;  // Public access for all legal documents
+        allow write: if false; // Admin only via Firebase Console
+      }
+      
+      // Webhook events for subscription updates from server
+      match /webhook_events/{eventId} {
+        allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+        allow list: if request.auth != null;
+        allow write: if false; // Only server/Cloud Functions can write
+      }
+      
+      // Revenue attribution tracking for analytics - user document approach
+      match /revenue_attribution/{userId} {
+        allow read: if request.auth != null && request.auth.uid == userId;
+        allow write: if request.auth != null && request.auth.uid == userId;
+        allow delete: if request.auth != null && request.auth.uid == userId;
+        
+        // Touchpoint history subcollection
+        match /touchpoint_history/{historyId} {
+          allow read: if request.auth != null && request.auth.uid == userId;
+          allow write: if request.auth != null && request.auth.uid == userId;
+          allow delete: if request.auth != null && request.auth.uid == userId;
+        }
+      }
+      
+      // Default deny all
+      match /{document=**} {
+        allow read, write: if false;
+      }
+    }
+} 

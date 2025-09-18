@@ -1,0 +1,8 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -target Growth -configuration Debug -sdk iphonesimulator18.5 CODE_SIGN_IDENTITY= CODE_SIGNING_REQUIRED=NO build
+
+Build settings from command line:
+    CODE_SIGN_IDENTITY = 
+    CODE_SIGNING_REQUIRED = NO
+    SDKROOT = iphonesimulator18.5
+

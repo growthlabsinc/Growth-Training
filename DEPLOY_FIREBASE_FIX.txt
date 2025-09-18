@@ -1,0 +1,17 @@
+DEPLOY FIREBASE FUNCTION WITH LOGGING FIX
+==========================================
+
+Run this command to deploy the updated function:
+
+cd /Users/tradeflowj/Desktop/Dev/growth-fresh && firebase deploy --only functions:manageLiveActivityUpdates
+
+What was updated:
+1. Added logging of raw contentState to help debug timestamp issues
+2. This will help trace why endTime sometimes becomes -17179867648
+
+After deployment:
+1. Clean build in Xcode (Cmd+Shift+K)
+2. Build and run on device
+3. Start a 1-minute timer
+4. Check if it displays correctly as 0:01:00 (not 1:00:00)
+5. Check Firebase logs for the raw contentState values

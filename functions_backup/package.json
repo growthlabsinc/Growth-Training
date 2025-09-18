@@ -1,0 +1,25 @@
+{
+  "name": "growth-app-functions",
+  "version": "1.0.0",
+  "description": "Firebase Cloud Functions for Growth App",
+  "main": "index.js",
+  "engines": {
+    "node": "20"
+  },
+  "scripts": {
+    "serve": "firebase emulators:start --only functions",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "firebase-admin": "^12.0.0",
+    "firebase-functions": "^5.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^9.16.0",
+    "firebase-functions-test": "^3.1.1",
+    "firebase-tools": "^13.5.1"
+  },
+  "private": true
+}

@@ -1,0 +1,82 @@
+// Release Build Configuration for Growth App
+// This file contains all the build settings for App Store releases
+
+// Bundle Configuration
+PRODUCT_BUNDLE_IDENTIFIER = com.growthlabs.growthmethod
+PRODUCT_NAME = Growth: Method
+PRODUCT_MODULE_NAME = Growth
+DEVELOPMENT_TEAM = 62T6J77P6R
+
+// Code Signing
+CODE_SIGN_STYLE = Manual
+CODE_SIGN_IDENTITY = Apple Distribution
+CODE_SIGN_ENTITLEMENTS = Growth/Growth.Production.entitlements
+PROVISIONING_PROFILE_SPECIFIER = Growth App Store Distribution
+
+// Swift Compiler - Code Generation
+SWIFT_OPTIMIZATION_LEVEL = -O
+SWIFT_COMPILATION_MODE = wholemodule
+SWIFT_ACTIVE_COMPILATION_CONDITIONS = RELEASE
+
+// Swift Compiler - Custom Flags
+OTHER_SWIFT_FLAGS = -DRELEASE -Xfrontend -warn-long-function-bodies=200 -Xfrontend -warn-long-expression-type-checking=200
+
+// Apple Clang - Code Generation
+GCC_OPTIMIZATION_LEVEL = s
+GCC_PREPROCESSOR_DEFINITIONS = RELEASE=1
+
+// Deployment
+IPHONEOS_DEPLOYMENT_TARGET = 16.0
+TARGETED_DEVICE_FAMILY = 1,2
+SUPPORTS_MACCATALYST = NO
+
+// Linking
+DEAD_CODE_STRIPPING = YES
+STRIP_INSTALLED_PRODUCT = YES
+STRIP_SWIFT_SYMBOLS = YES
+DEPLOYMENT_POSTPROCESSING = YES
+SEPARATE_STRIP = YES
+
+// Debug Information
+DEBUG_INFORMATION_FORMAT = dwarf-with-dsym
+GCC_GENERATE_DEBUGGING_SYMBOLS = YES
+DWARF_DSYM_FOLDER_PATH = $(CONFIGURATION_BUILD_DIR)
+DWARF_DSYM_FILE_NAME = $(PRODUCT_NAME).app.dSYM
+
+// Build Options
+ENABLE_BITCODE = NO
+ENABLE_TESTABILITY = NO
+VALIDATE_PRODUCT = YES
+ONLY_ACTIVE_ARCH = NO
+
+// Asset Catalog
+ASSETCATALOG_COMPILER_OPTIMIZATION = space
+ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES
+
+// Info.plist
+INFOPLIST_FILE = Growth/Resources/Plist/App/Info.plist
+GENERATE_INFOPLIST_FILE = NO
+
+// Marketing Version (update for each release)
+MARKETING_VERSION = 1.0.0
+
+// Current Project Version (auto-incremented by build script)
+CURRENT_PROJECT_VERSION = 1
+
+// Firebase Configuration
+FIREBASE_CONFIG_FILE = GoogleService-Info
+FIREBASE_ENVIRONMENT = production
+
+// Custom Build Settings
+ENABLE_PREVIEWS = NO
+SWIFT_EMIT_LOC_STRINGS = YES
+
+// Localization
+DEVELOPMENT_LANGUAGE = en
+LOCALIZATION_PREFERS_STRING_CATALOGS = YES
+
+// Search Paths
+ALWAYS_SEARCH_USER_PATHS = NO
+
+// Hardened Runtime (for future macOS support)
+ENABLE_HARDENED_RUNTIME = NO

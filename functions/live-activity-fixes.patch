@@ -1,0 +1,3110 @@
+diff --git a/CLAUDE.md b/CLAUDE.md
+index 4c555b6..76ea338 100644
+--- a/CLAUDE.md
++++ b/CLAUDE.md
+@@ -106,6 +106,39 @@ When using Claude Code, xcodebuild commands may stall or timeout. This is a know
+    timeout 30 xcodebuild -project Growth.xcodeproj -scheme Growth -dry-run
+    ```
+ 
++### ⚠️ IMPORTANT: Git Lock Issues in Claude Code
++
++Git commands (status, add, commit) often hang or timeout in Claude Code due to lock files and stuck processes. Use these fixes:
++
++1. **Quick Fix - Kill processes and remove locks**:
++   ```bash
++   pkill -f git || true
++   rm -f .git/index.lock .git/HEAD.lock
++   ```
++
++2. **Try direct push (often works when other commands fail)**:
++   ```bash
++   git push origin main
++   ```
++
++3. **Low-level commit approach when regular commit fails**:
++   ```bash
++   rm -f .git/index.lock
++   git update-ref HEAD $(echo "Your commit message" | git commit-tree $(git write-tree) -p HEAD)
++   git push origin main
++   ```
++
++4. **If git status/diff timeout but you need to check changes**:
++   ```bash
++   # Check staged files
++   git ls-files --stage | grep "your-file"
++   
++   # Or just try the push - it will fail if nothing to push
++   git push origin main
++   ```
++
++See `FIX_GIT_LOCK_ISSUES.md` for detailed troubleshooting steps and advanced fixes.
++
+ ### Build and Run
+ ```bash
+ # FIRST: Check available simulators
+diff --git a/Growth.xcodeproj/project.pbxproj b/Growth.xcodeproj/project.pbxproj
+index 1448b91..522e756 100755
+--- a/Growth.xcodeproj/project.pbxproj
++++ b/Growth.xcodeproj/project.pbxproj
+@@ -629,7 +629,7 @@
+ 					"@executable_path/Frameworks",
+ 				);
+ 				MARKETING_VERSION = 1.0;
+-				PRODUCT_BUNDLE_IDENTIFIER = com.growthtraining.Growth;
++				PRODUCT_BUNDLE_IDENTIFIER = com.growthlabs.growthmethod;
+ 				PRODUCT_NAME = "$(TARGET_NAME)";
+ 				SWIFT_EMIT_LOC_STRINGS = YES;
+ 				SWIFT_VERSION = 5.0;
+@@ -660,7 +660,7 @@
+ 					"@executable_path/Frameworks",
+ 				);
+ 				MARKETING_VERSION = 1.0;
+-				PRODUCT_BUNDLE_IDENTIFIER = com.growthtraining.Growth;
++				PRODUCT_BUNDLE_IDENTIFIER = com.growthlabs.growthmethod;
+ 				PRODUCT_NAME = "$(TARGET_NAME)";
+ 				SWIFT_EMIT_LOC_STRINGS = YES;
+ 				SWIFT_VERSION = 5.0;
+@@ -680,7 +680,7 @@
+ 				INFOPLIST_FILE = Growth/Resources/Plist/App/Info.plist;
+ 				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
+ 				MARKETING_VERSION = 1.0;
+-				PRODUCT_BUNDLE_IDENTIFIER = com.growthtraining.GrowthTests;
++				PRODUCT_BUNDLE_IDENTIFIER = com.growthlabs.growthmethod.Tests;
+ 				PRODUCT_NAME = "$(TARGET_NAME)";
+ 				SWIFT_EMIT_LOC_STRINGS = NO;
+ 				SWIFT_VERSION = 5.0;
+@@ -701,7 +701,7 @@
+ 				INFOPLIST_FILE = Growth/Resources/Plist/App/Info.plist;
+ 				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
+ 				MARKETING_VERSION = 1.0;
+-				PRODUCT_BUNDLE_IDENTIFIER = com.growthtraining.GrowthTests;
++				PRODUCT_BUNDLE_IDENTIFIER = com.growthlabs.growthmethod.Tests;
+ 				PRODUCT_NAME = "$(TARGET_NAME)";
+ 				SWIFT_EMIT_LOC_STRINGS = NO;
+ 				SWIFT_VERSION = 5.0;
+@@ -720,7 +720,7 @@
+ 				GENERATE_INFOPLIST_FILE = NO;
+ 				INFOPLIST_FILE = Growth/Resources/Plist/App/Info.plist;
+ 				MARKETING_VERSION = 1.0;
+-				PRODUCT_BUNDLE_IDENTIFIER = com.growthtraining.GrowthUITests;
++				PRODUCT_BUNDLE_IDENTIFIER = com.growthlabs.growthmethod.UITests;
+ 				PRODUCT_NAME = "$(TARGET_NAME)";
+ 				SWIFT_EMIT_LOC_STRINGS = NO;
+ 				SWIFT_VERSION = 5.0;
+@@ -739,7 +739,7 @@
+ 				GENERATE_INFOPLIST_FILE = NO;
+ 				INFOPLIST_FILE = Growth/Resources/Plist/App/Info.plist;
+ 				MARKETING_VERSION = 1.0;
+-				PRODUCT_BUNDLE_IDENTIFIER = com.growthtraining.GrowthUITests;
++				PRODUCT_BUNDLE_IDENTIFIER = com.growthlabs.growthmethod.UITests;
+ 				PRODUCT_NAME = "$(TARGET_NAME)";
+ 				SWIFT_EMIT_LOC_STRINGS = NO;
+ 				SWIFT_VERSION = 5.0;
+@@ -769,7 +769,7 @@
+ 					"@executable_path/../../Frameworks",
+ 				);
+ 				MARKETING_VERSION = 1.0;
+-				PRODUCT_BUNDLE_IDENTIFIER = com.growthtraining.Growth.GrowthTimerWidget;
++				PRODUCT_BUNDLE_IDENTIFIER = com.growthlabs.growthmethod.GrowthTimerWidget;
+ 				PRODUCT_NAME = "$(TARGET_NAME)";
+ 				SKIP_INSTALL = NO;
+ 				SWIFT_EMIT_LOC_STRINGS = YES;
+@@ -799,7 +799,7 @@
+ 					"@executable_path/../../Frameworks",
+ 				);
+ 				MARKETING_VERSION = 1.0;
+-				PRODUCT_BUNDLE_IDENTIFIER = com.growthtraining.Growth.GrowthTimerWidget;
++				PRODUCT_BUNDLE_IDENTIFIER = com.growthlabs.growthmethod.GrowthTimerWidget;
+ 				PRODUCT_NAME = "$(TARGET_NAME)";
+ 				SKIP_INSTALL = NO;
+ 				SWIFT_EMIT_LOC_STRINGS = YES;
+diff --git a/Growth/Application/AppSceneDelegate.swift b/Growth/Application/AppSceneDelegate.swift
+index f5df7da..91d98a6 100644
+--- a/Growth/Application/AppSceneDelegate.swift
++++ b/Growth/Application/AppSceneDelegate.swift
+@@ -74,7 +74,7 @@ class AppSceneDelegate: NSObject, UIWindowSceneDelegate {
+         
+         // If no stop action found in file, check UserDefaults
+         if !foundStopAction {
+-            if let defaults = UserDefaults(suiteName: "group.com.growth.shared"),
++            if let defaults = UserDefaults(suiteName: "group.com.growthlabs.growthmethod"),
+                       let action = defaults.string(forKey: "lastTimerAction"),
+                       let actionTime = defaults.object(forKey: "lastActionTime") as? Date {
+                 // Fallback to UserDefaults
+diff --git a/Growth/Application/GrowthAppApp.swift b/Growth/Application/GrowthAppApp.swift
+index e4214fe..a71ab77 100644
+--- a/Growth/Application/GrowthAppApp.swift
++++ b/Growth/Application/GrowthAppApp.swift
+@@ -32,6 +32,10 @@ struct GrowthTrainingApp: App {
+ 
+     // Set up UITabBar appearance for selected/unselected item colors
+     init() {
++        // Configure Firebase early to prevent timing warnings
++        let environment = EnvironmentDetector.detectEnvironment()
++        _ = FirebaseClient.shared.configure(for: environment)
++        
+         setupTabBarAppearance()
+     }
+     
+@@ -93,6 +97,11 @@ struct GrowthTrainingApp: App {
+                         return
+                     }
+                     
++                    #if DEBUG
++                    // Validate App Check configuration in debug builds
++                    AppCheckDebugHelper.shared.validateConfiguration()
++                    #endif
++                    
+                     // Check authentication state on app launch
+                     if let currentUser = Auth.auth().currentUser {
+                         print("User already authenticated: \(currentUser.uid)")
+diff --git a/Growth/Core/Models/GrowthMethod.swift b/Growth/Core/Models/GrowthMethod.swift
+index 8d86bf0..843fcc5 100644
+--- a/Growth/Core/Models/GrowthMethod.swift
++++ b/Growth/Core/Models/GrowthMethod.swift
+@@ -239,29 +239,23 @@ class GrowthMethod: NSObject, Codable, Identifiable, NSSecureCoding {
+     /// Initialize from Firestore document
+     convenience init?(document: DocumentSnapshot) {
+         guard let data = document.data() else {
+-            print("GrowthMethod: Missing data for document \(document.documentID)")
+             return nil
+         }
+         
+         // Log document data for debugging
+-        print("GrowthMethod: Parsing document \(document.documentID)")
+-        print("GrowthMethod: Available fields: \(data.keys.joined(separator: ", "))")
+         
+         // Extract required fields with type checking
+         guard let id = document.documentID as String? else {
+-            print("GrowthMethod: Missing document ID")
+             return nil
+         }
+         
+         guard let stage = data["stage"] as? Int else {
+-            print("GrowthMethod: Missing or invalid 'stage' for document \(id)")
+             return nil
+         }
+         
+         let classification = data["classification"] as? String
+         
+         guard let title = data["title"] as? String else {
+-            print("GrowthMethod: Missing or invalid 'title' for document \(id)")
+             return nil
+         }
+         
+@@ -269,29 +263,22 @@ class GrowthMethod: NSObject, Codable, Identifiable, NSSecureCoding {
+         let descriptionValue: String
+         if let desc = data["description"] as? String, !desc.isEmpty {
+             descriptionValue = desc
+-            print("GrowthMethod: Found description field: \(desc.prefix(20))...")
+         } else if let desc = data["methodDescription"] as? String, !desc.isEmpty {
+             descriptionValue = desc
+-            print("GrowthMethod: Found methodDescription field: \(desc.prefix(20))...")
+         } else {
+             descriptionValue = "No description available"
+-            print("GrowthMethod: Missing description field, using default")
+         }
+         
+         // For instructions, try multiple field naming patterns
+         let instructionsText: String
+         if let text = data["instructions_text"] as? String, !text.isEmpty {
+             instructionsText = text
+-            print("GrowthMethod: Found instructions_text field: \(text.prefix(20))...")
+         } else if let text = data["instructionsText"] as? String, !text.isEmpty {
+             instructionsText = text
+-            print("GrowthMethod: Found instructionsText field: \(text.prefix(20))...")
+         } else if let text = data["instructions"] as? String, !text.isEmpty {
+             instructionsText = text
+-            print("GrowthMethod: Found instructions field: \(text.prefix(20))...")
+         } else {
+             instructionsText = "No instructions provided"
+-            print("GrowthMethod: Missing instructions field, using default")
+         }
+         
+         // Optional fields with defaults and multi-format handling
+@@ -351,19 +338,13 @@ class GrowthMethod: NSObject, Codable, Identifiable, NSSecureCoding {
+         // Deserialize TimerConfiguration from Firestore map/dictionary
+         var timerConfigValue: TimerConfiguration? = nil
+         if let timerConfigData = data["timerConfig"] as? [String: Any] {
+-            print("GrowthMethod: timerConfig data for \(id): \(timerConfigData)")
+             do {
+                 let jsonData = try JSONSerialization.data(withJSONObject: timerConfigData, options: [])
+                 timerConfigValue = try JSONDecoder().decode(TimerConfiguration.self, from: jsonData)
+-                print("GrowthMethod: Successfully decoded timerConfig: \(timerConfigValue!)")
+             } catch {
+-                print("GrowthMethod: Error decoding timerConfig from Firestore data for document \(id): \(error)")
+-                print("GrowthMethod: Raw timerConfig data: \(timerConfigData)")
+             }
+         } else if data["timerConfig"] != nil {
+-            print("GrowthMethod: timerConfig field exists for document \(id) but is not a dictionary: \(type(of: data["timerConfig"])))")
+         } else {
+-            print("GrowthMethod: No timerConfig field for document \(id)")
+         }
+ 
+         let createdTimestamp = data["createdAt"] as? Timestamp
+diff --git a/Growth/Core/Models/SubscriptionProduct.swift b/Growth/Core/Models/SubscriptionProduct.swift
+index a75c86b..4d14044 100644
+--- a/Growth/Core/Models/SubscriptionProduct.swift
++++ b/Growth/Core/Models/SubscriptionProduct.swift
+@@ -113,12 +113,12 @@ enum SubscriptionDuration: String, CaseIterable, Codable {
+ 
+ /// App Store Connect product identifiers
+ enum SubscriptionProductIDs {
+-    static let basicMonthly = "com.growth.subscription.basic.monthly"
+-    static let basicYearly = "com.growth.subscription.basic.yearly"
+-    static let premiumMonthly = "com.growth.subscription.premium.monthly"
+-    static let premiumYearly = "com.growth.subscription.premium.yearly"
+-    static let eliteMonthly = "com.growth.subscription.elite.monthly"
+-    static let eliteYearly = "com.growth.subscription.elite.yearly"
++    static let basicMonthly = "com.growthlabs.growthmethod.subscription.basic.monthly"
++    static let basicYearly = "com.growthlabs.growthmethod.subscription.basic.yearly"
++    static let premiumMonthly = "com.growthlabs.growthmethod.subscription.premium.monthly"
++    static let premiumYearly = "com.growthlabs.growthmethod.subscription.premium.yearly"
++    static let eliteMonthly = "com.growthlabs.growthmethod.subscription.elite.monthly"
++    static let eliteYearly = "com.growthlabs.growthmethod.subscription.elite.yearly"
+     
+     /// All available product IDs
+     static let allProductIDs: Set<String> = [
+diff --git a/Growth/Core/Networking/FirebaseClient.swift b/Growth/Core/Networking/FirebaseClient.swift
+index 768229a..f3c316e 100644
+--- a/Growth/Core/Networking/FirebaseClient.swift
++++ b/Growth/Core/Networking/FirebaseClient.swift
+@@ -118,13 +118,14 @@ class FirebaseClient {
+             }
+             print("GCM Sender ID: \(options.gcmSenderID)")
+             
++            // Configure App Check BEFORE Firebase.configure()
++            // This is critical - the provider factory must be set before Firebase initialization
++            configureAppCheck()
++            
+             // Initialize Firebase with the appropriate options
+             FirebaseApp.configure(options: options)
+             print("Firebase configured for environment: \(environment.rawValue)")
+             
+-            // Configure App Check AFTER Firebase.configure()
+-            configureAppCheck()
+-            
+             // Additional Firebase service initializations
+             Analytics.setAnalyticsCollectionEnabled(true)
+             Crashlytics.crashlytics().setCrashlyticsCollectionEnabled(true)
+@@ -144,33 +145,57 @@ class FirebaseClient {
+     
+     /// Configure Firebase App Check
+     private func configureAppCheck() {
+-        // Check if we're running in a debug/simulator environment
+-        #if DEBUG
+-        // Use debug provider for development
++        // IMPORTANT: This must be called BEFORE FirebaseApp.configure()
++        
++        #if targetEnvironment(simulator)
++        // Always use debug provider in simulator
+         let providerFactory = DebugAppCheckFactory()
+         AppCheck.setAppCheckProviderFactory(providerFactory)
+-        print("Firebase App Check configured with DEBUG provider")
++        print("🔐 Firebase App Check configured with DEBUG provider (Simulator)")
++        #elseif DEBUG
++        // Use debug provider for development builds on real devices
++        let providerFactory = DebugAppCheckFactory()
++        AppCheck.setAppCheckProviderFactory(providerFactory)
++        print("🔐 Firebase App Check configured with DEBUG provider (Debug build)")
++        #else
++        // Use device check provider for production
++        let providerFactory = DeviceCheckAppCheckFactory()
++        AppCheck.setAppCheckProviderFactory(providerFactory)
++        print("🔐 Firebase App Check configured with DEVICE CHECK provider (Production)")
++        #endif
+         
+-        // In debug mode, we may need to get the debug token
+-        // This token needs to be added to Firebase Console for App Check
+-        AppCheck.appCheck().token(forcingRefresh: false) { token, error in
++        // Schedule token retrieval after Firebase is initialized
++        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [weak self] in
++            self?.retrieveAppCheckToken()
++        }
++    }
++    
++    /// Retrieve and log App Check token (called after Firebase initialization)
++    private func retrieveAppCheckToken() {
++        #if DEBUG || targetEnvironment(simulator)
++        // Get debug token for development
++        AppCheck.appCheck().token(forcingRefresh: true) { token, error in
+             if let error = error {
+-                print("App Check token error: \(error.localizedDescription)")
++                print("❌ App Check token error: \(error.localizedDescription)")
+                 return
+             }
+             if let token = token {
+-                print("App Check debug token retrieved (add this to Firebase Console if needed): \(token.token)")
++                print("\n========================================")
++                print("🔑 App Check Debug Token:")
++                print(token.token)
++                print("========================================")
++                print("⚠️  Add this token to Firebase Console:")
++                print("1. Go to: https://console.firebase.google.com/project/growth-70a85/appcheck/apps")
++                print("2. Click on your iOS app")
++                print("3. Click 'Manage debug tokens'")
++                print("4. Add this token with a descriptive name")
++                print("========================================\n")
+             }
+         }
+-        #else
+-        // Use device check provider for production
+-        let providerFactory = DeviceCheckAppCheckFactory()
+-        AppCheck.setAppCheckProviderFactory(providerFactory)
+-        print("Firebase App Check configured with DEVICE CHECK provider")
+-        #endif
+         
+-        // Enable App Check token auto-refresh
++        // Enable auto-refresh after initialization
+         AppCheck.appCheck().isTokenAutoRefreshEnabled = true
++        #endif
+     }
+     
+     /// Force reconfigure Firebase (used when connection issues occur)
+diff --git a/Growth/Core/Services/LegalDocumentService.swift b/Growth/Core/Services/LegalDocumentService.swift
+index b9a38df..7ff62ab 100644
+--- a/Growth/Core/Services/LegalDocumentService.swift
++++ b/Growth/Core/Services/LegalDocumentService.swift
+@@ -49,7 +49,7 @@ final class LegalDocumentService: ObservableObject {
+             
+             print("LegalDocumentService: Retrieved data for \(id): \(data.keys)")
+             
+-            if let doc = self.parseLegalDocument(id: snapshot!.documentID, data: data) {
++            if let snapshot = snapshot, let doc = self.parseLegalDocument(id: snapshot.documentID, data: data) {
+                 self.documents[id] = doc
+                 print("LegalDocumentService: Successfully parsed and cached \(id)")
+                 completion(doc)
+diff --git a/Growth/Core/Services/NotificationService.swift b/Growth/Core/Services/NotificationService.swift
+index 1c5242d..9b698c2 100644
+--- a/Growth/Core/Services/NotificationService.swift
++++ b/Growth/Core/Services/NotificationService.swift
+@@ -205,6 +205,41 @@ class NotificationService: NSObject, ObservableObject {
+         }
+     }
+     
++    /// Show a session completion notification immediately
++    /// - Parameters:
++    ///   - methodName: Name of the method/session completed
++    ///   - duration: Duration of the session in seconds
++    func showSessionCompletionNotification(methodName: String, duration: TimeInterval) {
++        let content = UNMutableNotificationContent()
++        content.title = "Session Completed! 🎉"
++        
++        // Format duration
++        let minutes = Int(duration) / 60
++        let seconds = Int(duration) % 60
++        let durationText = minutes > 0 ? "\(minutes) min \(seconds) sec" : "\(seconds) seconds"
++        
++        content.body = "Great job completing your \(methodName) session! Duration: \(durationText)"
++        content.sound = .default
++        content.categoryIdentifier = "SESSION_COMPLETION"
++        
++        // Show immediately (0.1 second delay to ensure it appears)
++        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 0.1, repeats: false)
++        
++        let request = UNNotificationRequest(
++            identifier: "session_completion_\(UUID().uuidString)",
++            content: content,
++            trigger: trigger
++        )
++        
++        userNotificationCenter.add(request) { error in
++            if let error = error {
++                print("Error showing session completion notification: \(error.localizedDescription)")
++            } else {
++                print("✅ Session completion notification scheduled")
++            }
++        }
++    }
++    
+     /// Cancel all pending notifications of a specific type
+     /// - Parameter identifierPrefix: The prefix of notification identifiers to cancel
+     func cancelNotifications(withIdentifierPrefix prefix: String) {
+@@ -254,6 +289,13 @@ class NotificationService: NSObject, ObservableObject {
+                 object: nil
+             )
+             
++        case "SESSION_COMPLETION":
++            // Handle session completion tap - navigate to progress or dashboard
++            NotificationCenter.default.post(
++                name: Notification.Name("NavigateToProgressScreen"),
++                object: nil
++            )
++            
+         default:
+             // Handle other notifications
+             break
+diff --git a/Growth/Core/Services/ProgressionService.swift b/Growth/Core/Services/ProgressionService.swift
+index 610bfaf..ed33c12 100644
+--- a/Growth/Core/Services/ProgressionService.swift
++++ b/Growth/Core/Services/ProgressionService.swift
+@@ -57,7 +57,9 @@ final class ProgressionService {
+         // Fetch up to the latest 500 session logs for the user to compute stats.
+         firestoreService.getSessionLogsForUser(userId: userId, limit: 500) { [weak self] logs, error in
+             guard error == nil else {
+-                print("ProgressionService: Error fetching session logs – \(error!.localizedDescription)")
++                if let error = error {
++                    print("ProgressionService: Error fetching session logs – \(error.localizedDescription)")
++                }
+                 completion(nil)
+                 return
+             }
+diff --git a/Growth/Core/Services/SecurityService.swift b/Growth/Core/Services/SecurityService.swift
+index 0fdc27d..6783281 100644
+--- a/Growth/Core/Services/SecurityService.swift
++++ b/Growth/Core/Services/SecurityService.swift
+@@ -16,7 +16,7 @@ final class SecurityService {
+     // MARK: - Keychain Keys
+     struct Keys {
+         /// Example key for Firebase Auth ID token (refreshable via Firebase SDK)
+-        static let firebaseIDToken = "com.growth.firebase.idToken"
++        static let firebaseIDToken = "com.growthlabs.growthmethod.firebase.idToken"
+     }
+ 
+     // MARK: - Public API – Keychain Convenience
+diff --git a/Growth/Core/Services/SessionService.swift b/Growth/Core/Services/SessionService.swift
+index 5ecf791..e610176 100644
+--- a/Growth/Core/Services/SessionService.swift
++++ b/Growth/Core/Services/SessionService.swift
+@@ -38,10 +38,8 @@ class SessionService {
+         // Use FirestoreService to save the session log
+         firestoreService.saveSessionLog(log: sessionLog) { error in
+             if let error = error {
+-                print("SessionService: Error saving session log: \(error)")
+                 completion(error)
+             } else {
+-                print("SessionService: Successfully saved session log with ID: \(sessionLog.id)")
+                 
+                 // Post notification for session log creation
+                 NotificationCenter.default.post(name: .sessionLogCreated, object: sessionLog)
+@@ -68,7 +66,6 @@ class SessionService {
+             .limit(to: limit)
+             .getDocuments { snapshot, error in
+                 if let error = error {
+-                    print("SessionService: Error fetching session logs: \(error)")
+                     completion([], error)
+                     return
+                 }
+@@ -108,10 +105,8 @@ class SessionService {
+     func deleteSessionLog(logId: String, completion: @escaping (Error?) -> Void) {
+         firestoreService.deleteSessionLog(logId: logId) { error in
+             if let error = error {
+-                print("SessionService: Error deleting session log: \(error)")
+                 completion(error)
+             } else {
+-                print("SessionService: Successfully deleted session log with ID: \(logId)")
+                 
+                 // Post notification for session log deletion
+                 NotificationCenter.default.post(name: .sessionLogDeleted, object: logId)
+diff --git a/Growth/Core/UI/Components/Cards/GrowthCard.swift b/Growth/Core/UI/Components/Cards/GrowthCard.swift
+index ea6f787..74b6070 100644
+--- a/Growth/Core/UI/Components/Cards/GrowthCard.swift
++++ b/Growth/Core/UI/Components/Cards/GrowthCard.swift
+@@ -167,7 +167,11 @@ class GrowthCard: UIView, ShadowProvider, BorderProvider {
+         guard cardType == .workout else { return }
+         
+         // Remove any existing gradient
+-        layer.sublayers?.forEach { if $0 is CAGradientLayer { $0.removeFromSuperlayer() } }
++        layer.sublayers?.forEach { sublayer in
++            if sublayer is CAGradientLayer {
++                sublayer.removeFromSuperlayer()
++            }
++        }
+         
+         // Create new gradient
+         let gradientLayer = CAGradientLayer()
+diff --git a/Growth/Core/Utilities/AppGroupConstants.swift b/Growth/Core/Utilities/AppGroupConstants.swift
+index 140c0c4..2595ab9 100644
+--- a/Growth/Core/Utilities/AppGroupConstants.swift
++++ b/Growth/Core/Utilities/AppGroupConstants.swift
+@@ -3,7 +3,7 @@ import Foundation
+ /// Constants for App Group functionality
+ struct AppGroupConstants {
+     /// The app group identifier used for data sharing between app and widgets
+-    static let identifier = "group.com.growth.shared"
++    static let identifier = "group.com.growthlabs.growthmethod"
+     
+     /// UserDefaults instance for the app group
+     static var sharedDefaults: UserDefaults? {
+@@ -12,14 +12,16 @@ struct AppGroupConstants {
+     
+     /// Keys for storing data in shared UserDefaults
+     struct Keys {
+-        static let timerState = "com.growth.timerState"
+-        static let timerStartTime = "com.growth.timerStartTime"
+-        static let timerEndTime = "com.growth.timerEndTime"
+-        static let timerElapsedTime = "com.growth.timerElapsedTime"
+-        static let timerIsPaused = "com.growth.timerIsPaused"
+-        static let timerMethodName = "com.growth.timerMethodName"
+-        static let timerSessionType = "com.growth.timerSessionType"
+-        static let liveActivityId = "com.growth.liveActivityId"
++        static let timerState = "com.growthlabs.growthmethod.timerState"
++        static let timerStartTime = "com.growthlabs.growthmethod.timerStartTime"
++        static let timerEndTime = "com.growthlabs.growthmethod.timerEndTime"
++        static let timerElapsedTime = "com.growthlabs.growthmethod.timerElapsedTime"
++        static let timerIsPaused = "com.growthlabs.growthmethod.timerIsPaused"
++        static let timerMethodName = "com.growthlabs.growthmethod.timerMethodName"
++        static let timerSessionType = "com.growthlabs.growthmethod.timerSessionType"
++        static let liveActivityId = "com.growthlabs.growthmethod.liveActivityId"
++        static let timerIsCompleted = "com.growthlabs.growthmethod.timerIsCompleted"
++        static let timerCompletionMessage = "com.growthlabs.growthmethod.timerCompletionMessage"
+     }
+     
+     /// Store timer state in app group
+@@ -30,7 +32,9 @@ struct AppGroupConstants {
+         isPaused: Bool,
+         methodName: String,
+         sessionType: String,
+-        activityId: String?
++        activityId: String?,
++        isCompleted: Bool = false,
++        completionMessage: String? = nil
+     ) {
+         guard let defaults = sharedDefaults else { return }
+         
+@@ -40,11 +44,16 @@ struct AppGroupConstants {
+         defaults.set(isPaused, forKey: Keys.timerIsPaused)
+         defaults.set(methodName, forKey: Keys.timerMethodName)
+         defaults.set(sessionType, forKey: Keys.timerSessionType)
++        defaults.set(isCompleted, forKey: Keys.timerIsCompleted)
+         
+         if let activityId = activityId {
+             defaults.set(activityId, forKey: Keys.liveActivityId)
+         }
+         
++        if let completionMessage = completionMessage {
++            defaults.set(completionMessage, forKey: Keys.timerCompletionMessage)
++        }
++        
+         defaults.synchronize()
+     }
+     
+@@ -59,6 +68,8 @@ struct AppGroupConstants {
+         defaults.removeObject(forKey: Keys.timerMethodName)
+         defaults.removeObject(forKey: Keys.timerSessionType)
+         defaults.removeObject(forKey: Keys.liveActivityId)
++        defaults.removeObject(forKey: Keys.timerIsCompleted)
++        defaults.removeObject(forKey: Keys.timerCompletionMessage)
+         
+         defaults.synchronize()
+     }
+@@ -71,10 +82,12 @@ struct AppGroupConstants {
+         isPaused: Bool,
+         methodName: String?,
+         sessionType: String?,
+-        activityId: String?
++        activityId: String?,
++        isCompleted: Bool,
++        completionMessage: String?
+     ) {
+         guard let defaults = sharedDefaults else {
+-            return (nil, nil, 0, false, nil, nil, nil)
++            return (nil, nil, 0, false, nil, nil, nil, false, nil)
+         }
+         
+         return (
+@@ -84,7 +97,9 @@ struct AppGroupConstants {
+             defaults.bool(forKey: Keys.timerIsPaused),
+             defaults.string(forKey: Keys.timerMethodName),
+             defaults.string(forKey: Keys.timerSessionType),
+-            defaults.string(forKey: Keys.liveActivityId)
++            defaults.string(forKey: Keys.liveActivityId),
++            defaults.bool(forKey: Keys.timerIsCompleted),
++            defaults.string(forKey: Keys.timerCompletionMessage)
+         )
+     }
+ }
+\ No newline at end of file
+diff --git a/Growth/Core/Utilities/EnvironmentDetector.swift b/Growth/Core/Utilities/EnvironmentDetector.swift
+index 7846168..8424435 100644
+--- a/Growth/Core/Utilities/EnvironmentDetector.swift
++++ b/Growth/Core/Utilities/EnvironmentDetector.swift
+@@ -19,11 +19,11 @@ struct EnvironmentDetector {
+         
+         // Determine environment based on bundle ID
+         switch bundleIdentifier {
+-        case "com.growth.dev":
++        case "com.growthlabs.growthmethod.dev":
+             return .development
+-        case "com.growth.staging":
++        case "com.growthlabs.growthmethod.staging":
+             return .staging
+-        case "com.growth":
++        case "com.growthlabs.growthmethod":
+             return .production
+         default:
+             // Check if running in debug configuration
+diff --git a/Growth/Features/Dashboard/ViewModels/NextSessionViewModel.swift b/Growth/Features/Dashboard/ViewModels/NextSessionViewModel.swift
+index 7677e0b..b7b3dfa 100644
+--- a/Growth/Features/Dashboard/ViewModels/NextSessionViewModel.swift
++++ b/Growth/Features/Dashboard/ViewModels/NextSessionViewModel.swift
+@@ -43,7 +43,7 @@ class NextSessionViewModel: ObservableObject {
+             // Extract the current focus method ID & stage from user doc custom fields.
+             // Because earlier stories might not have stored these fields yet, attempt to
+             // read them defensively.
+-            let docData = (userModel == nil) ? nil : userModel!.toFirestoreData()
++            let docData = userModel?.toFirestoreData()
+             // In Firestore, we expect: currentFocus.methodId and currentFocus.stage
+             var focusMethodId: String? = nil
+             if let focus = docData?["currentFocus"] as? [String: Any] {
+diff --git a/Growth/Features/Notifications/NotificationSchedulerService.swift b/Growth/Features/Notifications/NotificationSchedulerService.swift
+index b97209e..9fbbd12 100644
+--- a/Growth/Features/Notifications/NotificationSchedulerService.swift
++++ b/Growth/Features/Notifications/NotificationSchedulerService.swift
+@@ -115,9 +115,9 @@ class NotificationSchedulerService {
+                 print("Daily reminder scheduled successfully for \(timePreference.rawValue)")
+                 
+                 // Save preferences to Firestore if user is logged in
+-                if Auth.auth().currentUser?.uid != nil {
++                if let userId = Auth.auth().currentUser?.uid {
+                     self.saveNotificationPreference(
+-                        userId: Auth.auth().currentUser!.uid,
++                        userId: userId,
+                         type: .reminder,
+                         timePreference: timePreference,
+                         customHour: customHour,
+@@ -341,9 +341,9 @@ class NotificationSchedulerService {
+                 print("Weekly progress summary scheduled successfully")
+                 
+                 // Save preference to Firestore if user is logged in
+-                if Auth.auth().currentUser?.uid != nil {
++                if let userId = Auth.auth().currentUser?.uid {
+                     self.saveNotificationPreference(
+-                        userId: Auth.auth().currentUser!.uid,
++                        userId: userId,
+                         type: .weeklyProgress,
+                         enabled: true
+                     ) { success, error in
+@@ -372,10 +372,10 @@ class NotificationSchedulerService {
+             }
+             
+             // If user is logged in, update Firestore
+-            if type == .reminder || type == .weeklyProgress, 
+-               Auth.auth().currentUser?.uid != nil {
++            if type == .reminder || type == .weeklyProgress,
++               let userId = Auth.auth().currentUser?.uid {
+                 self.saveNotificationPreference(
+-                    userId: Auth.auth().currentUser!.uid,
++                    userId: userId,
+                     type: type,
+                     enabled: false
+                 ) { success, _ in
+diff --git a/Growth/Features/Practice/Views/PracticeTabView.swift b/Growth/Features/Practice/Views/PracticeTabView.swift
+index a809a69..5ad988e 100644
+--- a/Growth/Features/Practice/Views/PracticeTabView.swift
++++ b/Growth/Features/Practice/Views/PracticeTabView.swift
+@@ -162,7 +162,6 @@ struct PracticeTabView: View {
+             
+             // If timer is already running (e.g., restored from background), ensure we're tracking it
+             if mainTimerService.timerState == .running {
+-                print("PracticeTabView: Timer already running on appear, updating cache")
+                 updateProgressCache()
+             }
+         }
+@@ -173,22 +172,17 @@ struct PracticeTabView: View {
+             updateProgressCache()
+         }
+         .onReceive(NotificationCenter.default.publisher(for: .sessionLogged)) { notification in
+-            print("PracticeTabView: Received sessionLogged notification")
+             
+             // Update session count when a ROUTINE session is logged (not quick practice)
+             if let userInfo = notification.userInfo,
+                let sessionType = userInfo["sessionType"] as? String {
+-                print("PracticeTabView: Session type: \(sessionType)")
+                 if sessionType == SessionType.quickPractice.rawValue {
+                     // Ignore quick practice sessions
+-                    print("PracticeTabView: Ignoring quick practice session")
+                     return
+                 }
+             } else {
+-                print("PracticeTabView: No sessionType in userInfo, assuming routine session")
+             }
+             
+-            print("PracticeTabView: Processing routine session logged notification")
+             
+             // Temporarily disable quick practice button to prevent sheet conflicts
+             canShowQuickPractice = false
+@@ -197,7 +191,6 @@ struct PracticeTabView: View {
+             }
+             
+             // For routine sessions, refresh the progress to ensure it updates
+-            print("PracticeTabView: Refreshing progress...")
+             viewModel.refreshProgress()
+             
+             // Wait a moment for Firestore to update and fetch the new data
+@@ -206,8 +199,6 @@ struct PracticeTabView: View {
+                 self.updateProgressCache()
+                 // Force UI update to show completion state if all methods are done
+                 self.viewModel.objectWillChange.send()
+-                print("PracticeTabView: Progress refresh completed")
+-                print("PracticeTabView: Final completed sessions: \(self.completedSessions) / \(self.totalSessions)")
+             }
+         }
+         .onReceive(NotificationCenter.default.publisher(for: .methodCompleted)) { _ in
+@@ -247,7 +238,6 @@ struct PracticeTabView: View {
+             }
+         }
+         .onChange(of: routinesViewModel.selectedRoutineId) { oldValue, newValue in
+-            print("PracticeTabView: Routine changed from \(oldValue ?? "nil") to \(newValue ?? "nil")")
+             // Force view model to refresh when routine changes
+             viewModel.refreshProgress()
+             updateProgressCache()
+@@ -430,20 +420,16 @@ struct PracticeTabView: View {
+         // If the day is complete, always show 100%
+         if viewModel.isDailyRoutineComplete() {
+             cachedProgressValue = 1.0
+-            print("PracticeTabView: Progress = 100% (day complete)")
+             return
+         }
+         
+         guard totalSessions > 0 else { 
+             cachedProgressValue = 0
+-            print("PracticeTabView: Progress = 0% (no sessions)")
+             return
+         }
+         
+         // Calculate base progress from completed sessions, capped at 1.0
+         let baseProgress = min(Double(completedSessions) / Double(totalSessions), 1.0)
+-        print("PracticeTabView: Completed sessions: \(completedSessions) / \(totalSessions)")
+-        print("PracticeTabView: Base progress: \(baseProgress * 100)%")
+         
+         // If there's an active MAIN timer and we haven't reached 100%, add incremental progress
+         // Quick practice sessions should NOT affect routine progress
+@@ -469,11 +455,8 @@ struct PracticeTabView: View {
+             let sessionProgressIncrement = elapsedProgress / Double(totalSessions)
+             
+             cachedProgressValue = min(baseProgress + sessionProgressIncrement, 1.0)
+-            print("PracticeTabView: Timer active, adding increment: \(sessionProgressIncrement * 100)%")
+-            print("PracticeTabView: Total progress: \(cachedProgressValue * 100)%")
+         } else {
+             cachedProgressValue = baseProgress
+-            print("PracticeTabView: No active timer, progress: \(cachedProgressValue * 100)%")
+         }
+         
+         lastProgressUpdateTime = Date()
+diff --git a/Growth/Features/Routines/ViewModels/MultiMethodSessionViewModel.swift b/Growth/Features/Routines/ViewModels/MultiMethodSessionViewModel.swift
+index 584b032..30d227c 100644
+--- a/Growth/Features/Routines/ViewModels/MultiMethodSessionViewModel.swift
++++ b/Growth/Features/Routines/ViewModels/MultiMethodSessionViewModel.swift
+@@ -198,10 +198,6 @@ class MultiMethodSessionViewModel: ObservableObject {
+     
+     /// Complete the entire session
+     func completeSession() {
+-        print("MultiMethodSessionViewModel: completeSession called")
+-        print("MultiMethodSessionViewModel: Current method index: \(currentMethodIndex)")
+-        print("MultiMethodSessionViewModel: Total methods: \(totalMethods)")
+-        print("MultiMethodSessionViewModel: Methods count: \(methods.count)")
+         
+         isSessionComplete = true
+         cancelUpNextTimer()
+@@ -255,18 +251,15 @@ class MultiMethodSessionViewModel: ObservableObject {
+     /// Get custom duration for a method at the given index
+     func getCustomDuration(for index: Int) -> Int? {
+         guard index >= 0 && index < methodSchedules.count else { 
+-            print("MultiMethodSessionViewModel: getCustomDuration - index \(index) out of bounds (methodSchedules.count: \(methodSchedules.count))")
+             return nil 
+         }
+         let duration = methodSchedules[index].duration
+-        print("MultiMethodSessionViewModel: getCustomDuration for index \(index) = \(duration) min")
+         return duration
+     }
+     
+     /// Get custom duration for the current method
+     func getCurrentMethodCustomDuration() -> Int? {
+         let duration = getCustomDuration(for: currentMethodIndex)
+-        print("MultiMethodSessionViewModel: getCurrentMethodCustomDuration (index: \(currentMethodIndex)) = \(duration ?? -1) min")
+         return duration
+     }
+     
+@@ -275,7 +268,6 @@ class MultiMethodSessionViewModel: ObservableObject {
+     private func setupSession() {
+         // Handle rest days gracefully
+         if schedule.isRestDay {
+-            print("MultiMethodSessionViewModel: Schedule is a rest day, no methods to load")
+             totalMethods = 0
+             methods = []
+             methodSchedules = []
+@@ -285,7 +277,6 @@ class MultiMethodSessionViewModel: ObservableObject {
+         
+         let methodSchedules = schedule.methods
+         guard !methodSchedules.isEmpty else {
+-            print("MultiMethodSessionViewModel: No methods found in schedule (not a rest day)")
+             totalMethods = 0
+             methods = []
+             isLoadingMethods = false
+@@ -297,10 +288,6 @@ class MultiMethodSessionViewModel: ObservableObject {
+         self.methodSchedules = sortedMethodSchedules
+         let methodIds = sortedMethodSchedules.map { $0.methodId }
+         
+-        print("MultiMethodSessionViewModel: Setting up session with methodIds: \(methodIds)")
+-        print("MultiMethodSessionViewModel: Schedule: \(schedule.dayName)")
+-        print("MultiMethodSessionViewModel: Setting totalMethods to: \(methodIds.count)")
+-        print("MultiMethodSessionViewModel: Method orders: \(sortedMethodSchedules.map { "\($0.methodId): order \($0.order), duration: \($0.duration) min" })")
+         
+         totalMethods = methodIds.count
+         
+@@ -328,14 +315,6 @@ class MultiMethodSessionViewModel: ObservableObject {
+                 // Methods are already in the correct order from sequential loading
+                 self.methods = loadedMethods
+                 
+-                // Debug: Print loaded methods and their durations
+-                print("MultiMethodSessionViewModel: Loaded \(loadedMethods.count) methods")
+-                for (index, method) in loadedMethods.enumerated() {
+-                    let customDuration = index < self.methodSchedules.count ? self.methodSchedules[index].duration : -1
+-                    print("  Method \(index): \(method.title)")
+-                    print("    - Default duration: \(method.estimatedDurationMinutes ?? -1) min")
+-                    print("    - Custom duration: \(customDuration) min")
+-                }
+                 
+                 self.calculateTotalSessionTime()
+                 self.updateCurrentMethod()
+@@ -355,12 +334,6 @@ class MultiMethodSessionViewModel: ObservableObject {
+         }
+         totalTimeRemaining = totalSessionTime * 60
+         
+-        print("MultiMethodSessionViewModel: Calculated total session time: \(totalSessionTime) minutes")
+-        for (index, schedule) in methodSchedules.enumerated() {
+-            if index < methods.count {
+-                print("  Method \(index): \(methods[index].title) - \(schedule.duration) minutes (custom duration)")
+-            }
+-        }
+     }
+     
+     private func updateCurrentMethod() {
+@@ -368,19 +341,6 @@ class MultiMethodSessionViewModel: ObservableObject {
+         
+         currentMethod = methods[currentMethodIndex]
+         
+-        print("MultiMethodSessionViewModel: Setting current method at index \(currentMethodIndex): \(currentMethod?.title ?? "nil") (ID: \(currentMethod?.id ?? "nil"))")
+-        print("MultiMethodSessionViewModel: Total methods loaded: \(methods.count)")
+-        
+-        // Debug custom duration for current method
+-        if currentMethodIndex < methodSchedules.count {
+-            let customDuration = methodSchedules[currentMethodIndex].duration
+-            print("MultiMethodSessionViewModel: Current method custom duration: \(customDuration) min")
+-        }
+-        
+-        for (idx, method) in methods.enumerated() {
+-            print("  - Method \(idx): \(method.title) (ID: \(method.id ?? "nil"))")
+-        }
+-        
+         // Mark current method as started
+         if let methodId = currentMethod?.id {
+             markMethodStarted(methodId)
+@@ -403,11 +363,9 @@ class MultiMethodSessionViewModel: ObservableObject {
+         if currentMethodIndex < methodSchedules.count {
+             let customDuration = methodSchedules[currentMethodIndex].duration
+             currentMethodTimeRemaining = customDuration * 60
+-            print("MultiMethodSessionViewModel: Reset timer for method \(currentMethodIndex) to \(customDuration) minutes (custom duration)")
+         } else if let duration = currentMethod?.estimatedDurationMinutes {
+             // Fallback to default duration if schedule not available
+             currentMethodTimeRemaining = duration * 60
+-            print("MultiMethodSessionViewModel: Reset timer for method \(currentMethodIndex) to \(duration) minutes (default duration)")
+         }
+     }
+     
+diff --git a/Growth/Features/Routines/Views/DailyRoutineView.swift b/Growth/Features/Routines/Views/DailyRoutineView.swift
+index 42520a9..deb57e5 100644
+--- a/Growth/Features/Routines/Views/DailyRoutineView.swift
++++ b/Growth/Features/Routines/Views/DailyRoutineView.swift
+@@ -43,15 +43,6 @@ struct DailyRoutineView: View {
+         self.onExit = onExit
+         _viewModel = StateObject(wrappedValue: DailyRoutineViewModel(schedule: schedule))
+         _sessionViewModel = StateObject(wrappedValue: MultiMethodSessionViewModel(schedule: schedule))
+-        
+-        // Debug: Print schedule details on init
+-        print("=== DailyRoutineView init ===")
+-        print("Schedule day: \(schedule.dayName)")
+-        print("Schedule methods count: \(schedule.methods.count)")
+-        for (idx, methodSchedule) in schedule.methods.enumerated() {
+-            print("  Method \(idx): \(methodSchedule.methodId), duration: \(methodSchedule.duration) min, order: \(methodSchedule.order)")
+-        }
+-        print("===========================")
+     }
+ 
+     var body: some View {
+@@ -80,7 +71,6 @@ struct DailyRoutineView: View {
+                             
+                             // Handle completion if there was elapsed time
+                             if elapsedTime > 0 {
+-                                print("DailyRoutineView: Timer had elapsed time, showing completion")
+                                 // Get the current method from sessionViewModel
+                                 if let currentMethod = sessionViewModel.currentMethod {
+                                     let methodId = currentMethod.id ?? UUID().uuidString
+@@ -109,9 +99,6 @@ struct DailyRoutineView: View {
+                 notificationCancellable?.cancel()
+             }
+             .onReceive(timerService.$timerState) { newState in
+-                print("DailyRoutineView: Timer state changed to \(newState), last state was \(lastTimerState)")
+-                print("DailyRoutineView: Timer mode: \(timerService.timerMode), remainingTime: \(timerService.remainingTime), elapsedTime: \(timerService.elapsedTime)")
+-                print("DailyRoutineView: hasHandledTimerCompletion: \(hasHandledTimerCompletion)")
+                 
+                 // Check if timer just completed (transitioned from running to paused with 0 remaining)
+                 if timerService.timerMode == .countdown && 
+@@ -122,7 +109,6 @@ struct DailyRoutineView: View {
+                    !hasHandledTimerCompletion &&
+                    !isConfiguringTimer &&
+                    !completionViewModel.showCompletionPrompt {
+-                    print("DailyRoutineView: Timer state changed from running to paused with 0 remaining - timer completed!")
+                     // Timer completed for current method
+                     hasHandledTimerCompletion = true
+                     // Don't set isShowingCompletionPrompt here - let handleTimerCompletion do it
+@@ -132,7 +118,6 @@ struct DailyRoutineView: View {
+                 }
+                 // Reset completion flag when timer starts
+                 if newState == .running && lastTimerState != .running {
+-                    print("DailyRoutineView: Timer started, resetting hasHandledTimerCompletion flag")
+                     hasHandledTimerCompletion = false
+                     isShowingCompletionPrompt = false
+                 }
+@@ -149,9 +134,6 @@ struct DailyRoutineView: View {
+                    !hasHandledTimerCompletion &&
+                    !isConfiguringTimer &&
+                    !completionViewModel.showCompletionPrompt {
+-                    print("DailyRoutineView: Detected timer completion via remainingTime reaching 0")
+-                    print("DailyRoutineView: Current method: \(sessionViewModel.currentMethod?.title ?? "nil")")
+-                    print("DailyRoutineView: Method index: \(sessionViewModel.currentMethodIndex) of \(sessionViewModel.totalMethods)")
+                     hasHandledTimerCompletion = true
+                     // Don't set isShowingCompletionPrompt here - let handleTimerCompletion do it
+                     DispatchQueue.main.async {
+@@ -164,9 +146,6 @@ struct DailyRoutineView: View {
+                     // Mark view as visible when app becomes active
+                     isViewVisible = true
+                     
+-                    print("DailyRoutineView: App became active, checking timer state")
+-                    print("DailyRoutineView: Timer mode: \(timerService.timerMode), state: \(timerService.timerState), remainingTime: \(timerService.remainingTime)")
+-                    print("DailyRoutineView: hasHandledTimerCompletion: \(hasHandledTimerCompletion), showCompletionPrompt: \(completionViewModel.showCompletionPrompt)")
+                     
+                     // Check if timer completed while in background
+                     if timerService.timerMode == .countdown &&
+@@ -175,7 +154,6 @@ struct DailyRoutineView: View {
+                        timerService.elapsedTime > 0 &&
+                        !hasHandledTimerCompletion &&
+                        !completionViewModel.showCompletionPrompt {
+-                        print("DailyRoutineView: Timer completed while in background, showing completion")
+                         hasHandledTimerCompletion = true
+                         // Don't set isShowingCompletionPrompt here - let handleTimerCompletion do it
+                         
+@@ -196,7 +174,6 @@ struct DailyRoutineView: View {
+                 if oldValue && !newValue {
+                     // Completion prompt was dismissed
+                     isShowingCompletionPrompt = false
+-                    print("DailyRoutineView: Completion prompt dismissed")
+                 }
+             }
+     }
+@@ -640,7 +617,6 @@ struct DailyRoutineView: View {
+                             
+                             // Don't start if we're showing completion prompt
+                             if completionViewModel.showCompletionPrompt {
+-                                print("DailyRoutineView: Not starting timer - completion prompt is showing")
+                                 return
+                             }
+                             
+@@ -850,8 +826,6 @@ struct DailyRoutineView: View {
+     }
+     
+     private var displayTime: String {
+-        print("DailyRoutineView.displayTime: mode=\(timerService.timerMode), remainingTime=\(timerService.remainingTime), elapsedTime=\(timerService.elapsedTime)")
+-        
+         switch timerService.timerMode {
+         case .stopwatch:
+             return formatTime(timerService.elapsedTime)
+@@ -861,7 +835,6 @@ struct DailyRoutineView: View {
+             if timerService.remainingTime == 0,
+                let method = sessionViewModel.currentMethod,
+                let duration = sessionViewModel.getCurrentMethodCustomDuration() ?? method.estimatedDurationMinutes {
+-                print("DailyRoutineView.displayTime: Using method duration fallback: \(duration) minutes")
+                 return formatTime(TimeInterval(duration * 60))
+             }
+             return formatTime(timerService.remainingTime)
+@@ -966,7 +939,6 @@ struct DailyRoutineView: View {
+         
+         // Don't configure timer if completion prompt is showing
+         if completionViewModel.showCompletionPrompt {
+-            print("DailyRoutineView: Skipping timer config - completion prompt is showing")
+             return
+         }
+         
+@@ -976,15 +948,8 @@ struct DailyRoutineView: View {
+         lastTimerState = timerService.timerState
+         isConfiguringTimer = true
+         
+-        print("DailyRoutineView: Configuring timer for method: \(method.title)")
+-        print("DailyRoutineView: Method estimatedDurationMinutes: \(method.estimatedDurationMinutes ?? -1)")
+-        print("DailyRoutineView: Timer state before config: \(timerService.timerState)")
+-        print("DailyRoutineView: Timer remainingTime before: \(timerService.remainingTime)")
+-        print("DailyRoutineView: Current method index: \(sessionViewModel.currentMethodIndex)")
+         
+         // Debug: Print schedule details
+-        print("DailyRoutineView: Schedule day: \(schedule.dayName)")
+-        print("DailyRoutineView: Schedule methods count: \(schedule.methods.count)")
+         for (idx, methodSchedule) in schedule.methods.enumerated() {
+             print("  Method \(idx): \(methodSchedule.methodId), duration: \(methodSchedule.duration) min")
+         }
+@@ -994,44 +959,30 @@ struct DailyRoutineView: View {
+         if timerService.timerState == .paused && 
+            timerService.remainingTime <= 0 &&
+            timerService.currentMethodId != method.id {
+-            print("DailyRoutineView: Timer is in completed state for different method, forcing stop to reset")
+             timerService.stop()
+         }
+         
+         // Don't reconfigure if timer is running (likely restored from background)
+         if timerService.timerState == .running {
+-            print("DailyRoutineView: Timer is already running, skipping configuration")
+             return
+         }
+         
+         // Force timer to stopped state before configuration
+         if timerService.timerState != .stopped {
+-            print("DailyRoutineView: Forcing timer to stopped state")
+             timerService.stop()
+         }
+         
+         // Configure timer based on method configuration
+         if let config = method.timerConfig {
+-            print("DailyRoutineView: Method has timerConfig: \(config)")
+-            print("DailyRoutineView: - recommendedDurationSeconds: \(config.recommendedDurationSeconds ?? 0)")
+-            print("DailyRoutineView: - isCountdown: \(config.isCountdown ?? false)")
+-            print("DailyRoutineView: - hasIntervals: \(config.hasIntervals ?? false)")
+             
+             // Only use timerConfig if it has valid duration or intervals
+             if (config.recommendedDurationSeconds ?? 0) > 0 || (config.intervals?.count ?? 0) > 0 {
+-                print("DailyRoutineView: Using method's timer config")
+                 timerService.configure(with: config)
+             } else {
+-                print("DailyRoutineView: Timer config exists but has no duration, falling back to custom/estimated duration")
+                 // Use custom duration if available, otherwise fall back to method's estimated duration
+                 let customDuration = sessionViewModel.getCurrentMethodCustomDuration()
+                 let estimatedDuration = method.estimatedDurationMinutes
+                 let duration = customDuration ?? estimatedDuration ?? 10 // Default 10 minutes
+-                print("DailyRoutineView: Using default countdown config with final duration: \(duration) minutes")
+-                print("DailyRoutineView: Method estimatedDurationMinutes: \(estimatedDuration ?? 0)")
+-                print("DailyRoutineView: Custom duration from sessionViewModel: \(customDuration ?? -1)")
+-                print("DailyRoutineView: sessionViewModel.currentMethodIndex: \(sessionViewModel.currentMethodIndex)")
+-                print("DailyRoutineView: sessionViewModel.methods count: \(sessionViewModel.methods.count)")
+                 timerService.configure(with: TimerConfiguration(
+                     recommendedDurationSeconds: duration * 60,
+                     isCountdown: true,
+@@ -1045,11 +996,6 @@ struct DailyRoutineView: View {
+             let customDuration = sessionViewModel.getCurrentMethodCustomDuration()
+             let estimatedDuration = method.estimatedDurationMinutes
+             let duration = customDuration ?? estimatedDuration ?? 10 // Default 10 minutes
+-            print("DailyRoutineView: No timer config, using default countdown config with final duration: \(duration) minutes")
+-            print("DailyRoutineView: Method estimatedDurationMinutes: \(estimatedDuration ?? 0)")
+-            print("DailyRoutineView: Custom duration from sessionViewModel: \(customDuration ?? -1)")
+-            print("DailyRoutineView: sessionViewModel.currentMethodIndex: \(sessionViewModel.currentMethodIndex)")
+-            print("DailyRoutineView: sessionViewModel.methods count: \(sessionViewModel.methods.count)")
+             timerService.configure(with: TimerConfiguration(
+                 recommendedDurationSeconds: duration * 60,
+                 isCountdown: true,
+@@ -1059,10 +1005,6 @@ struct DailyRoutineView: View {
+             ))
+         }
+         
+-        print("DailyRoutineView: Timer state after config: \(timerService.timerState)")
+-        print("DailyRoutineView: Timer remainingTime after: \(timerService.remainingTime)")
+-        print("DailyRoutineView: Timer mode: \(timerService.timerMode)")
+-        print("DailyRoutineView: Timer targetDuration: \(timerService.totalDuration ?? 0)")
+         
+         // Clear configuration flag after a delay
+         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+@@ -1094,14 +1036,12 @@ struct DailyRoutineView: View {
+         
+         // Check if cache exists
+         if let methodIdsArray = UserDefaults.standard.array(forKey: cacheKey) as? [String] {
+-            print("DailyRoutineView: Found \(methodIdsArray.count) completed methods in cache")
+             
+             // Mark each method as completed in the session view model
+             for methodId in methodIdsArray {
+                 // Find the method in our schedule
+                 if schedule.methods.contains(where: { $0.methodId == methodId }) {
+                     sessionViewModel.markMethodCompleted(methodId, duration: 0)
+-                    print("DailyRoutineView: Marked method \(methodId) as completed from cache")
+                 }
+             }
+             
+@@ -1114,7 +1054,6 @@ struct DailyRoutineView: View {
+                    methodIdsArray.contains(methodId) {
+                     // Current method is completed, advance to next
+                     sessionViewModel.goToNextMethod()
+-                    print("DailyRoutineView: Advanced to next method index: \(sessionViewModel.currentMethodIndex)")
+                 } else {
+                     // Current method is not completed, stop advancing
+                     shouldAdvance = false
+@@ -1129,14 +1068,11 @@ struct DailyRoutineView: View {
+     private func handleTimerCompletion() {
+         // Prevent duplicate handling
+         guard !completionViewModel.showCompletionPrompt else {
+-            print("DailyRoutineView: Completion prompt already showing, skipping duplicate handling")
+-            print("DailyRoutineView: isShowingCompletionPrompt: \(isShowingCompletionPrompt)")
+             return
+         }
+         
+         // Check if view is still visible before showing sheet
+         if !isViewVisible {
+-            print("DailyRoutineView: View is not visible, skipping completion prompt to prevent detached view controller error")
+             // Still mark the method as completed for progress tracking
+             if let method = sessionViewModel.currentMethod,
+                let methodId = method.id {
+@@ -1148,12 +1084,6 @@ struct DailyRoutineView: View {
+         // Mark that we're showing the completion prompt immediately
+         isShowingCompletionPrompt = true
+         
+-        print("DailyRoutineView: Timer completed for method")
+-        print("DailyRoutineView: Current method index: \(sessionViewModel.currentMethodIndex)")
+-        print("DailyRoutineView: Total methods: \(sessionViewModel.totalMethods)")
+-        print("DailyRoutineView: Current method: \(sessionViewModel.currentMethod?.title ?? "nil")")
+-        print("DailyRoutineView: Auto-progression enabled: \(sessionViewModel.autoProgressionEnabled)")
+-        print("DailyRoutineView: isViewVisible: \(isViewVisible)")
+         
+         // Pause the timer (TimerService calls this when timer completes)
+         // Only pause if not already paused to avoid triggering extra state changes
+@@ -1166,24 +1096,20 @@ struct DailyRoutineView: View {
+         
+         // Capture the elapsed time BEFORE any state changes
+         let capturedElapsedTime = timerService.elapsedTime
+-        print("DailyRoutineView: Captured elapsed time: \(capturedElapsedTime)")
+         
+         // Mark current method as completed
+         if let method = sessionViewModel.currentMethod,
+            let methodId = method.id {
+-            print("DailyRoutineView: Marking method \(method.title) as completed")
+             
+             // Update completion in session view model with captured duration
+             sessionViewModel.markMethodCompleted(methodId, duration: capturedElapsedTime)
+             
+-            print("DailyRoutineView: Method marked as completed. Total completed: \(sessionViewModel.methodsCompleted)")
+             
+             // Update routine progress to increment nextMethodIndex
+             if let userId = Auth.auth().currentUser?.uid,
+                let routineId = routinesViewModel.selectedRoutineId {
+                 RoutineProgressService.shared.incrementMethodIndex(userId: userId, routineId: routineId) { updatedProgress in
+                     if let progress = updatedProgress {
+-                        print("DailyRoutineView: Updated routine progress")
+                         // Update the routinesViewModel's progress
+                         DispatchQueue.main.async {
+                             self.routinesViewModel.routineProgress = progress
+@@ -1200,7 +1126,6 @@ struct DailyRoutineView: View {
+         
+         // Check if auto-progression is enabled and we can go to next method
+         if sessionViewModel.autoProgressionEnabled && sessionViewModel.canGoNext {
+-            print("DailyRoutineView: Auto-progressing to next method")
+             
+             // Stop the timer before progressing to next method
+             timerService.stop()
+@@ -1228,15 +1153,10 @@ struct DailyRoutineView: View {
+             // This prevents the timer from being reset before showing completion
+             // The timer is already paused from handleTimerCompletion in TimerService
+             // Show completion prompt if auto-progression is disabled or on last method
+-            print("DailyRoutineView: Showing completion prompt (auto-progression disabled or last method)")
+-            print("DailyRoutineView: Is last method: \(!sessionViewModel.canGoNext)")
+-            print("DailyRoutineView: Current session progress - completed: \(sessionViewModel.methodsCompleted), total: \(sessionViewModel.totalMethods)")
+             
+             // Always show completion prompt when auto-progression is disabled or on last method
+             // For the first method when auto-progression is off, we still want to show the prompt
+             if let currentMethod = sessionViewModel.currentMethod {
+-                print("DailyRoutineView: Preparing completion for method: \(currentMethod.title)")
+-                print("DailyRoutineView: completionViewModel.showCompletionPrompt before: \(completionViewModel.showCompletionPrompt)")
+                 
+                 // Call completeSession directly - it's already @MainActor
+                 completionViewModel.completeSession(
+@@ -1246,7 +1166,6 @@ struct DailyRoutineView: View {
+                     variation: currentMethod.title
+                 )
+                 
+-                print("DailyRoutineView: completionViewModel.showCompletionPrompt after: \(completionViewModel.showCompletionPrompt)")
+                 
+                 // Force the UI to update to ensure the sheet binding is properly triggered
+                 DispatchQueue.main.async {
+@@ -1255,12 +1174,9 @@ struct DailyRoutineView: View {
+                     
+                     // Add a small delay to ensure the completion prompt has time to show
+                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+-                        print("DailyRoutineView: Delayed check - showCompletionPrompt: \(completionViewModel.showCompletionPrompt)")
+-                        print("DailyRoutineView: Timer state: \(timerService.timerState)")
+                         
+                         // If the sheet still isn't showing and view is still visible, try again
+                         if !completionViewModel.showCompletionPrompt && isShowingCompletionPrompt && isViewVisible {
+-                            print("DailyRoutineView: WARNING: Completion prompt not showing, attempting to show again")
+                             completionViewModel.completeSession(
+                                 methodId: currentMethod.id,
+                                 duration: capturedElapsedTime,
+@@ -1274,7 +1190,6 @@ struct DailyRoutineView: View {
+             
+             // Special handling for the last method
+             if !sessionViewModel.canGoNext {
+-                print("DailyRoutineView: This is the last method")
+                 
+                 // Delay stopping the timer to allow the completion sheet to appear
+                 // The timer will be stopped when the user logs or dismisses the completion sheet
+@@ -1399,10 +1314,11 @@ private struct CompletionSheetModifier: ViewModifier {
+                     },
+                     onDismiss: {
+                         completionViewModel.skipLogging()
+-                        // Don't stop the timer - let it continue running
+-                        // timerService.stop() // Removed to keep timer running
+-                        // Don't clear the saved state - keep it for background tracking
+-                        // BackgroundTimerTracker.shared.clearSavedState() // Removed
++                        
++                        // Stop the timer and clear state when dismissing after completion
++                        // This ensures we show the start session card instead of timer controls
++                        timerService.stop()
++                        BackgroundTimerTracker.shared.clearSavedState()
+                         
+                         // Reset the completion state for the current method since it wasn't logged
+                         if let method = sessionViewModel.currentMethod,
+@@ -1494,10 +1410,11 @@ private struct CompletionSheetModifier: ViewModifier {
+                     },
+                     onDismiss: {
+                         completionViewModel.skipLogging()
+-                        // Don't stop the timer - let it continue running
+-                        // timerService.stop() // Removed to keep timer running
+-                        // Don't clear the saved state - keep it for background tracking
+-                        // BackgroundTimerTracker.shared.clearSavedState() // Removed
++                        
++                        // Stop the timer and clear state when dismissing after completion
++                        // This ensures we show the start session card instead of timer controls
++                        timerService.stop()
++                        BackgroundTimerTracker.shared.clearSavedState()
+                         
+                         // Reset the completion state for the current method since it wasn't logged
+                         if let method = sessionViewModel.currentMethod,
+@@ -1582,8 +1499,6 @@ private struct LifecycleModifier: ViewModifier {
+     }
+     
+     private func handleOnAppear() {
+-        print("DailyRoutineView: onAppear - checking for background timer")
+-        print("DailyRoutineView: Initial state - hasHandledTimerCompletion: \(hasHandledTimerCompletion), isShowingCompletionPrompt: \(isShowingCompletionPrompt)")
+         
+         // Mark view as visible
+         isViewVisible = true
+@@ -1592,14 +1507,10 @@ private struct LifecycleModifier: ViewModifier {
+         
+         hasActiveTimer = BackgroundTimerTracker.shared.hasActiveBackgroundTimer()
+         if hasActiveTimer && !hasRestoredTimer {
+-            print("DailyRoutineView: Active background timer found, restoring...")
+             timerService.restoreFromBackground(isQuickPractice: false)
+             hasRestoredTimer = true
+             
+             // Check immediately after restore
+-            print("DailyRoutineView: Timer restored - state: \(timerService.timerState), remainingTime: \(timerService.remainingTime)")
+-            print("DailyRoutineView: Timer mode: \(timerService.timerMode), elapsedTime: \(timerService.elapsedTime)")
+-            print("DailyRoutineView: hasHandledTimerCompletion: \(hasHandledTimerCompletion)")
+             
+             // Check if timer was already completed in background
+             if timerService.timerMode == .countdown && 
+@@ -1609,7 +1520,6 @@ private struct LifecycleModifier: ViewModifier {
+                !hasHandledTimerCompletion &&
+                !completionViewModel.showCompletionPrompt &&
+                !isShowingCompletionPrompt {  // Prevent duplicate handling
+-                print("DailyRoutineView: Timer completed in background, showing completion prompt")
+                 hasHandledTimerCompletion = true
+                 isShowingCompletionPrompt = true
+                 
+@@ -1652,7 +1562,6 @@ private struct LifecycleModifier: ViewModifier {
+                    !hasHandledTimerCompletion &&
+                    !completionViewModel.showCompletionPrompt &&
+                    !isShowingCompletionPrompt {
+-                    print("DailyRoutineView: Timer in completed state on appear, showing completion prompt")
+                     hasHandledTimerCompletion = true
+                     isShowingCompletionPrompt = true
+                     
+@@ -1681,11 +1590,9 @@ private struct LifecycleModifier: ViewModifier {
+         if timerService.timerState == .running {
+             let methodName = sessionViewModel.currentMethod?.title ?? "Practice Session"
+             timerService.saveStateForBackground(methodName: methodName)
+-            print("DailyRoutineView: onDisappear - saved timer state and scheduled notifications")
+         } else if sessionViewModel.isSessionComplete && timerService.timerState == .paused {
+             // If session is complete and timer is just paused, stop it to end Live Activity
+             timerService.stop()
+-            print("DailyRoutineView: onDisappear - stopped timer for completed session")
+         }
+         
+         navigationContext.clearContext()
+@@ -1710,26 +1617,22 @@ private struct LifecycleModifier: ViewModifier {
+     private func handleMethodIdChange(oldId: String?, newId: String?) {
+         if oldId == nil && newId != nil && timerService.timerState == .stopped && !hasActiveTimer && !hasConfiguredTimer,
+            let method = sessionViewModel.currentMethod {
+-            print("DailyRoutineView: Method changed, scheduling timer configuration")
+             hasConfiguredTimer = true
+             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                 configureTimerForMethod(method)
+             }
+         } else if oldId == nil && newId != nil && hasActiveTimer {
+-            print("DailyRoutineView: Method loaded but skipping timer config due to active background timer")
+         }
+     }
+     
+     private func handleLoadingChange(wasLoading: Bool, isLoading: Bool) {
+         if wasLoading && !isLoading && sessionViewModel.methods.count > 0 {
+-            print("DailyRoutineView: Methods loaded, count: \(sessionViewModel.methods.count)")
+             
+             // Session initialization is handled by sessionViewModel
+             
+             if !hasActiveTimer && !hasConfiguredTimer {
+                 if let firstMethod = sessionViewModel.currentMethod,
+                    let methodId = firstMethod.id {
+-                    print("DailyRoutineView: Methods loaded, configuring initial method: \(firstMethod.title)")
+                     
+                     if timerService.timerState == .stopped {
+                         hasConfiguredTimer = true
+@@ -1739,7 +1642,6 @@ private struct LifecycleModifier: ViewModifier {
+                     sessionViewModel.markMethodStarted(methodId)
+                 }
+             } else {
+-                print("DailyRoutineView: Methods loaded but skipping initial config due to active background timer")
+                 if let firstMethod = sessionViewModel.currentMethod,
+                    let methodId = firstMethod.id {
+                     sessionViewModel.markMethodStarted(methodId)
+diff --git a/Growth/Features/SessionLogging/ViewModels/LogSessionViewModel.swift b/Growth/Features/SessionLogging/ViewModels/LogSessionViewModel.swift
+index 6c90f9f..191d130 100644
+--- a/Growth/Features/SessionLogging/ViewModels/LogSessionViewModel.swift
++++ b/Growth/Features/SessionLogging/ViewModels/LogSessionViewModel.swift
+@@ -198,7 +198,7 @@ class LogSessionViewModel: ObservableObject {
+         }
+ 
+         isSaving = true
+-        let logId = isEditMode ? editingLog!.id : UUID().uuidString // Use existing ID if editing
++        let logId = isEditMode ? (editingLog?.id ?? UUID().uuidString) : UUID().uuidString // Use existing ID if editing
+ 
+         let sessionLog = SessionLog(
+             id: logId,
+diff --git a/Growth/Features/Timer/Services/LiveActivityBackgroundTaskManager.swift b/Growth/Features/Timer/Services/LiveActivityBackgroundTaskManager.swift
+index 93699e5..2f66d48 100644
+--- a/Growth/Features/Timer/Services/LiveActivityBackgroundTaskManager.swift
++++ b/Growth/Features/Timer/Services/LiveActivityBackgroundTaskManager.swift
+@@ -16,8 +16,8 @@ class LiveActivityBackgroundTaskManager {
+     static let shared = LiveActivityBackgroundTaskManager()
+     
+     // Background task identifiers
+-    static let refreshTaskIdentifier = "com.growth.timer.refresh"
+-    static let processingTaskIdentifier = "com.growth.timer.processing"
++    static let refreshTaskIdentifier = "com.growthlabs.growthmethod.timer.refresh"
++    static let processingTaskIdentifier = "com.growthlabs.growthmethod.timer.processing"
+     
+     private init() {}
+     
+@@ -148,7 +148,7 @@ class LiveActivityBackgroundTaskManager {
+     func debugLaunchBackgroundTasks() {
+         #if DEBUG
+         // Use this in simulator with debugger command:
+-        // e -l objc -- (void)[[BGTaskScheduler sharedScheduler] _simulateLaunchForTaskWithIdentifier:@"com.growth.timer.refresh"]
++        // e -l objc -- (void)[[BGTaskScheduler sharedScheduler] _simulateLaunchForTaskWithIdentifier:@"com.growthlabs.growthmethod.timer.refresh"]
+         print("🔍 LiveActivityBackgroundTaskManager: To test background tasks in simulator, use:")
+         print("e -l objc -- (void)[[BGTaskScheduler sharedScheduler] _simulateLaunchForTaskWithIdentifier:@\"\(Self.refreshTaskIdentifier)\"]")
+         #endif
+diff --git a/Growth/Features/Timer/Services/LiveActivityManager.swift b/Growth/Features/Timer/Services/LiveActivityManager.swift
+index 6c9f88f..43f6fa0 100644
+--- a/Growth/Features/Timer/Services/LiveActivityManager.swift
++++ b/Growth/Features/Timer/Services/LiveActivityManager.swift
+@@ -4,15 +4,22 @@ import UIKit
+ import Firebase
+ import FirebaseFirestore
+ import FirebaseAuth
++import FirebaseFunctions
+ 
+ @available(iOS 16.1, *)
+ class LiveActivityManager: ObservableObject {
+     static let shared = LiveActivityManager()
+     
+     @Published private(set) var currentActivity: Activity<TimerActivityAttributes>?
++    private var isShowingCompletion = false
+     
+     private init() {}
+     
++    /// Check if Live Activity is showing completion state
++    var isActivityShowingCompletion: Bool {
++        return isShowingCompletion
++    }
++    
+     func startTimerActivity(
+         methodId: String,
+         methodName: String,
+@@ -27,6 +34,9 @@ class LiveActivityManager: ObservableObject {
+         print("  - Duration: \(duration)s, Type: \(sessionType)")
+         print("  - Start: \(startTime), End: \(endTime)")
+         
++        // Clear completion flag when starting new activity
++        isShowingCompletion = false
++        
+         guard ActivityAuthorizationInfo().areActivitiesEnabled else {
+             print("❌ LiveActivityManager: Live Activities are NOT enabled in system settings")
+             return
+@@ -256,6 +266,9 @@ class LiveActivityManager: ObservableObject {
+         
+         print("🔴 LiveActivityManager: Ending current activity \(activity.id) (immediately: \(immediately))")
+         
++        // Clear completion flag
++        isShowingCompletion = false
++        
+         // Stop monitoring
+         LiveActivityMonitor.shared.stopMonitoring(activityId: activity.id)
+         
+@@ -323,11 +336,18 @@ class LiveActivityManager: ObservableObject {
+         
+         print("✅ LiveActivityManager: Completing activity \(activity.id)")
+         
++        // Clear completion flag
++        isShowingCompletion = false
++        
++        // Stop monitoring and push updates
++        LiveActivityMonitor.shared.stopMonitoring(activityId: activity.id)
++        LiveActivityPushService.shared.stopPushUpdates()
++        
+         let now = Date()
+         let elapsed = now.timeIntervalSince(activity.content.state.startTime)
+         
+-        // First show completion state
+-        let completionState = TimerActivityAttributes.ContentState(
++        // Create final state (not a completion state, just a normal ended state)
++        let finalState = TimerActivityAttributes.ContentState(
+             startTime: activity.content.state.startTime,
+             endTime: now,
+             methodName: activity.content.state.methodName,
+@@ -338,31 +358,25 @@ class LiveActivityManager: ObservableObject {
+             remainingTimeAtLastUpdate: 0,
+             lastKnownGoodUpdate: now,
+             expectedEndTime: now,
+-            isCompleted: true,
+-            completionMessage: message
++            isCompleted: false,
++            completionMessage: nil
+         )
+         
+-        // Set stale date for 5 minutes from now - this will auto-dismiss the activity
+-        let staleDate = now.addingTimeInterval(300) // 5 minutes
+-        
+-        // Update to show completion state with stale date
+-        await activity.update(ActivityContent(state: completionState, staleDate: staleDate))
+-        
+-        print("✅ LiveActivityManager: Updated activity to completion state")
+-        print("✅ LiveActivityManager: Activity will auto-dismiss at \(staleDate)")
+-        
+-        // Stop monitoring and push updates
+-        LiveActivityMonitor.shared.stopMonitoring(activityId: activity.id)
+-        LiveActivityPushService.shared.stopPushUpdates()
++        // End the activity immediately
++        await activity.end(
++            ActivityContent(state: finalState, staleDate: now),
++            dismissalPolicy: .immediate
++        )
++        print("✅ LiveActivityManager: Activity ended immediately")
+         
+         // Clear the current activity reference
+         await MainActor.run {
+             self.currentActivity = nil
+         }
+         
+-        // DO NOT call activity.end() - let the stale date handle dismissal
+-        // This allows the completion view to remain visible for the full 5 minutes
+-        print("✅ LiveActivityManager: Activity will remain visible with completion message")
++        // Clear App Group data
++        AppGroupConstants.clearTimerState()
++        print("✅ LiveActivityManager: Cleared timer state from App Group")
+     }
+     
+     func endAllActivities() async {
+@@ -487,6 +501,18 @@ class LiveActivityManager: ObservableObject {
+             if let firestoreError = error as NSError? {
+                 print("  - Error code: \(firestoreError.code)")
+                 print("  - Error domain: \(firestoreError.domain)")
++                
++                // Check for App Check errors specifically
++                if firestoreError.domain == "FIRFirestoreErrorDomain" && firestoreError.code == 7 {
++                    print("  ⚠️ This appears to be an App Check error")
++                    print("  ⚠️ The app may not be registered in Firebase Console")
++                    print("  ⚠️ See FIREBASE_APP_CHECK_COMPLETE_FIX.md for instructions")
++                    
++                    #if DEBUG
++                    // In debug, try to refresh the token
++                    AppCheckDebugHelper.shared.refreshDebugToken()
++                    #endif
++                }
+             }
+         }
+     }
+@@ -543,4 +569,5 @@ class LiveActivityManager: ObservableObject {
+             break
+         }
+     }
++    
+ }
+\ No newline at end of file
+diff --git a/Growth/Features/Timer/Services/LiveActivityPushService.swift b/Growth/Features/Timer/Services/LiveActivityPushService.swift
+index 28b6e3d..62d4d44 100644
+--- a/Growth/Features/Timer/Services/LiveActivityPushService.swift
++++ b/Growth/Features/Timer/Services/LiveActivityPushService.swift
+@@ -321,10 +321,10 @@ class LiveActivityPushService {
+         }
+     }
+     
+-    // MARK: - Private Methods
++    // MARK: - Types
+     
+     /// Action type for timer state updates
+-    private enum TimerAction: String {
++    enum TimerAction: String {
+         case start = "start"
+         case pause = "pause"
+         case resume = "resume"
+@@ -333,7 +333,7 @@ class LiveActivityPushService {
+     }
+     
+     /// Store timer state in Firestore for server-side management
+-    private func storeTimerStateInFirestore(for activity: Activity<TimerActivityAttributes>, action: TimerAction = .update) async {
++    func storeTimerStateInFirestore(for activity: Activity<TimerActivityAttributes>, action: TimerAction = .update) async {
+         guard let userId = Auth.auth().currentUser?.uid else {
+             print("❌ LiveActivityPushService: No authenticated user to store timer state")
+             return
+diff --git a/Growth/Features/Timer/Services/TimerIntentObserver.swift b/Growth/Features/Timer/Services/TimerIntentObserver.swift
+index 6c127d4..b4d9da7 100644
+--- a/Growth/Features/Timer/Services/TimerIntentObserver.swift
++++ b/Growth/Features/Timer/Services/TimerIntentObserver.swift
+@@ -15,10 +15,10 @@ class TimerIntentObserver {
+     private func startObserving() {
+         // Register for Darwin notifications for each action type
+         let notificationNames = [
+-            "com.growth.liveactivity.stop",
+-            "com.growth.liveactivity.pause", 
+-            "com.growth.liveactivity.resume",
+-            "com.growth.liveactivity.action" // Keep the old one for compatibility
++            "com.growthlabs.growthmethod.liveactivity.stop",
++            "com.growthlabs.growthmethod.liveactivity.pause", 
++            "com.growthlabs.growthmethod.liveactivity.resume",
++            "com.growthlabs.growthmethod.liveactivity.action" // Keep the old one for compatibility
+         ]
+         
+         for name in notificationNames {
+diff --git a/Growth/Features/Timer/Services/TimerService.swift b/Growth/Features/Timer/Services/TimerService.swift
+index 2776008..4b7efd5 100644
+--- a/Growth/Features/Timer/Services/TimerService.swift
++++ b/Growth/Features/Timer/Services/TimerService.swift
+@@ -389,19 +389,9 @@ class TimerService: ObservableObject {
+         // Log every 10th tick (1 second) to avoid spam
+         let shouldLog = Int(elapsedTime * 10) % 10 == 0
+         if shouldLog {
+-            print("⏱️ [TICK] Timer update at \(now)")
+-            print("  - Last resume time: \(resumeTime)")
+-            print("  - Current time: \(now)")
+-            print("  - Time since resume: \(timeSinceResume)s")
+-            print("  - Paused elapsed: \(pausedElapsedTime)s")
+-            print("  - Previous elapsed: \(previousElapsed)s")
+-            print("  - New elapsed: \(elapsedTime)s")
+-            print("  - Delta: \(elapsedTime - previousElapsed)s")
+-            #if DEBUG
+-            if TimerService.debugSpeedMultiplier != 1.0 {
+-                print("  - Debug speed: \(TimerService.debugSpeedMultiplier)x")
+-            }
+-            #endif
++            let modeStr = currentTimerMode == .countdown ? "countdown" : "stopwatch"
++            let remainingStr = currentTimerMode == .countdown ? String(format: "%.1fs", remainingTime) : "N/A"
++            print("⏱️ [TICK] \(modeStr) - elapsed: \(String(format: "%.1fs", elapsedTime)), remaining: \(remainingStr)")
+         }
+         
+         // Live Activity updates are now handled entirely by push notifications
+@@ -520,20 +510,44 @@ class TimerService: ObservableObject {
+             // elapsedTime for the last interval is already at its target
+         }
+         
+-        // Show completion in Live Activity before pausing
++        // Set timer state to stopped BEFORE Live Activity updates
++        timerState = .stopped
++        timer?.invalidate()
++        timer = nil
++        
++        // End Live Activity immediately and show notification
+         if #available(iOS 16.1, *) {
+             Task { @MainActor in
++                // First, update the Live Activity push state to stop
++                if let activity = LiveActivityManager.shared.currentActivity {
++                    await LiveActivityPushService.shared.storeTimerStateInFirestore(for: activity, action: .stop)
++                }
++                
++                // End the Live Activity immediately
++                await LiveActivityManager.shared.completeActivity()
++                
++                // Show session completion notification
+                 let methodName = currentMethodName ?? "Training"
+-                await LiveActivityManager.shared.completeActivity(withMessage: "Great job completing your \(methodName) session!")
++                let duration = elapsedTime
++                NotificationService.shared.showSessionCompletionNotification(
++                    methodName: methodName,
++                    duration: duration
++                )
++                
++                // Stop syncing timer state
++                TimerStateSync.shared.stopSyncing()
+                 
+-                // Keep timer paused at the end state after showing completion
+-                // This must be inside the Task to ensure proper sequencing
+-                // Use MainActor to ensure UI updates happen on main thread
+-                self.pause()
++                // Cancel background tasks
++                LiveActivityBackgroundTaskManager.shared.cancelAllTasks()
+             }
+         } else {
+-            // For iOS versions that don't support Live Activities, just pause
+-            pause()
++            // For iOS versions that don't support Live Activities
++            let methodName = currentMethodName ?? "Training"
++            let duration = elapsedTime
++            NotificationService.shared.showSessionCompletionNotification(
++                methodName: methodName,
++                duration: duration
++            )
+         } 
+         // Optionally, could change state to a specific .completed state if needed
+         // For now, .paused signifies completion for countdown/interval
+@@ -584,15 +598,14 @@ class TimerService: ObservableObject {
+         // Update Live Activity (only if not showing completion)
+         if #available(iOS 16.1, *) {
+             // Check if the activity is showing completion state
+-            if let activity = LiveActivityManager.shared.currentActivity,
+-               !activity.content.state.isCompleted {
++            if !LiveActivityManager.shared.isActivityShowingCompletion {
+                 print("  📱 Updating Live Activity to paused state")
+                 LiveActivityManager.shared.updateActivity(isPaused: true)
+                 
+                 // Sync pause state to Firestore
+                 TimerStateSync.shared.updatePauseState(isPaused: true)
+             } else {
+-                print("  ℹ️ Skipping Live Activity update (already completed or no activity)")
++                print("  ℹ️ Skipping Live Activity update (activity is showing completion)")
+             }
+         }
+         
+@@ -1161,7 +1174,7 @@ class TimerService: ObservableObject {
+             // Check if timer completed while app was terminated
+             // Only trigger completion if there was actual time remaining when saved
+             if self.remainingTime == 0 && sState == .running && (sTargetDuration - sElapsedTime) > 0.1 {
+-                self.timerState = .paused
++                // Don't set to paused - let handleTimerCompletion handle the state
+                 handleTimerCompletion()
+             }
+         } else if sMode == .interval {
+@@ -1193,7 +1206,7 @@ class TimerService: ObservableObject {
+                     // Only trigger completion if there was actual time remaining when we went to background
+                     let timeWhenBackgrounded = sTargetDuration - sElapsedTime
+                     if self.remainingTime == 0 && timeWhenBackgrounded > 0.1 {
+-                        self.timerState = .paused
++                        // Don't set to paused - let handleTimerCompletion handle the state
+                         handleTimerCompletion()
+                         return
+                     }
+@@ -1264,6 +1277,12 @@ class TimerService: ObservableObject {
+         print("    - Current timer state: \(timerState)")
+         
+         // Check if states are out of sync
++        // Don't sync if timer is already stopped (completed)
++        if timerState == .stopped {
++            print("  ℹ️ Timer is stopped, skipping sync")
++            return
++        }
++        
+         if appGroupState.isPaused && timerState == .running {
+             print("  ⚠️ State mismatch: Live Activity is paused but timer is running")
+             print("  - Pausing timer to match Live Activity")
+@@ -1292,6 +1311,12 @@ class TimerService: ObservableObject {
+                 print("  - Is paused: \(contentState.isPaused)")
+                 print("  - Current state: \(self.timerState)")
+                 
++                // Don't sync if timer is already stopped (completed)
++                guard self.timerState != .stopped else {
++                    print("  ℹ️ Timer is stopped, ignoring remote state update")
++                    return
++                }
++                
+                 // Sync with remote pause state
+                 if contentState.isPaused && self.timerState == .running {
+                     print("  - Remote pause detected, pausing local timer")
+diff --git a/Growth/Features/Timer/ViewModels/SessionCompletionViewModel.swift b/Growth/Features/Timer/ViewModels/SessionCompletionViewModel.swift
+index 2c653ef..5eef4bc 100644
+--- a/Growth/Features/Timer/ViewModels/SessionCompletionViewModel.swift
++++ b/Growth/Features/Timer/ViewModels/SessionCompletionViewModel.swift
+@@ -140,7 +140,6 @@ class SessionCompletionViewModel: ObservableObject {
+             let sessionType: SessionType = sessionLog.methodId != nil ? .multiMethod : .quickPractice
+             notificationInfo["sessionType"] = sessionType.rawValue
+             
+-            print("SessionCompletionViewModel: Posting sessionLogged notification with type: \(sessionType.rawValue)")
+             
+             // Post notification on main thread for immediate UI updates
+             DispatchQueue.main.async {
+diff --git a/Growth/Growth.entitlements b/Growth/Growth.entitlements
+index 2ae72dc..11ccc71 100644
+--- a/Growth/Growth.entitlements
++++ b/Growth/Growth.entitlements
+@@ -10,12 +10,12 @@
+ 	</array>
+ 	<key>com.apple.developer.associated-domains</key>
+ 	<array>
+-		<string>webcredentials:growthtraining.com</string>
+-		<string>webcredentials:www.growthtraining.com</string>
++		<string>webcredentials:growthlabs.coach</string>
++		<string>webcredentials:www.growthlabs.coach</string>
+ 	</array>
+ 	<key>com.apple.security.application-groups</key>
+ 	<array>
+-		<string>group.com.growth.shared</string>
++		<string>group.com.growthlabs.growthmethod</string>
+ 	</array>
+ </dict>
+ </plist>
+diff --git a/Growth/Persistence.swift b/Growth/Persistence.swift
+index 3f18fab..3e1c398 100644
+--- a/Growth/Persistence.swift
++++ b/Growth/Persistence.swift
+@@ -34,7 +34,9 @@ struct PersistenceController {
+     init(inMemory: Bool = false) {
+         container = NSPersistentContainer(name: "Growth")
+         if inMemory {
+-            container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
++            if let storeDescription = container.persistentStoreDescriptions.first {
++                storeDescription.url = URL(fileURLWithPath: "/dev/null")
++            }
+         }
+         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
+             if let error = error as NSError? {
+diff --git a/Growth/Resources/Plist/App/Info.plist b/Growth/Resources/Plist/App/Info.plist
+index e3e0a75..f526b18 100644
+--- a/Growth/Resources/Plist/App/Info.plist
++++ b/Growth/Resources/Plist/App/Info.plist
+@@ -76,7 +76,7 @@
+             <string>Google Sign-In</string>
+             <key>CFBundleURLSchemes</key>
+             <array>
+-                <string>com.googleusercontent.apps.645068839446-e2hieedodcgv06djtr02adbiv7cmv2ub</string>
++                <string>com.googleusercontent.apps.645068839446-ornmecs6mg94okaqlp11oj6ouu1af74r</string>
+             </array>
+         </dict>
+         <dict>
+@@ -104,8 +104,8 @@
+     <!-- Background Task Identifiers -->
+     <key>BGTaskSchedulerPermittedIdentifiers</key>
+     <array>
+-        <string>com.growth.timer.refresh</string>
+-        <string>com.growth.timer.processing</string>
++        <string>com.growthlabs.growthmethod.timer.refresh</string>
++        <string>com.growthlabs.growthmethod.timer.processing</string>
+     </array>
+     
+     <!-- Privacy Usage Descriptions -->
+diff --git a/Growth/Resources/Plist/GoogleService-Info.plist b/Growth/Resources/Plist/GoogleService-Info.plist
+index 911cdc4..ed3b8df 100644
+--- a/Growth/Resources/Plist/GoogleService-Info.plist
++++ b/Growth/Resources/Plist/GoogleService-Info.plist
+@@ -3,9 +3,9 @@
+ <plist version="1.0">
+ <dict>
+ 	<key>CLIENT_ID</key>
+-	<string>645068839446-e2hieedodcgv06djtr02adbiv7cmv2ub.apps.googleusercontent.com</string>
++	<string>645068839446-ornmecs6mg94okaqlp11oj6ouu1af74r.apps.googleusercontent.com</string>
+ 	<key>REVERSED_CLIENT_ID</key>
+-	<string>com.googleusercontent.apps.645068839446-e2hieedodcgv06djtr02adbiv7cmv2ub</string>
++	<string>com.googleusercontent.apps.645068839446-ornmecs6mg94okaqlp11oj6ouu1af74r</string>
+ 	<key>API_KEY</key>
+ 	<string>AIzaSyAG_6EUgBI75ICsMqNwZJGKOHH9y3Q8-To</string>
+ 	<key>GCM_SENDER_ID</key>
+@@ -13,7 +13,7 @@
+ 	<key>PLIST_VERSION</key>
+ 	<string>1</string>
+ 	<key>BUNDLE_ID</key>
+-	<string>com.growthtraining.Growth</string>
++	<string>com.growthlabs.growthmethod</string>
+ 	<key>PROJECT_ID</key>
+ 	<string>growth-70a85</string>
+ 	<key>STORAGE_BUCKET</key>
+@@ -29,6 +29,6 @@
+ 	<key>IS_SIGNIN_ENABLED</key>
+ 	<true></true>
+ 	<key>GOOGLE_APP_ID</key>
+-	<string>1:645068839446:ios:7782656347bee14bfc3337</string>
++	<string>1:645068839446:ios:c49ec579111e8a65fc3337</string>
+ </dict>
+ </plist>
+\ No newline at end of file
+diff --git a/Growth/Services/RoutineProgressService.swift b/Growth/Services/RoutineProgressService.swift
+index 9106899..5280300 100644
+--- a/Growth/Services/RoutineProgressService.swift
++++ b/Growth/Services/RoutineProgressService.swift
+@@ -248,7 +248,7 @@ final class RoutineProgressService {
+                 progress.lastCompletedDate = nil
+                 
+                 // IMPORTANT: Remove current day from completedDays array
+-                progress.completedDays.removeAll { $0 == progress.currentDayNumber }
++                progress.completedDays.removeAll { day in day == progress.currentDayNumber }
+                 
+                 // Reset isCompleted flag if it was set
+                 progress.isCompleted = false
+diff --git a/GrowthTimerWidget/AppGroupConstants.swift b/GrowthTimerWidget/AppGroupConstants.swift
+index 140c0c4..2595ab9 100644
+--- a/GrowthTimerWidget/AppGroupConstants.swift
++++ b/GrowthTimerWidget/AppGroupConstants.swift
+@@ -3,7 +3,7 @@ import Foundation
+ /// Constants for App Group functionality
+ struct AppGroupConstants {
+     /// The app group identifier used for data sharing between app and widgets
+-    static let identifier = "group.com.growth.shared"
++    static let identifier = "group.com.growthlabs.growthmethod"
+     
+     /// UserDefaults instance for the app group
+     static var sharedDefaults: UserDefaults? {
+@@ -12,14 +12,16 @@ struct AppGroupConstants {
+     
+     /// Keys for storing data in shared UserDefaults
+     struct Keys {
+-        static let timerState = "com.growth.timerState"
+-        static let timerStartTime = "com.growth.timerStartTime"
+-        static let timerEndTime = "com.growth.timerEndTime"
+-        static let timerElapsedTime = "com.growth.timerElapsedTime"
+-        static let timerIsPaused = "com.growth.timerIsPaused"
+-        static let timerMethodName = "com.growth.timerMethodName"
+-        static let timerSessionType = "com.growth.timerSessionType"
+-        static let liveActivityId = "com.growth.liveActivityId"
++        static let timerState = "com.growthlabs.growthmethod.timerState"
++        static let timerStartTime = "com.growthlabs.growthmethod.timerStartTime"
++        static let timerEndTime = "com.growthlabs.growthmethod.timerEndTime"
++        static let timerElapsedTime = "com.growthlabs.growthmethod.timerElapsedTime"
++        static let timerIsPaused = "com.growthlabs.growthmethod.timerIsPaused"
++        static let timerMethodName = "com.growthlabs.growthmethod.timerMethodName"
++        static let timerSessionType = "com.growthlabs.growthmethod.timerSessionType"
++        static let liveActivityId = "com.growthlabs.growthmethod.liveActivityId"
++        static let timerIsCompleted = "com.growthlabs.growthmethod.timerIsCompleted"
++        static let timerCompletionMessage = "com.growthlabs.growthmethod.timerCompletionMessage"
+     }
+     
+     /// Store timer state in app group
+@@ -30,7 +32,9 @@ struct AppGroupConstants {
+         isPaused: Bool,
+         methodName: String,
+         sessionType: String,
+-        activityId: String?
++        activityId: String?,
++        isCompleted: Bool = false,
++        completionMessage: String? = nil
+     ) {
+         guard let defaults = sharedDefaults else { return }
+         
+@@ -40,11 +44,16 @@ struct AppGroupConstants {
+         defaults.set(isPaused, forKey: Keys.timerIsPaused)
+         defaults.set(methodName, forKey: Keys.timerMethodName)
+         defaults.set(sessionType, forKey: Keys.timerSessionType)
++        defaults.set(isCompleted, forKey: Keys.timerIsCompleted)
+         
+         if let activityId = activityId {
+             defaults.set(activityId, forKey: Keys.liveActivityId)
+         }
+         
++        if let completionMessage = completionMessage {
++            defaults.set(completionMessage, forKey: Keys.timerCompletionMessage)
++        }
++        
+         defaults.synchronize()
+     }
+     
+@@ -59,6 +68,8 @@ struct AppGroupConstants {
+         defaults.removeObject(forKey: Keys.timerMethodName)
+         defaults.removeObject(forKey: Keys.timerSessionType)
+         defaults.removeObject(forKey: Keys.liveActivityId)
++        defaults.removeObject(forKey: Keys.timerIsCompleted)
++        defaults.removeObject(forKey: Keys.timerCompletionMessage)
+         
+         defaults.synchronize()
+     }
+@@ -71,10 +82,12 @@ struct AppGroupConstants {
+         isPaused: Bool,
+         methodName: String?,
+         sessionType: String?,
+-        activityId: String?
++        activityId: String?,
++        isCompleted: Bool,
++        completionMessage: String?
+     ) {
+         guard let defaults = sharedDefaults else {
+-            return (nil, nil, 0, false, nil, nil, nil)
++            return (nil, nil, 0, false, nil, nil, nil, false, nil)
+         }
+         
+         return (
+@@ -84,7 +97,9 @@ struct AppGroupConstants {
+             defaults.bool(forKey: Keys.timerIsPaused),
+             defaults.string(forKey: Keys.timerMethodName),
+             defaults.string(forKey: Keys.timerSessionType),
+-            defaults.string(forKey: Keys.liveActivityId)
++            defaults.string(forKey: Keys.liveActivityId),
++            defaults.bool(forKey: Keys.timerIsCompleted),
++            defaults.string(forKey: Keys.timerCompletionMessage)
+         )
+     }
+ }
+\ No newline at end of file
+diff --git a/GrowthTimerWidget/AppIntents/TimerControlIntent.swift b/GrowthTimerWidget/AppIntents/TimerControlIntent.swift
+index 6c107b0..593f317 100644
+--- a/GrowthTimerWidget/AppIntents/TimerControlIntent.swift
++++ b/GrowthTimerWidget/AppIntents/TimerControlIntent.swift
+@@ -101,11 +101,11 @@ struct TimerControlIntent: AppIntent {
+         let notificationName: CFString
+         switch action {
+         case .stop:
+-            notificationName = "com.growth.liveactivity.stop" as CFString
++            notificationName = "com.growthlabs.growthmethod.liveactivity.stop" as CFString
+         case .pause:
+-            notificationName = "com.growth.liveactivity.pause" as CFString
++            notificationName = "com.growthlabs.growthmethod.liveactivity.pause" as CFString
+         case .resume:
+-            notificationName = "com.growth.liveactivity.resume" as CFString
++            notificationName = "com.growthlabs.growthmethod.liveactivity.resume" as CFString
+         }
+         
+         CFNotificationCenterPostNotification(
+diff --git a/GrowthTimerWidget/GrowthTimerWidget.entitlements b/GrowthTimerWidget/GrowthTimerWidget.entitlements
+index 7f547e0..e5307e3 100644
+--- a/GrowthTimerWidget/GrowthTimerWidget.entitlements
++++ b/GrowthTimerWidget/GrowthTimerWidget.entitlements
+@@ -4,7 +4,7 @@
+ <dict>
+ 	<key>com.apple.security.application-groups</key>
+ 	<array>
+-		<string>group.com.growth.shared</string>
++		<string>group.com.growthlabs.growthmethod</string>
+ 	</array>
+ 	<key>aps-environment</key>
+ 	<string>development</string>
+diff --git a/GrowthTimerWidget/GrowthTimerWidgetLiveActivity.swift b/GrowthTimerWidget/GrowthTimerWidgetLiveActivity.swift
+index d3f16f7..6d24490 100644
+--- a/GrowthTimerWidget/GrowthTimerWidgetLiveActivity.swift
++++ b/GrowthTimerWidget/GrowthTimerWidgetLiveActivity.swift
+@@ -57,17 +57,6 @@ struct GrowthTimerWidgetLiveActivity: Widget {
+             return DynamicIsland {
+                 // Expanded UI with better visual hierarchy
+                 DynamicIslandExpandedRegion(.leading) {
+-                    if context.state.isCompleted {
+-                        ZStack {
+-                            Circle()
+-                                .fill(Color(red: 0.2, green: 0.8, blue: 0.4).opacity(0.2))
+-                                .frame(width: 40, height: 40)
+-                            Image(systemName: "checkmark.circle.fill")
+-                                .foregroundColor(Color(red: 0.2, green: 0.8, blue: 0.4))
+-                                .font(.system(size: 20, weight: .medium))
+-                        }
+-                        .padding(.leading, 8)
+-                    } else {
+                     ZStack {
+                         Circle()
+                             .fill(Color(red: 0.2, green: 0.8, blue: 0.4).opacity(0.2))
+@@ -77,51 +66,30 @@ struct GrowthTimerWidgetLiveActivity: Widget {
+                             .font(.system(size: 20, weight: .medium))
+                     }
+                     .padding(.leading, 8)
+-                    }
+                 }
+                 DynamicIslandExpandedRegion(.trailing) {
+-                    if !context.state.isCompleted {
+-                        if #available(iOS 16.0, *) {
+-                            Button(intent: TimerControlIntent(
+-                                action: .stop,
+-                                activityId: context.activityID,
+-                                timerType: context.attributes.timerType
+-                            )) {
+-                                ZStack {
+-                                    Circle()
+-                                        .fill(Color.red.opacity(0.2))
+-                                        .frame(width: 32, height: 32)
+-                                    
+-                                    Image(systemName: "xmark")
+-                                        .font(.system(size: 12, weight: .semibold))
+-                                        .foregroundColor(.white)
+-                                }
++                    if #available(iOS 16.0, *) {
++                        Button(intent: TimerControlIntent(
++                            action: .stop,
++                            activityId: context.activityID,
++                            timerType: context.attributes.timerType
++                        )) {
++                            ZStack {
++                                Circle()
++                                    .fill(Color.red.opacity(0.2))
++                                    .frame(width: 32, height: 32)
++                                
++                                Image(systemName: "xmark")
++                                    .font(.system(size: 12, weight: .semibold))
++                                    .foregroundColor(.white)
+                             }
+-                            .buttonStyle(.plain)
+-                            .padding(.trailing, 8)
+                         }
++                        .buttonStyle(.plain)
++                        .padding(.trailing, 8)
+                     }
+                 }
+                 DynamicIslandExpandedRegion(.center) {
+-                    if context.state.isCompleted {
+-                        VStack(spacing: 4) {
+-                            Text("Complete!")
+-                                .font(.system(size: 20, weight: .bold))
+-                                .foregroundColor(.white)
+-                                .padding(.horizontal)
+-                            Text(context.state.methodName)
+-                                .font(.system(size: 14, weight: .medium))
+-                                .foregroundColor(.white.opacity(0.8))
+-                                .lineLimit(1)
+-                                .padding(.horizontal)
+-                            Text(formatTime(context.state.elapsedTimeAtLastUpdate))
+-                                .font(.system(size: 16, weight: .medium, design: .monospaced))
+-                                .foregroundColor(.white.opacity(0.7))
+-                                .monospacedDigit()
+-                                .padding(.horizontal)
+-                        }
+-                    } else {
+-                        VStack(spacing: 0) {
++                    VStack(spacing: 0) {
+                         // Method name and type at the top (more compact)
+                         HStack(spacing: 4) {
+                             Text(context.state.methodName)
+@@ -147,21 +115,12 @@ struct GrowthTimerWidgetLiveActivity: Widget {
+                                         .foregroundColor(.white)
+                                         .monospacedDigit()
+                                 } else {
+-                                    // Check if timer has reached zero
+-                                    let timeRemaining = context.state.endTime.timeIntervalSince(Date())
+-                                    if timeRemaining <= 0 {
+-                                        Text("00:00")
+-                                            .font(.system(size: 24, weight: .bold, design: .monospaced))
+-                                            .foregroundColor(.white)
+-                                            .monospacedDigit()
+-                                    } else {
+-                                        // Use timer interval for countdown
+-                                        Text(timerInterval: Date()...context.state.endTime, countsDown: true)
+-                                            .multilineTextAlignment(.center)
+-                                            .font(.system(size: 24, weight: .bold, design: .monospaced))
+-                                            .foregroundColor(.white)
+-                                            .monospacedDigit()
+-                                    }
++                                    // Use timer interval for countdown
++                                    Text(timerInterval: Date()...context.state.endTime, countsDown: true)
++                                        .multilineTextAlignment(.center)
++                                        .font(.system(size: 24, weight: .bold, design: .monospaced))
++                                        .foregroundColor(.white)
++                                        .monospacedDigit()
+                                 }
+                             } else {
+                                 if context.state.isPaused {
+@@ -192,7 +151,7 @@ struct GrowthTimerWidgetLiveActivity: Widget {
+                         .padding(.horizontal, 8)
+                         
+                         // Progress bar for countdown timers in Dynamic Island
+-                        if context.state.sessionType == .countdown && !context.state.isCompleted {
++                        if context.state.sessionType == .countdown {
+                             if context.state.isPaused {
+                                 // When paused, show static progress
+                                 let totalDuration = context.attributes.totalDuration
+@@ -212,61 +171,38 @@ struct GrowthTimerWidgetLiveActivity: Widget {
+                             }
+                         }
+                     }
+-                    }
+                 }
+                 DynamicIslandExpandedRegion(.bottom) {
+                     VStack(spacing: 0) {
+-                        if context.state.isCompleted {
+-                            // Show dismiss button for completion
+-                            if #available(iOS 16.0, *) {
+-                                Button(intent: TimerControlIntent(
+-                                    action: .stop,
+-                                    activityId: context.activityID,
+-                                    timerType: context.attributes.timerType
+-                                )) {
+-                                    Text("Dismiss")
++                        if #available(iOS 16.0, *) {
++                            Button(intent: TimerControlIntent(
++                                action: context.state.isPaused ? .resume : .pause,
++                                activityId: context.activityID,
++                                timerType: context.attributes.timerType
++                            )) {
++                                HStack(spacing: 6) {
++                                    Image(systemName: context.state.isPaused ? "play.fill" : "pause.fill")
++                                        .font(.system(size: 12, weight: .medium))
++                                    Text(context.state.isPaused ? "Resume" : "Pause")
+                                         .font(.system(size: 12, weight: .medium))
+-                                        .foregroundColor(.white)
+-                                        .padding(.horizontal, 16)
+-                                        .padding(.vertical, 4)
+-                                        .background(
+-                                            Capsule()
+-                                                .fill(Color.white.opacity(0.2))
+-                                        )
+-                                }
+-                                .buttonStyle(.plain)
+-                            }
+-                        } else {
+-                            if #available(iOS 16.0, *) {
+-                                Button(intent: TimerControlIntent(
+-                                    action: context.state.isPaused ? .resume : .pause,
+-                                    activityId: context.activityID,
+-                                    timerType: context.attributes.timerType
+-                                )) {
+-                                    HStack(spacing: 6) {
+-                                        Image(systemName: context.state.isPaused ? "play.fill" : "pause.fill")
+-                                            .font(.system(size: 12, weight: .medium))
+-                                        Text(context.state.isPaused ? "Resume" : "Pause")
+-                                            .font(.system(size: 12, weight: .medium))
+-                                    }
+-                                    .foregroundColor(.white)
+-                                    .padding(.horizontal, 16)
+-                                    .padding(.vertical, 5)
+-                                    .background(
+-                                        Capsule()
+-                                            .fill(LinearGradient(
+-                                                gradient: Gradient(colors: [
+-                                                    Color(red: 0.2, green: 0.8, blue: 0.4).opacity(0.3),
+-                                                    Color(red: 0.2, green: 0.8, blue: 0.4).opacity(0.2)
+-                                                ]),
+-                                                startPoint: .leading,
+-                                                endPoint: .trailing
+-                                            ))
+-                                    )
+                                 }
+-                                .buttonStyle(.plain)
++                                .foregroundColor(.white)
++                                .padding(.horizontal, 16)
++                                .padding(.vertical, 5)
++                                .background(
++                                    Capsule()
++                                        .fill(LinearGradient(
++                                            gradient: Gradient(colors: [
++                                                Color(red: 0.2, green: 0.8, blue: 0.4).opacity(0.3),
++                                                Color(red: 0.2, green: 0.8, blue: 0.4).opacity(0.2)
++                                            ]),
++                                            startPoint: .leading,
++                                            endPoint: .trailing
++                                        ))
++                                )
+                             }
+-                        } // End else
++                            .buttonStyle(.plain)
++                        }
+                     } // End VStack
+                     .padding(.horizontal, 12)
+                 } // End DynamicIslandExpandedRegion(.bottom)
+@@ -351,100 +287,10 @@ struct TimerLockScreenView: View {
+     }
+     
+     var body: some View {
+-        let _ = print("🎯 [Widget] TimerLockScreenView rendering - isCompleted: \(context.state.isCompleted), isPaused: \(context.state.isPaused), remaining: \(context.state.remainingTimeAtLastUpdate)")
++        let _ = print("🎯 [Widget] TimerLockScreenView rendering - isPaused: \(context.state.isPaused), remaining: \(context.state.remainingTimeAtLastUpdate)")
+         
+-        if context.state.isCompleted {
+-            // Completion view
+-            VStack(spacing: 12) {
+-                // Success icon
+-                ZStack {
+-                    Circle()
+-                        .fill(primaryGreen.opacity(0.15))
+-                        .frame(width: 50, height: 50)
+-                    
+-                    Image(systemName: "checkmark.circle.fill")
+-                        .font(.system(size: 30, weight: .medium))
+-                        .foregroundColor(primaryGreen)
+-                }
+-                
+-                VStack(spacing: 8) {
+-                    Text("Session Complete!")
+-                        .font(.system(size: 20, weight: .bold))
+-                        .foregroundColor(.white)
+-                    
+-                    Text(context.state.completionMessage ?? "Great job on your \(context.state.methodName) session!")
+-                        .font(.system(size: 14))
+-                        .foregroundColor(.white.opacity(0.8))
+-                        .multilineTextAlignment(.center)
+-                        .lineLimit(2)
+-                    
+-                    // Show final time
+-                    HStack(spacing: 12) {
+-                        VStack(spacing: 4) {
+-                            Text("Duration")
+-                                .font(.system(size: 11))
+-                                .foregroundColor(.white.opacity(0.6))
+-                            Text(formatFullTime(context.state.elapsedTimeAtLastUpdate))
+-                                .font(.system(size: 16, weight: .semibold, design: .monospaced))
+-                                .foregroundColor(.white)
+-                        }
+-                        
+-                        if context.state.sessionType == .countdown {
+-                            Divider()
+-                                .frame(height: 30)
+-                                .background(Color.white.opacity(0.2))
+-                            
+-                            VStack(spacing: 4) {
+-                                Text("Target")
+-                                    .font(.system(size: 11))
+-                                    .foregroundColor(.white.opacity(0.6))
+-                                Text(formatFullTime(context.attributes.totalDuration))
+-                                    .font(.system(size: 16, weight: .semibold, design: .monospaced))
+-                                    .foregroundColor(.white)
+-                            }
+-                        }
+-                    }
+-                }
+-                
+-                // Dismiss button
+-                if #available(iOS 16.0, *) {
+-                    Button(intent: TimerControlIntent(
+-                        action: .stop,
+-                        activityId: context.activityID,
+-                        timerType: context.attributes.timerType
+-                    )) {
+-                        HStack(spacing: 4) {
+-                            Image(systemName: "xmark.circle.fill")
+-                                .font(.system(size: 13, weight: .medium))
+-                            Text("Dismiss")
+-                                .font(.system(size: 13, weight: .medium))
+-                        }
+-                        .foregroundColor(.white)
+-                        .frame(maxWidth: .infinity)
+-                        .padding(.vertical, 8)
+-                        .background(
+-                            RoundedRectangle(cornerRadius: 10)
+-                                .fill(Color.white.opacity(0.15))
+-                        )
+-                    }
+-                    .buttonStyle(.plain)
+-                }
+-            }
+-            .padding(.horizontal, 16)
+-            .padding(.vertical, 12)
+-            .background(
+-                LinearGradient(
+-                    gradient: Gradient(colors: [
+-                        backgroundDark,
+-                        backgroundDark.opacity(0.95)
+-                    ]),
+-                    startPoint: .top,
+-                    endPoint: .bottom
+-                )
+-            )
+-        } else {
+-            // Normal timer view
+-            VStack(spacing: 8) {
++        // Normal timer view
++        VStack(spacing: 8) {
+             // Header with method name and status
+             HStack {
+                 // Method icon and name
+@@ -526,22 +372,12 @@ struct TimerLockScreenView: View {
+                             .foregroundColor(.white)
+                             .monospacedDigit()
+                     } else {
+-                        // Check if timer has reached zero
+-                        let timeRemaining = context.state.endTime.timeIntervalSince(Date())
+-                        if timeRemaining <= 0 {
+-                            // Show 00:00 when timer completes
+-                            Text("00:00")
+-                                .font(.system(size: 32, weight: .bold, design: .monospaced))
+-                                .foregroundColor(.white)
+-                                .monospacedDigit()
+-                        } else {
+-                            // Use timer interval for automatic countdown updates
+-                            Text(timerInterval: Date()...context.state.endTime, countsDown: true)
+-                                .multilineTextAlignment(.center)
+-                                .font(.system(size: 32, weight: .bold, design: .monospaced))
+-                                .foregroundColor(.white)
+-                                .monospacedDigit()
+-                        }
++                        // Use timer interval for automatic countdown updates
++                        Text(timerInterval: Date()...context.state.endTime, countsDown: true)
++                            .multilineTextAlignment(.center)
++                            .font(.system(size: 32, weight: .bold, design: .monospaced))
++                            .foregroundColor(.white)
++                            .monospacedDigit()
+                     }
+                 } else {
+                     if context.state.isPaused {
+@@ -642,7 +478,6 @@ struct TimerLockScreenView: View {
+                 endPoint: .bottom
+             )
+         )
+-        } // End of else block
+     }
+ }
+ 
+diff --git a/functions/index.js b/functions/index.js
+index c11eccb..e7b60b7 100644
+--- a/functions/index.js
++++ b/functions/index.js
+@@ -4,7 +4,12 @@
+ 
+ const { onCall, HttpsError } = require('firebase-functions/v2/https');
+ const functions = require('firebase-functions');
++const { onDocumentWritten } = require('firebase-functions/v2/firestore');
+ const admin = require('firebase-admin');
++
++// Initialize Firebase Admin SDK
++admin.initializeApp();
++
+ const vertexAIProxy = require('./vertexAiProxy');
+ const { getFallbackResponse } = require('./fallbackKnowledge');
+ 
+@@ -148,12 +153,12 @@ exports.addMissingRoutines = onCall(
+   }
+ );
+ 
+-// Live Activity update functions
+-const liveActivityFunctions = require('./liveActivityUpdates');
++// Live Activity update functions - using simplified version to avoid deployment timeouts
++const liveActivityFunctions = require('./liveActivityUpdatesSimple');
+ exports.updateLiveActivityTimer = liveActivityFunctions.updateLiveActivityTimer;
+ exports.onTimerStateChange = liveActivityFunctions.onTimerStateChange;
+ exports.updateLiveActivity = liveActivityFunctions.updateLiveActivity;
+-exports.startLiveActivity = liveActivityFunctions.startLiveActivity;
++// Note: startLiveActivity not included in simplified version yet
+ 
+ // New server-side timer management function
+ const { manageLiveActivityUpdates } = require('./manageLiveActivityUpdates');
+@@ -223,10 +228,10 @@ exports.trackRoutineDownload = onCall(
+ );
+ 
+ // Update routine statistics when ratings change
+-exports.updateRoutineStats = functions.firestore
+-  .document('routines/{routineId}/ratings/{ratingId}')
+-  .onWrite(async (change, context) => {
+-    const routineId = context.params.routineId;
++exports.updateRoutineStats = onDocumentWritten(
++  'routines/{routineId}/ratings/{ratingId}',
++  async (event) => {
++    const routineId = event.params.routineId;
+     const db = admin.firestore();
+     
+     try {
+@@ -259,4 +264,5 @@ exports.updateRoutineStats = functions.firestore
+     } catch (error) {
+       console.error('Error updating routine stats:', error);
+     }
+-  });
+\ No newline at end of file
++  }
++);
+\ No newline at end of file
+diff --git a/functions/liveActivityUpdates.js b/functions/liveActivityUpdates.js
+index 7de60e8..ce1aca2 100644
+--- a/functions/liveActivityUpdates.js
++++ b/functions/liveActivityUpdates.js
+@@ -9,19 +9,18 @@ const admin = require('firebase-admin');
+ const http2 = require('http2');
+ const jwt = require('jsonwebtoken');
+ 
+-// Initialize admin if not already initialized
+-try {
+-  if (!admin.apps.length) {
+-    admin.initializeApp();
+-  }
+-} catch (error) {
+-  console.error('Error initializing admin:', error);
++// Admin should already be initialized in index.js
++// Check if admin is initialized, log warning if not
++if (!admin.apps.length) {
++  console.warn('Warning: Firebase Admin not initialized in liveActivityUpdates.js');
+ }
+ 
+ // APNs configuration
+ // Note: Apple uses the same hostname for both production and development
+ // The environment is determined by the app's provisioning profile and push token
+-const APNS_HOST = 'api.push.apple.com';
++// However, sandbox tokens MUST use the development endpoint
++const APNS_HOST_PROD = 'api.push.apple.com';
++const APNS_HOST_DEV = 'api.development.push.apple.com';
+ const APNS_PORT = 443;
+ const APNS_PATH_PREFIX = '/3/device/';
+ 
+@@ -39,25 +38,31 @@ async function loadAPNsConfig() {
+   if (apnsConfigLoaded) return;
+   
+   try {
+-    // These are the known values from Firebase config
+-    apnsKeyId = '3G84L8G52R';
+-    apnsTeamId = '62T6J77P6R';
++    // Try to load from .env file if it exists (for local development)
++    try {
++      require('dotenv').config();
++    } catch (e) {
++      // Ignore if dotenv is not available in production
++    }
++    
++    // Load from environment variables first, fallback to Firebase config
++    const functions = require('firebase-functions');
++    const config = functions.config();
++    
++    // Try environment variables first, then Firebase config
++    apnsKeyId = process.env.APNS_KEY_ID || config.apns?.key_id || 'KD9A39PBA7';
++    apnsTeamId = process.env.APNS_TEAM_ID || config.apns?.team_id || '62T6J77P6R';
+     
+-    // Default to production topic, but can be overridden by environment
+-    apnsTopic = process.env.APNS_TOPIC || 'com.growthtraining.Growth.GrowthTimerWidget.push-type.liveactivity';
++    // Default to production topic with new bundle ID
++    apnsTopic = process.env.APNS_TOPIC || config.apns?.topic || 'com.growthlabs.growthmethod.GrowthTimerWidget.push-type.liveactivity';
+     
+     // Try to get the auth key from environment or config
+     if (process.env.APNS_AUTH_KEY) {
+       apnsKey = process.env.APNS_AUTH_KEY;
+       console.log('Loaded APNs key from environment');
+-    } else {
+-      // Load from Firebase config (already set)
+-      const functions = require('firebase-functions');
+-      const config = functions.config();
+-      if (config.apns && config.apns.auth_key) {
+-        apnsKey = config.apns.auth_key;
+-        console.log('Loaded APNs key from Firebase config');
+-      }
++    } else if (config.apns && config.apns.auth_key) {
++      apnsKey = config.apns.auth_key;
++      console.log('Loaded APNs key from Firebase config');
+     }
+     
+     if (!apnsKey) {
+@@ -73,6 +78,8 @@ async function loadAPNsConfig() {
+     console.log('- Key ID:', apnsKeyId);
+     console.log('- Team ID:', apnsTeamId);
+     console.log('- Topic:', apnsTopic);
++    console.log('- Auth key loaded:', apnsKey ? 'Yes' : 'No');
++    console.log('- Auth key length:', apnsKey ? apnsKey.length : 0);
+     apnsConfigLoaded = true;
+   } catch (error) {
+     console.error('❌ Failed to load APNs configuration:', error.message);
+@@ -99,12 +106,24 @@ async function generateAPNsToken() {
+       apnsKey,
+       {
+         algorithm: 'ES256',
+-        keyid: apnsKeyId
++        header: {
++          alg: 'ES256',
++          kid: apnsKeyId
++        }
+       }
+     );
++    
++    // Debug: Log token info (first 20 chars only for security)
++    console.log('🔑 Generated JWT token (first 20 chars):', token.substring(0, 20) + '...');
++    console.log('🔑 JWT header kid:', apnsKeyId);
++    console.log('🔑 JWT issuer:', apnsTeamId);
++    
+     return token;
+   } catch (error) {
+     console.error('Failed to generate APNs JWT token:', error);
++    console.error('Key ID:', apnsKeyId);
++    console.error('Team ID:', apnsTeamId);
++    console.error('Key length:', apnsKey ? apnsKey.length : 0);
+     throw new Error(`Failed to generate APNs token: ${error.message}`);
+   }
+ }
+@@ -112,7 +131,7 @@ async function generateAPNsToken() {
+ /**
+  * Send push update to Live Activity
+  */
+-async function sendLiveActivityUpdate(pushToken, activityId, contentState, dismissalDate = null, topicOverride = null) {
++async function sendLiveActivityUpdate(pushToken, activityId, contentState, dismissalDate = null, topicOverride = null, retryWithDev = false) {
+   const payload = {
+     'aps': {
+       'timestamp': Math.floor(Date.now() / 1000),
+@@ -132,9 +151,13 @@ async function sendLiveActivityUpdate(pushToken, activityId, contentState, dismi
+   const payloadString = JSON.stringify(payload);
+   const token = await generateAPNsToken();
+ 
+-  return new Promise((resolve, reject) => {
++  return new Promise(async (resolve, reject) => {
++    // Determine which APNs host to use
++    const apnsHost = retryWithDev ? APNS_HOST_DEV : APNS_HOST_PROD;
++    console.log(`📱 Using APNs host: ${apnsHost} (${retryWithDev ? 'development' : 'production'})`);
++    
+     // Create HTTP/2 client
+-    const client = http2.connect(`https://${APNS_HOST}:${APNS_PORT}`);
++    const client = http2.connect(`https://${apnsHost}:${APNS_PORT}`);
+     
+     client.on('error', (err) => {
+       console.error('HTTP/2 client error:', err);
+@@ -233,6 +256,7 @@ exports.updateLiveActivity = onCall(
+ 
+     try {
+       let finalPushToken = pushToken;
++      let tokenData = null;
+       
+       if (!finalPushToken) {
+         const tokenDoc = await admin.firestore()
+@@ -244,13 +268,23 @@ exports.updateLiveActivity = onCall(
+           throw new HttpsError('not-found', 'Live Activity token not found');
+         }
+ 
+-        const tokenData = tokenDoc.data();
++        tokenData = tokenDoc.data();
+         
+         if (tokenData.userId !== request.auth.uid) {
+           throw new HttpsError('permission-denied', 'Not authorized to update this activity');
+         }
+         
+         finalPushToken = tokenData.pushToken;
++      } else {
++        // If we have a push token but no tokenData, try to fetch it anyway for topic info
++        const tokenDoc = await admin.firestore()
++          .collection('liveActivityTokens')
++          .doc(activityId)
++          .get();
++        
++        if (tokenDoc.exists) {
++          tokenData = tokenDoc.data();
++        }
+       }
+ 
+       // Use the environment-specific topic if available
+@@ -265,14 +299,14 @@ exports.updateLiveActivity = onCall(
+           let bundleId;
+           switch (tokenData.environment) {
+             case 'development':
+-              bundleId = 'com.growth.dev';
++              bundleId = 'com.growthlabs.growthmethod.dev';
+               break;
+             case 'staging':
+-              bundleId = 'com.growth.staging';
++              bundleId = 'com.growthlabs.growthmethod.staging';
+               break;
+             case 'production':
+             default:
+-              bundleId = 'com.growthtraining.Growth';
++              bundleId = 'com.growthlabs.growthmethod';
+               break;
+           }
+           topicOverride = `${bundleId}.GrowthTimerWidget.push-type.liveactivity`;
+@@ -280,7 +314,17 @@ exports.updateLiveActivity = onCall(
+         }
+       }
+ 
+-      await sendLiveActivityUpdate(finalPushToken, activityId, contentState, null, topicOverride);
++      try {
++        await sendLiveActivityUpdate(finalPushToken, activityId, contentState, null, topicOverride, false);
++      } catch (error) {
++        // If we get BadDeviceToken, retry with development endpoint
++        if (error.message && error.message.includes('BadDeviceToken')) {
++          console.log('🔄 Retrying with development APNs endpoint...');
++          await sendLiveActivityUpdate(finalPushToken, activityId, contentState, null, topicOverride, true);
++        } else {
++          throw error;
++        }
++      }
+ 
+       await admin.firestore()
+         .collection('activeTimers')
+@@ -354,14 +398,14 @@ exports.updateLiveActivityTimer = onCall(
+         let bundleId;
+         switch (tokenData.environment) {
+           case 'development':
+-            bundleId = 'com.growth.dev';
++            bundleId = 'com.growthlabs.growthmethod.dev';
+             break;
+           case 'staging':
+-            bundleId = 'com.growth.staging';
++            bundleId = 'com.growthlabs.growthmethod.staging';
+             break;
+           case 'production':
+           default:
+-            bundleId = 'com.growthtraining.Growth';
++            bundleId = 'com.growthlabs.growthmethod';
+             break;
+         }
+         topicOverride = `${bundleId}.GrowthTimerWidget.push-type.liveactivity`;
+diff --git a/functions/manageLiveActivityUpdates.js b/functions/manageLiveActivityUpdates.js
+index 091b264..2527927 100644
+--- a/functions/manageLiveActivityUpdates.js
++++ b/functions/manageLiveActivityUpdates.js
+@@ -1,13 +1,13 @@
+ const { onCall, HttpsError } = require('firebase-functions/v2/https');
+ const admin = require('firebase-admin');
+-const axios = require('axios');
++const http2 = require('http2');
+ const jwt = require('jsonwebtoken');
+ 
+ // Apple Push Notification Service (APNs) configuration
+ // Use development endpoint for testing (use api.push.apple.com for production)
+-const APNS_HOST = process.env.APNS_HOST || 'https://api.development.push.apple.com';
+-const TEAM_ID = process.env.APNS_TEAM_ID || 'YOUR_TEAM_ID';
+-const KEY_ID = process.env.APNS_KEY_ID || 'YOUR_KEY_ID';
++const APNS_HOST = process.env.APNS_HOST || 'api.push.apple.com';
++const TEAM_ID = process.env.APNS_TEAM_ID || '62T6J77P6R';
++const KEY_ID = process.env.APNS_KEY_ID || '3G84L8G52R';
+ let APNS_KEY = process.env.APNS_AUTH_KEY || `-----BEGIN PRIVATE KEY-----
+ YOUR_APNS_AUTH_KEY_HERE
+ -----END PRIVATE KEY-----`;
+@@ -235,7 +235,7 @@ async function sendTimerUpdate(activityId, userId) {
+                     
+                     // Send completion update with a 5-minute stale date (completion shouldn't go stale)
+                     const completionStaleDate = Math.floor(Date.now() / 1000) + 300;
+-                    const dismissalDate = Math.floor(Date.now() / 1000) + 6; // Dismiss after 6 seconds
++                    const dismissalDate = Math.floor(Date.now() / 1000) + 300; // Dismiss after 5 minutes
+                     
+                     const payload = {
+                         aps: {
+@@ -250,25 +250,63 @@ async function sendTimerUpdate(activityId, userId) {
+                     const authToken = generateAPNsToken();
+                     if (authToken) {
+                         try {
+-                            const response = await axios.post(
+-                                `${APNS_HOST}/3/device/${pushToken}`,
+-                                JSON.stringify(payload),
+-                                {
+-                                    headers: {
+-                                        'authorization': `bearer ${authToken}`,
+-                                        'apns-topic': 'com.growthtraining.Growth.GrowthTimerWidget.push-type.liveactivity',
+-                                        'apns-push-type': 'liveactivity',
+-                                        'apns-priority': '10',
+-                                        'apns-expiration': '0'
+-                                    }
+-                                }
+-                            );
++                            const payloadString = JSON.stringify(payload);
+                             
+-                            if (response.status === 200) {
+-                                console.log(`Successfully sent completion update for activity: ${activityId} with dismissal at ${new Date(dismissalDate * 1000).toISOString()}`);
+-                            }
++                            await new Promise((resolve, reject) => {
++                                const client = http2.connect(`https://${APNS_HOST}:443`);
++                                
++                                client.on('error', (err) => {
++                                    console.error('HTTP/2 client error:', err);
++                                    reject(err);
++                                });
++
++                                const req = client.request({
++                                    ':method': 'POST',
++                                    ':path': `/3/device/${pushToken}`,
++                                    'authorization': `bearer ${authToken}`,
++                                    'apns-topic': 'com.growthlabs.growthmethod.GrowthTimerWidget.push-type.liveactivity',
++                                    'apns-push-type': 'liveactivity',
++                                    'apns-priority': '10',
++                                    'apns-expiration': '0',
++                                    'content-type': 'application/json',
++                                    'content-length': Buffer.byteLength(payloadString)
++                                });
++
++                                let responseBody = '';
++                                let responseHeaders = {};
++
++                                req.on('response', (headers) => {
++                                    responseHeaders = headers;
++                                });
++
++                                req.on('data', (chunk) => {
++                                    responseBody += chunk;
++                                });
++
++                                req.on('end', () => {
++                                    client.close();
++                                    
++                                    const statusCode = responseHeaders[':status'];
++                                    if (statusCode === 200) {
++                                        console.log(`Successfully sent completion update for activity: ${activityId} with dismissal at ${new Date(dismissalDate * 1000).toISOString()}`);
++                                        resolve({ success: true });
++                                    } else {
++                                        console.error(`APNs error: ${statusCode} - ${responseBody}`);
++                                        reject(new Error(`APNs error: ${statusCode} - ${responseBody}`));
++                                    }
++                                });
++
++                                req.on('error', (error) => {
++                                    console.error('Request error:', error);
++                                    client.close();
++                                    reject(error);
++                                });
++
++                                req.write(payloadString);
++                                req.end();
++                            });
+                         } catch (error) {
+-                            console.error('Error sending completion notification:', error.response?.data || error.message);
++                            console.error('Error sending completion notification:', error.message);
+                         }
+                     }
+                 } else {
+@@ -334,24 +372,62 @@ async function sendDismissalNotification(pushToken, activityId, delaySeconds = 2
+             }
+         };
+         
+-        const response = await axios.post(
+-            `${APNS_HOST}/3/device/${pushToken}`,
+-            JSON.stringify(payload),
+-            {
+-                headers: {
+-                    'authorization': `bearer ${authToken}`,
+-                    'apns-topic': 'com.growthtraining.Growth.GrowthTimerWidget.push-type.liveactivity',
+-                    'apns-push-type': 'liveactivity',
+-                    'apns-priority': '10'
+-                }
+-            }
+-        );
++        const payloadString = JSON.stringify(payload);
+         
+-        if (response.status === 200) {
+-            console.log(`Successfully sent dismissal for activity: ${activityId} (dismissal at ${new Date(dismissalDate * 1000).toISOString()})`);
+-        }
++        await new Promise((resolve, reject) => {
++            const client = http2.connect(`https://${APNS_HOST}:443`);
++            
++            client.on('error', (err) => {
++                console.error('HTTP/2 client error:', err);
++                reject(err);
++            });
++
++            const req = client.request({
++                ':method': 'POST',
++                ':path': `/3/device/${pushToken}`,
++                'authorization': `bearer ${authToken}`,
++                'apns-topic': 'com.growthlabs.growthmethod.GrowthTimerWidget.push-type.liveactivity',
++                'apns-push-type': 'liveactivity',
++                'apns-priority': '10',
++                'content-type': 'application/json',
++                'content-length': Buffer.byteLength(payloadString)
++            });
++
++            let responseBody = '';
++            let responseHeaders = {};
++
++            req.on('response', (headers) => {
++                responseHeaders = headers;
++            });
++
++            req.on('data', (chunk) => {
++                responseBody += chunk;
++            });
++
++            req.on('end', () => {
++                client.close();
++                
++                const statusCode = responseHeaders[':status'];
++                if (statusCode === 200) {
++                    console.log(`Successfully sent dismissal for activity: ${activityId} (dismissal at ${new Date(dismissalDate * 1000).toISOString()})`);
++                    resolve({ success: true });
++                } else {
++                    console.error(`APNs error: ${statusCode} - ${responseBody}`);
++                    reject(new Error(`APNs error: ${statusCode} - ${responseBody}`));
++                }
++            });
++
++            req.on('error', (error) => {
++                console.error('Request error:', error);
++                client.close();
++                reject(error);
++            });
++
++            req.write(payloadString);
++            req.end();
++        });
+     } catch (error) {
+-        console.error('Error sending dismissal notification:', error.response?.data || error.message);
++        console.error('Error sending dismissal notification:', error.message);
+     }
+ }
+ 
+@@ -391,36 +467,64 @@ async function sendPushNotification(pushToken, activityId, contentState) {
+         console.log(`🟠 [Push Notification] Progress: ${contentState.elapsedTimeAtLastUpdate}s / ${contentState.sessionType === 'countdown' ? contentState.elapsedTimeAtLastUpdate + contentState.remainingTimeAtLastUpdate : 'N/A'}`);
+         console.log(`🟠 [Push Notification] Payload:`, JSON.stringify(payload, null, 2));
+         
+-        const response = await axios.post(
+-            `${APNS_HOST}/3/device/${pushToken}`,
+-            JSON.stringify(payload),
+-            {
+-                headers: {
+-                    'authorization': `bearer ${authToken}`,
+-                    'apns-topic': 'com.growthtraining.Growth.GrowthTimerWidget.push-type.liveactivity',
+-                    'apns-push-type': 'liveactivity',
+-                    'apns-priority': '10',
+-                    'apns-expiration': '0'
+-                }
+-            }
+-        );
++        const payloadString = JSON.stringify(payload);
+         
+-        if (response.status === 200) {
+-            console.log(`✅ [Push Notification] Successfully sent push update for activity: ${activityId}`);
+-            console.log(`✅ [Push Notification] Response headers:`, response.headers);
+-        }
++        // Send using HTTP/2
++        await new Promise((resolve, reject) => {
++            const client = http2.connect(`https://${APNS_HOST}:443`);
++            
++            client.on('error', (err) => {
++                console.error('HTTP/2 client error:', err);
++                reject(err);
++            });
++
++            const req = client.request({
++                ':method': 'POST',
++                ':path': `/3/device/${pushToken}`,
++                'authorization': `bearer ${authToken}`,
++                'apns-topic': 'com.growthlabs.growthmethod.GrowthTimerWidget.push-type.liveactivity',
++                'apns-push-type': 'liveactivity',
++                'apns-priority': '10',
++                'apns-expiration': '0',
++                'content-type': 'application/json',
++                'content-length': Buffer.byteLength(payloadString)
++            });
++
++            let responseBody = '';
++            let responseHeaders = {};
++
++            req.on('response', (headers) => {
++                responseHeaders = headers;
++            });
++
++            req.on('data', (chunk) => {
++                responseBody += chunk;
++            });
++
++            req.on('end', () => {
++                client.close();
++                
++                const statusCode = responseHeaders[':status'];
++                if (statusCode === 200) {
++                    console.log(`✅ [Push Notification] Successfully sent push update for activity: ${activityId}`);
++                    resolve({ success: true });
++                } else {
++                    console.error(`❌ [Push Notification] APNs error: ${statusCode} - ${responseBody}`);
++                    reject(new Error(`APNs error: ${statusCode} - ${responseBody}`));
++                }
++            });
++
++            req.on('error', (error) => {
++                console.error('Request error:', error);
++                client.close();
++                reject(error);
++            });
++
++            req.write(payloadString);
++            req.end();
++        });
+     } catch (error) {
+-        console.error('Error sending push notification:', error.response?.data || error.message);
+-        if (error.response) {
+-            console.error('  - Status:', error.response.status);
+-            console.error('  - Headers:', error.response.headers);
+-            console.error('  - Data:', error.response.data);
+-        }
+-        if (error.message && error.message.includes('Parse Error')) {
+-            console.error('  - APNs configuration issue detected. Check APNS_HOST and authentication.');
+-            console.error('  - Current APNS_HOST:', APNS_HOST);
+-            console.error('  - Consider using api.development.push.apple.com for dev environment');
+-        }
++        console.error('Error sending push notification:', error.message);
+         if (error.code === 'ECONNREFUSED' || error.code === 'ETIMEDOUT') {
+             console.error('  - Network connection issue to APNs server');
+         }
+diff --git a/functions/moderation.js b/functions/moderation.js
+index 3cfe9c0..3421adb 100644
+--- a/functions/moderation.js
++++ b/functions/moderation.js
+@@ -1,4 +1,7 @@
+ const functions = require('firebase-functions');
++const { onDocumentCreated, onDocumentWritten } = require('firebase-functions/v2/firestore');
++const { onCall, HttpsError } = require('firebase-functions/v2/https');
++const { onSchedule } = require('firebase-functions/v2/scheduler');
+ const admin = require('firebase-admin');
+ 
+ // Initialize admin if not already initialized
+@@ -15,9 +18,11 @@ const profanityList = [
+ ];
+ 
+ // Auto-moderate new community routines
+-exports.moderateNewRoutine = functions.firestore
+-    .document('routines/{routineId}')
+-    .onCreate(async (snap, context) => {
++exports.moderateNewRoutine = onDocumentCreated(
++    'routines/{routineId}',
++    async (event) => {
++        const snap = event.data;
++        const context = event;
+         const routine = snap.data();
+         
+         // Only moderate community-shared routines
+@@ -77,12 +82,15 @@ exports.moderateNewRoutine = functions.firestore
+         }
+         
+         return null;
+-    });
++    }
++);
+ 
+ // Process reports
+-exports.processReport = functions.firestore
+-    .document('reports/{reportId}')
+-    .onCreate(async (snap, context) => {
++exports.processReport = onDocumentCreated(
++    'reports/{reportId}',
++    async (event) => {
++        const snap = event.data;
++        const context = event;
+         const report = snap.data();
+         console.log(`Processing new report: ${context.params.reportId}`);
+         
+@@ -150,22 +158,28 @@ exports.processReport = functions.firestore
+         }
+         
+         return null;
+-    });
++    }
++);
+ 
+ // Admin function to ban user
+-exports.banUser = functions.https.onCall(async (data, context) => {
+-    // Verify admin privileges
+-    if (!context.auth || !context.auth.token.admin) {
+-        throw new functions.https.HttpsError(
+-            'permission-denied',
+-            'Must be an admin to ban users'
+-        );
+-    }
++exports.banUser = onCall(
++    { region: 'us-central1' },
++    async (request) => {
++        const data = request.data;
++        const context = request;
++        
++        // Verify admin privileges
++        if (!context.auth || !context.auth.token.admin) {
++            throw new HttpsError(
++                'permission-denied',
++                'Must be an admin to ban users'
++            );
++        }
+     
+     const { userId, reason, permanent = false } = data;
+     
+     if (!userId || !reason) {
+-        throw new functions.https.HttpsError(
++        throw new HttpsError(
+             'invalid-argument',
+             'userId and reason are required'
+         );
+@@ -211,7 +225,7 @@ exports.banUser = functions.https.onCall(async (data, context) => {
+         
+     } catch (error) {
+         console.error('Error banning user:', error);
+-        throw new functions.https.HttpsError(
++        throw new HttpsError(
+             'internal',
+             'Failed to ban user'
+         );
+@@ -219,19 +233,24 @@ exports.banUser = functions.https.onCall(async (data, context) => {
+ });
+ 
+ // Admin function to moderate content
+-exports.moderateContent = functions.https.onCall(async (data, context) => {
+-    // Verify admin or moderator privileges
+-    if (!context.auth || (!context.auth.token.admin && !context.auth.token.moderator)) {
+-        throw new functions.https.HttpsError(
+-            'permission-denied',
+-            'Must be an admin or moderator'
+-        );
+-    }
++exports.moderateContent = onCall(
++    { region: 'us-central1' },
++    async (request) => {
++        const data = request.data;
++        const context = request;
++        
++        // Verify admin or moderator privileges
++        if (!context.auth || (!context.auth.token.admin && !context.auth.token.moderator)) {
++            throw new HttpsError(
++                'permission-denied',
++                'Must be an admin or moderator'
++            );
++        }
+     
+     const { contentId, contentType, action, reason } = data;
+     
+     if (!contentId || !contentType || !action) {
+-        throw new functions.https.HttpsError(
++        throw new HttpsError(
+             'invalid-argument',
+             'contentId, contentType, and action are required'
+         );
+@@ -272,14 +291,14 @@ exports.moderateContent = functions.https.onCall(async (data, context) => {
+             return { success: true };
+         }
+         
+-        throw new functions.https.HttpsError(
++        throw new HttpsError(
+             'invalid-argument',
+             `Unsupported content type: ${contentType}`
+         );
+         
+     } catch (error) {
+         console.error('Error moderating content:', error);
+-        throw new functions.https.HttpsError(
++        throw new HttpsError(
+             'internal',
+             'Failed to moderate content'
+         );
+@@ -287,8 +306,13 @@ exports.moderateContent = functions.https.onCall(async (data, context) => {
+ });
+ 
+ // Scheduled function to clean up old reports
+-exports.cleanupOldReports = functions.pubsub.schedule('every 7 days').onRun(async (context) => {
+-    console.log('Running weekly cleanup of old reports');
++exports.cleanupOldReports = onSchedule(
++    { 
++        schedule: 'every 7 days',
++        region: 'us-central1'
++    },
++    async (event) => {
++        console.log('Running weekly cleanup of old reports');
+     
+     const thirtyDaysAgo = new Date();
+     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+@@ -332,13 +356,18 @@ exports.cleanupOldReports = functions.pubsub.schedule('every 7 days').onRun(asyn
+ });
+ 
+ // Function to check if user is banned
+-exports.checkUserBanned = functions.https.onCall(async (data, context) => {
+-    if (!context.auth) {
+-        throw new functions.https.HttpsError(
+-            'unauthenticated',
+-            'Must be authenticated'
+-        );
+-    }
++exports.checkUserBanned = onCall(
++    { region: 'us-central1' },
++    async (request) => {
++        const data = request.data;
++        const context = request;
++        
++        if (!context.auth) {
++            throw new HttpsError(
++                'unauthenticated',
++                'Must be authenticated'
++            );
++        }
+     
+     const userId = data.userId || context.auth.uid;
+     
+@@ -371,9 +400,10 @@ exports.checkUserBanned = functions.https.onCall(async (data, context) => {
+         
+     } catch (error) {
+         console.error('Error checking ban status:', error);
+-        throw new functions.https.HttpsError(
++        throw new HttpsError(
+             'internal',
+             'Failed to check ban status'
+         );
+     }
+-});
+\ No newline at end of file
++    }
++);
+\ No newline at end of file
+diff --git a/functions/package.json b/functions/package.json
+index 920d1ba..ba4bae5 100644
+--- a/functions/package.json
++++ b/functions/package.json
+@@ -17,6 +17,7 @@
+     "@google-cloud/vertexai": "^0.5.0",
+     "axios": "^1.6.0",
+     "cors": "^2.8.5",
++    "dotenv": "^17.2.0",
+     "firebase-admin": "^11.11.1",
+     "firebase-functions": "^6.3.2",
+     "jsonwebtoken": "^9.0.2"

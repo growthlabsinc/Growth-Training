@@ -1,0 +1,264 @@
+//
+//  SessionCompletionPromptView.swift
+//  Growth
+//
+//  Created by Developer on 5/30/25.
+//
+
+import SwiftUI
+
+struct SessionCompletionPromptView: View {
+    // MARK: - Properties
+    let sessionProgress: SessionProgress
+    let onLog: () -> Void
+    let onDismiss: () -> Void
+    let onPartialLog: (() -> Void)?
+    
+    @Environment(\.dismiss) private var dismiss
+    @State private var showGainsInput = false
+    
+    // MARK: - Computed Properties
+    private var primaryButtonTitle: String {
+        switch sessionProgress.sessionType {
+        case .single, .quickPractice, .freestyle:
+            return "Log Progress"
+        case .multiMethod:
+            return sessionProgress.completedMethods == sessionProgress.totalMethods ? "Log All Methods" : "Log Completed Methods"
+        case .restDay:
+            return "Done"
+        }
+    }
+    
+    private var showPartialOption: Bool {
+        sessionProgress.isPartiallyComplete
+    }
+    
+    private var iconName: String {
+        switch sessionProgress.sessionType {
+        case .single:
+            return "checkmark.circle.fill"
+        case .multiMethod:
+            return sessionProgress.completedMethods == sessionProgress.totalMethods ? "star.fill" : "chart.pie.fill"
+        case .restDay:
+            return "heart.fill"
+        case .quickPractice:
+            return "timer"
+        case .freestyle:
+            return "flame.fill"
+        }
+    }
+    
+    private var iconColor: Color {
+        switch sessionProgress.sessionType {
+        case .single, .quickPractice, .freestyle:
+            return AppTheme.Colors.success
+        case .multiMethod:
+            return sessionProgress.completedMethods == sessionProgress.totalMethods ? Color.orange : AppTheme.Colors.primary
+        case .restDay:
+            return AppTheme.Colors.accent
+        }
+    }
+    
+    // MARK: - Body
+    var body: some View {
+        VStack(spacing: AppTheme.Layout.spacingL) {
+            // Header Icon
+            Image(systemName: iconName)
+                .font(.system(size: 60))
+                .foregroundColor(iconColor)
+                .padding(.top, AppTheme.Layout.spacingXL)
+            
+            // Summary Text
+            Text(sessionProgress.generateSummary())
+                .font(AppTheme.Typography.gravityBoldFont(18))
+                .foregroundColor(AppTheme.Colors.text)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, AppTheme.Layout.spacingL)
+            
+            // Detailed Summary (if applicable)
+            if sessionProgress.sessionType == .multiMethod && !sessionProgress.methodDetails.isEmpty {
+                methodDetailsList
+                    .padding(.horizontal, AppTheme.Layout.spacingL)
+            }
+            
+            // Time Summary
+            if sessionProgress.totalElapsedTime > 0 && sessionProgress.sessionType != .restDay {
+                timeSummary
+            }
+            
+            Spacer()
+            
+            // Gains Tracking Card (for non-rest day sessions)
+            if sessionProgress.sessionType != .restDay && !showGainsInput {
+                Button(action: {
+                    showGainsInput = true
+                }) {
+                    HStack {
+                        Image(systemName: "ruler")
+                            .font(.system(size: 20))
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Track Your Measurements")
+                                .font(AppTheme.Typography.gravitySemibold(14))
+                            Text("Record measurements after your session")
+                                .font(AppTheme.Typography.gravityBook(11))
+                                .foregroundColor(Color("TextSecondaryColor"))
+                        }
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 14))
+                    }
+                    .padding()
+                    .background(Color("MintGreen").opacity(0.1))
+                    .cornerRadius(12)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color("MintGreen"), lineWidth: 1)
+                    )
+                }
+                .padding(.horizontal, AppTheme.Layout.spacingL)
+            }
+            
+            // Show gains input card if requested
+            if showGainsInput {
+                GainsInputCard(sessionId: sessionProgress.sessionId) { _ in
+                    showGainsInput = false
+                }
+                .padding(.horizontal, AppTheme.Layout.spacingL)
+            }
+            
+            // Action Buttons
+            VStack(spacing: AppTheme.Layout.spacingM) {
+                // Primary Action
+                Button(action: {
+                    onLog()
+                    dismiss()
+                }) {
+                    Text(primaryButtonTitle)
+                        .font(AppTheme.Typography.gravityBoldFont(16))
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, AppTheme.Layout.spacingM)
+                        .background(AppTheme.Colors.primary)
+                        .cornerRadius(AppTheme.Layout.cornerRadiusL)
+                }
+                
+                // Partial Log Option
+                if showPartialOption, let onPartialLog = onPartialLog {
+                    Button(action: {
+                        onPartialLog()
+                        dismiss()
+                    }) {
+                        Text("Log Partial Progress")
+                            .font(AppTheme.Typography.gravityBook(16))
+                            .foregroundColor(AppTheme.Colors.primary)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, AppTheme.Layout.spacingM)
+                            .background(AppTheme.Colors.primary.opacity(0.1))
+                            .cornerRadius(AppTheme.Layout.cornerRadiusL)
+                    }
+                }
+                
+                // Dismiss Option
+                if sessionProgress.sessionType != .restDay {
+                    Button(action: {
+                        onDismiss()
+                        dismiss()
+                    }) {
+                        Text("Exit Without Logging")
+                            .font(AppTheme.Typography.gravityBook(14))
+                            .foregroundColor(AppTheme.Colors.textSecondary)
+                    }
+                }
+            }
+            .padding(.horizontal, AppTheme.Layout.spacingL)
+            .padding(.bottom, AppTheme.Layout.spacingXL)
+        }
+        .background(AppTheme.Colors.background)
+    }
+    
+    // MARK: - Subviews
+    private var methodDetailsList: some View {
+        VStack(alignment: .leading, spacing: AppTheme.Layout.spacingS) {
+            ForEach(sessionProgress.methodDetails, id: \.methodId) { method in
+                HStack {
+                    Image(systemName: method.completed ? "checkmark.circle.fill" : (method.started ? "circle" : "circle"))
+                        .foregroundColor(method.completed ? AppTheme.Colors.success : AppTheme.Colors.textSecondary)
+                        .font(.system(size: 16))
+                    
+                    Text(method.methodName)
+                        .font(AppTheme.Typography.gravityBook(14))
+                        .foregroundColor(method.started ? AppTheme.Colors.text : AppTheme.Colors.textSecondary)
+                    
+                    Spacer()
+                    
+                    if method.duration > 0 {
+                        Text("\(Int(method.duration / 60)) min")
+                            .font(AppTheme.Typography.gravityBook(12))
+                            .foregroundColor(AppTheme.Colors.textSecondary)
+                    }
+                }
+            }
+        }
+        .padding(AppTheme.Layout.spacingM)
+        .background(Color.surfaceWhite)
+        .cornerRadius(AppTheme.Layout.cornerRadiusM)
+    }
+    
+    private var timeSummary: some View {
+        HStack {
+            Image(systemName: "clock")
+                .foregroundColor(AppTheme.Colors.textSecondary)
+            
+            Text("Total time: \(Int(sessionProgress.totalElapsedTime / 60)) minutes")
+                .font(AppTheme.Typography.gravityBook(14))
+                .foregroundColor(AppTheme.Colors.textSecondary)
+        }
+    }
+}
+
+// MARK: - Preview
+#if DEBUG
+struct SessionCompletionPromptView_Previews: PreviewProvider {
+    static var previews: some View {
+        Group {
+            // Single method completion
+            SessionCompletionPromptView(
+                sessionProgress: SessionProgress(
+                    sessionType: .single,
+                    sessionId: "test-1",
+                    methodId: "am-1-0",
+                    methodName: "Standard Jelqing",
+                    startTime: Date().addingTimeInterval(-600),
+                    endTime: Date()
+                ),
+                onLog: {},
+                onDismiss: {},
+                onPartialLog: nil
+            )
+            .previewDisplayName("Single Method")
+            
+            // Multi-method partial completion
+            SessionCompletionPromptView(
+                sessionProgress: SessionProgress(
+                    sessionType: .multiMethod,
+                    sessionId: "test-2",
+                    methodName: "Multi-Method Session",
+                    startTime: Date().addingTimeInterval(-1800),
+                    totalMethods: 3,
+                    completedMethods: 2,
+                    attemptedMethods: 3,
+                    methodDetails: [
+                        .init(methodId: "1", methodName: "Method 1", stage: "Stage 1", started: true, completed: true, duration: 600),
+                        .init(methodId: "2", methodName: "Method 2", stage: "Stage 1", started: true, completed: true, duration: 600),
+                        .init(methodId: "3", methodName: "Method 3", stage: "Stage 1", started: true, completed: false, duration: 300)
+                    ]
+                ),
+                onLog: {},
+                onDismiss: {},
+                onPartialLog: {}
+            )
+            .previewDisplayName("Multi-Method Partial")
+        }
+    }
+}
+#endif

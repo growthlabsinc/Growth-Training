@@ -1,0 +1,175 @@
+rules_version = '2';
+service cloud.firestore {
+    match /databases/{database}/documents {
+      // User data - users can only read/write their own data
+      match /users/{userId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+        
+        // Allow the user's nested stats documents (e.g., streak data)
+        match /stats/{statsDoc} {
+          allow read, write: if request.auth != null && request.auth.uid == userId;
+        }
+      }
+      
+      // Growth methods (public read)
+      match /growthMethods/{methodId} {
+        allow read: if request.auth != null;
+        allow write: if false;
+      }
+      
+      // Routines (public read)
+      match /routines/{routineId} {
+        allow read: if request.auth != null;
+        allow write: if false;
+      }
+      
+      // Session logs - users can only access their own logs
+      match /sessionLogs/{logId} {
+        // Allow read if authenticated and the document belongs to the user
+        // Note: For queries to work, the client must include a where clause filtering by userId
+        allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+        allow write: if request.auth != null && resource.data.userId == request.auth.uid;
+        allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+      }
+      
+      // Goals - users can only access their own goal documents
+      match /goals/{goalId} {
+        allow read, write: if request.auth != null && (
+          (request.method == 'create' && request.resource.data.userId == request.auth.uid) ||
+          (request.method != 'create' && resource.data.userId == request.auth.uid)
+        );
+      }
+      
+      // Alternative for user-specific session logs if stored as subcollection
+      match /users/{userId}/sessionLogs/{logId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+      
+      // Educational resources - read-only for authenticated users
+      match /educationalResources/{resourceId} {
+        allow read: if request.auth != null;
+        allow write: if false;
+      }
+
+      // Allow the connectivity check
+      match /connection_test/{docId} {
+        allow read, write: if request.auth != null;
+      }
+      
+      // Live Activity push tokens - users can only access their own tokens
+      match /liveActivityTokens/{activityId} {
+        allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+        allow write: if request.auth != null && (
+          (request.method == 'create' && request.resource.data.userId == request.auth.uid) ||
+          (request.method == 'update' && resource.data.userId == request.auth.uid) ||
+          (request.method == 'delete' && resource.data.userId == request.auth.uid)
+        );
+      }
+      
+      // Active timers - users can only access their own timer state
+      match /activeTimers/{userId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+      
+      // Routine progress - users can only access their own progress
+      match /routineProgress/{progressId} {
+        allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+        allow write: if request.auth != null && (
+          (request.method == 'create' && request.resource.data.userId == request.auth.uid) ||
+          (request.method != 'create' && resource.data.userId == request.auth.uid)
+        );
+      }
+      
+      // Device tokens - users can only access their own tokens
+      match /deviceTokens/{tokenId} {
+        allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+        allow write: if request.auth != null && (
+          (request.method == 'create' && request.resource.data.userId == request.auth.uid) ||
+          (request.method != 'create' && resource.data.userId == request.auth.uid)
+        );
+      }
+      
+      // Gains entries - users can only access their own entries
+      match /gains_entries/{entryId} {
+        allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+        allow write: if request.auth != null && (
+          (request.method == 'create' && request.resource.data.userId == request.auth.uid) ||
+          (request.method != 'create' && resource.data.userId == request.auth.uid)
+        );
+      }
+      
+      // Custom routines - users can only access their own custom routines
+      match /customRoutines/{routineId} {
+        allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+        allow write: if request.auth != null && (
+          (request.method == 'create' && request.resource.data.userId == request.auth.uid) ||
+          (request.method != 'create' && resource.data.userId == request.auth.uid)
+        );
+      }
+      
+      // User preferences - users can only access their own preferences
+      match /userPreferences/{userId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+      
+      // Activity logs - users can only access their own logs
+      match /activityLogs/{logId} {
+        allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+        allow write: if request.auth != null && (
+          (request.method == 'create' && request.resource.data.userId == request.auth.uid) ||
+          (request.method != 'create' && resource.data.userId == request.auth.uid)
+        );
+      }
+      
+      // Method progress - users can only access their own progress
+      match /methodProgress/{progressId} {
+        allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+        allow write: if request.auth != null && (
+          (request.method == 'create' && request.resource.data.userId == request.auth.uid) ||
+          (request.method != 'create' && resource.data.userId == request.auth.uid)
+        );
+      }
+      
+      // Subscriptions - users can only access their own subscription data
+      match /subscriptions/{userId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+      
+      // Achievements - users can only access their own achievements
+      match /achievements/{achievementId} {
+        allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+        allow write: if request.auth != null && (
+          (request.method == 'create' && request.resource.data.userId == request.auth.uid) ||
+          (request.method != 'create' && resource.data.userId == request.auth.uid)
+        );
+      }
+      
+      // Reminder settings - users can only access their own settings
+      match /reminderSettings/{userId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+      
+      // AI chat sessions - users can only access their own chat sessions
+      match /aiChatSessions/{sessionId} {
+        allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+        allow write: if request.auth != null && (
+          (request.method == 'create' && request.resource.data.userId == request.auth.uid) ||
+          (request.method != 'create' && resource.data.userId == request.auth.uid)
+        );
+      }
+      
+      // Progress snapshots - users can only access their own snapshots
+      match /progressSnapshots/{snapshotId} {
+        allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+        allow write: if request.auth != null && (
+          (request.method == 'create' && request.resource.data.userId == request.auth.uid) ||
+          (request.method != 'create' && resource.data.userId == request.auth.uid)
+        );
+      }
+
+      // Default deny all
+      match /{document=**} {
+        allow read, write: if false;
+      }
+    }
+} 

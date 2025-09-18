@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload Educational Resources</title>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js"></script>
+</head>
+<body>
+    <h1>Educational Resources Upload</h1>
+    <button id="uploadBtn">Upload All Resources</button>
+    <div id="status"></div>
+    
+    <script>
+        import { initializeApp } from 'firebase/app';
+        import { getFirestore, collection, doc, setDoc, Timestamp } from 'firebase/firestore';
+
+        const firebaseConfig = {
+            projectId: 'growth-70a85'
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const resources = [
+            {
+                "resourceId": "beginners-guide-angion-method-growth-potential",
+                "title": "Beginner's Guide to The Angion Method: Unlocking Your Growth Potential",
+                "content_text": "Welcome to the world of The Angion Method, a revolutionary approach designed to enhance male vascular health and promote natural growth. Unlike traditional methods, Angion focuses on optimizing your body's inherent capacity for development by understanding how your blood vessels work.\n\nAt its core, The Angion Method operates on a profound insight: **the male phallus is fundamentally designed to grow from the very stimuli it receives during natural sexual activity**. This isn't just about temporary engorgement; it's about stimulating long-term, physiological changes.\n\n## Understanding the Engine: Your Vascular System\n\nA crucial concept in Angion is that **your heart isn't the primary pump of your vascular system; instead, the vascular system itself acts as the pump**, with the heart functioning more as a timing flow regulator and force multiplier. The key to stimulating growth lies in manipulating blood flow within this self-pumping system.\n\n### How it works:\n\n**Shear Stress and Nitric Oxide (NO)**: Every blood vessel is lined with a special sensing mechanism called the **glycocalyx**. This \"shag carpet\" reacts to the rate of blood flow, a force known as **shear stress**. When blood flow is fast (high shear stress), the glycocalyx signals endothelial cells (the cells lining your blood vessels) to produce and release more **nitric oxide (NO)**. NO is vital because it causes the smooth muscles in your blood vessel walls to **relax and dilate**, allowing more blood to flow through.\n\n**Vascular Genesis and Growth**: When blood vessels are consistently exposed to elevated shear stress and natural growth factors in your bloodstream, a remarkable process called **endothelial cell migration** occurs. Endothelial cells literally move in the direction of flow, multiply, and begin to **\"burrow\" new holes into blood vessel walls**, radiating outwards. This leads to **vascular genesis** (the formation of new blood vessels) and the expansion of **capillary beds**, making arteries into \"great bushy masses\". This is the literal mechanism of growth.\n\n**Permanent Changes**: Chronically elevated shear stress can even lead to a **permanent increase in the inner diameter and overall structure of your blood vessels**.\n\n## Why The Angion Method is Unique\n\nUnlike other techniques that often only indirectly stimulate blood vessel growth, The Angion Method is designed to **selectively and directly stimulate arteries** in a way that encourages them to grow. It leverages these natural physiological processes to promote real, lasting change.\n\n### Benefits you can expect include:\n\n- **Beating Erectile Dysfunction (ED)**: By improving overall blood flow and vascular health.\n- **Gaining Significant Size**: Through genuine tissue expansion fueled by increased vascularity.\n- **Body Sculpting and Shaping**: Allowing you to consciously influence the development of your vascular system.\n\nThe state of your sexual organs is a powerful indicator of your overall cardiovascular health. If you identify as a \"grower\" (meaning you have less developed arteries and poorer vascular health), The Angion Method can help you transition to a \"shower\" state with better blood flow and a healthier resting size.",
+                "category": "basics",
+                "visual_placeholder_url": "https://example.com/images/beginners_angion_guide.jpg"
+            }
+        ];
+
+        document.getElementById('uploadBtn').addEventListener('click', async () => {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = 'Starting upload...';
+            
+            try {
+                const resource = resources[0];
+                await setDoc(doc(db, 'educationalResources', resource.resourceId), {
+                    ...resource,
+                    published: true,
+                    createdAt: Timestamp.now(),
+                    updatedAt: Timestamp.now(),
+                    publicationDate: Timestamp.now()
+                });
+                
+                statusDiv.innerHTML = 'Successfully uploaded: ' + resource.title;
+            } catch (error) {
+                statusDiv.innerHTML = 'Error: ' + error.message;
+            }
+        });
+    </script>
+</body>
+</html>

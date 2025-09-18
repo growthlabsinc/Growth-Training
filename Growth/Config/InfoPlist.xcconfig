@@ -1,0 +1,10 @@
+// Custom build settings to fix Info.plist duplication issue
+INFOPLIST_FILE = Growth/Resources/Plist/App/Info.plist
+INFOPLIST_PREPROCESS = YES
+INFOPLIST_PREFIX_HEADER = 
+COPYFILE_DISABLE = YES
+// Skip copying Info.plist in Copy Resource phase
+COPY_PHASE_STRIP = NO
+// Process but don't copy
+INFOPLIST_OTHER_PREPROCESSOR_FLAGS = -traditional
+// Use only processed version, not copied version

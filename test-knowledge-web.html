@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Coach Knowledge Base Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            max-width: 800px;
+        }
+        .result {
+            background: #f0f0f0;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+        }
+        #status {
+            margin: 20px 0;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>AI Coach Knowledge Base Test</h1>
+    
+    <div id="loginForm">
+        <h3>Login with your Firebase account:</h3>
+        <input type="email" id="email" placeholder="Email" style="margin: 5px; padding: 5px;">
+        <input type="password" id="password" placeholder="Password" style="margin: 5px; padding: 5px;">
+        <button onclick="login()">Login</button>
+        <button onclick="loginAnonymously()">Login Anonymously</button>
+    </div>
+    
+    <div id="controls" style="display: none;">
+        <button onclick="testCollection()">Test Collection Access</button>
+        <button onclick="searchForAM1()">Search for AM1</button>
+        <button onclick="searchForAngion()">Search for Angion</button>
+        <button onclick="logout()">Logout</button>
+    </div>
+    
+    <div id="status"></div>
+    <div id="results"></div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js';
+        import { getAuth, signInAnonymously, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js';
+        import { getFirestore, collection, getDocs, query, where, limit } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js';
+
+        const firebaseConfig = {
+            projectId: "growth-70a85",
+            appId: "1:645068839446:web:a15bebc58419dbd1fc3337",
+            storageBucket: "growth-70a85.firebasestorage.app",
+            apiKey: "AIzaSyBbfnUW1x-lvgEMlxIeEc0Jp5J3SMuuG-Q",
+            authDomain: "growth-70a85.firebaseapp.com",
+            messagingSenderId: "645068839446",
+            measurementId: "G-B32YEXMST6"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        
+        const statusDiv = document.getElementById('status');
+        const resultsDiv = document.getElementById('results');
+        const loginForm = document.getElementById('loginForm');
+        const controls = document.getElementById('controls');
+        
+        // Check auth state
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                statusDiv.textContent = `✅ Authenticated as: ${user.email || 'Anonymous User'}`;
+                loginForm.style.display = 'none';
+                controls.style.display = 'block';
+            } else {
+                statusDiv.textContent = '⚠️ Not authenticated';
+                loginForm.style.display = 'block';
+                controls.style.display = 'none';
+                resultsDiv.innerHTML = '';
+            }
+        });
+        
+        window.login = async function() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+            } catch (error) {
+                statusDiv.textContent = '❌ Login failed: ' + error.message;
+            }
+        };
+        
+        window.loginAnonymously = async function() {
+            try {
+                await signInAnonymously(auth);
+            } catch (error) {
+                statusDiv.textContent = '❌ Anonymous login failed: ' + error.message;
+            }
+        };
+        
+        window.logout = async function() {
+            try {
+                await signOut(auth);
+            } catch (error) {
+                statusDiv.textContent = '❌ Logout failed: ' + error.message;
+            }
+        };
+        
+        window.testCollection = async function() {
+            resultsDiv.innerHTML = '';
+            try {
+                const knowledgeRef = collection(db, 'ai_coach_knowledge');
+                const snapshot = await getDocs(knowledgeRef);
+                
+                resultsDiv.innerHTML = `<div class="result">
+                    <h3>Collection Test</h3>
+                    <p>Found ${snapshot.size} documents in ai_coach_knowledge</p>
+                </div>`;
+                
+                snapshot.docs.slice(0, 3).forEach(doc => {
+                    const data = doc.data();
+                    resultsDiv.innerHTML += `<div class="result">
+                        <strong>${data.title}</strong><br>
+                        Type: ${data.type}<br>
+                        Keywords: ${data.keywords ? data.keywords.slice(0, 5).join(', ') : 'none'}
+                    </div>`;
+                });
+            } catch (error) {
+                console.error('Full error:', error);
+                resultsDiv.innerHTML = `<div class="result" style="background: #ffcccc;">
+                    Error: ${error.message}<br>
+                    Code: ${error.code}<br>
+                    Check console for details
+                </div>`;
+            }
+        };
+        
+        window.searchForAM1 = async function() {
+            resultsDiv.innerHTML = '';
+            try {
+                const knowledgeRef = collection(db, 'ai_coach_knowledge');
+                const terms = ['am1', 'angion method 1'];
+                const q = query(knowledgeRef, where('keywords', 'array-contains-any', terms), limit(5));
+                const snapshot = await getDocs(q);
+                
+                resultsDiv.innerHTML = `<div class="result">
+                    <h3>AM1 Search Results</h3>
+                    <p>Found ${snapshot.size} documents matching AM1</p>
+                </div>`;
+                
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    resultsDiv.innerHTML += `<div class="result">
+                        <strong>${data.title}</strong><br>
+                        Content preview: ${data.content ? data.content.substring(0, 200) + '...' : 'No content'}
+                    </div>`;
+                });
+            } catch (error) {
+                console.error('Full error:', error);
+                resultsDiv.innerHTML = `<div class="result" style="background: #ffcccc;">
+                    Error: ${error.message}<br>
+                    Code: ${error.code}<br>
+                    Check console for details
+                </div>`;
+            }
+        };
+        
+        window.searchForAngion = async function() {
+            resultsDiv.innerHTML = '';
+            try {
+                const knowledgeRef = collection(db, 'ai_coach_knowledge');
+                const terms = ['angion', 'method'];
+                const q = query(knowledgeRef, where('keywords', 'array-contains-any', terms), limit(5));
+                const snapshot = await getDocs(q);
+                
+                resultsDiv.innerHTML = `<div class="result">
+                    <h3>Angion Search Results</h3>
+                    <p>Found ${snapshot.size} documents matching Angion</p>
+                </div>`;
+                
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    resultsDiv.innerHTML += `<div class="result">
+                        <strong>${data.title}</strong><br>
+                        Keywords: ${data.keywords ? data.keywords.slice(0, 10).join(', ') : 'none'}
+                    </div>`;
+                });
+            } catch (error) {
+                console.error('Full error:', error);
+                resultsDiv.innerHTML = `<div class="result" style="background: #ffcccc;">
+                    Error: ${error.message}<br>
+                    Code: ${error.code}<br>
+                    Check console for details
+                </div>`;
+            }
+        };
+    </script>
+</body>
+</html>

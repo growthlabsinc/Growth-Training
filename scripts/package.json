@@ -1,0 +1,28 @@
+{
+  "name": "growth-app-scripts",
+  "version": "1.0.0",
+  "description": "Utility scripts for the Growth app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "setup-vertex": "node vertex-ai-search-setup.js",
+    "ingest-data": "node vertex-ai-search-ingest.js",
+    "test-search": "node vertex-ai-search-test.js",
+    "analyze-images": "node analyze-placeholder-images.mjs",
+    "replace-images": "node replace-placeholder-images.mjs",
+    "optimize-images": "node optimize-images-for-ios.mjs",
+    "download-background": "node background-image-downloader.mjs",
+    "review-images": "node review-and-apply-images.mjs",
+    "generate-resolutions": "node generate-ios-resolutions.mjs"
+  },
+  "dependencies": {
+    "@google-cloud/discoveryengine": "^1.0.0",
+    "dotenv": "^16.0.0",
+    "firebase": "^11.9.0",
+    "firebase-admin": "^11.11.1",
+    "node-fetch": "^2.6.7",
+    "unsplash-js": "^7.0.19",
+    "uuid": "^9.0.0",
+    "yargs": "^17.7.2"
+  }
+}

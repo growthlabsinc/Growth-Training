@@ -1,0 +1,35 @@
+//
+//  firebase-dependencies.xcconfig
+//  Growth
+//
+//  Created on 5/8/25.
+//
+
+// Configuration settings file for specifying Firebase dependencies
+// Include this file in your Xcode project build settings to configure Firebase SDK dependencies
+
+// Firebase SDK dependencies using Swift Package Manager
+// The package URL is: https://github.com/firebase/firebase-ios-sdk.git
+
+// Required Firebase products:
+// - FirebaseAuth
+// - FirebaseFirestore
+// - FirebaseFunctions
+// - FirebaseAnalytics
+// - FirebaseCrashlytics
+// - FirebaseRemoteConfig
+
+// Minimum iOS target version
+IPHONEOS_DEPLOYMENT_TARGET = 16.0
+
+// Swift version
+SWIFT_VERSION = 5.0
+
+// Firebase-related build settings
+OTHER_LDFLAGS = $(inherited) -ObjC
+
+// Enable bitcode (set to NO for Firebase Crashlytics)
+ENABLE_BITCODE = NO
+
+// Debug Information Format for Crashlytics
+DEBUG_INFORMATION_FORMAT = dwarf-with-dsym 

@@ -1,0 +1,18 @@
+FIREBASE FUNCTION DEPLOYMENT COMMAND
+====================================
+
+Run this command in your terminal:
+
+cd /Users/tradeflowj/Desktop/Dev/growth-fresh && firebase deploy --only functions:manageLiveActivityUpdates
+
+This will deploy the updated manageLiveActivityUpdates function with the timestamp validation fix.
+
+What was fixed:
+- Changed timestamp upper limit from 2147483647 (year 2038) to 4102444800 (year 2100)
+- This prevents valid future timestamps from being rejected
+
+After deployment:
+1. Clean build in Xcode (Cmd+Shift+K)
+2. Build and run on device
+3. Test a 1-minute timer - should show 0:01:00 not 1:00:00
+4. Test pause button - should work without dismissing

@@ -1,0 +1,82 @@
+--- a/Growth/Features/Timer/Services/LiveActivityManager.swift
++++ b/Growth/Features/Timer/Services/LiveActivityManager.swift
+@@ -23,6 +23,8 @@ class LiveActivityManager: ObservableObject {
+     
+     @Published private(set) var currentActivity: Activity<TimerActivityAttributes>?
+     
++    private var periodicUpdateTimer: Timer?
++    
+     private init() {}
+     
+     func startTimerActivity(
+@@ -122,6 +124,9 @@ class LiveActivityManager: ObservableObject {
+                 // Start monitoring the activity
+                 LiveActivityMonitor.shared.startMonitoring(activity: activity)
+                 
++                // Start periodic updates to prevent "OFFLINE" indicator
++                startPeriodicUpdates()
++                
+                 // Start server-side push updates (no local updates)
+                 LiveActivityPushService.shared.startPushUpdates(for: activity)
+                 
+@@ -320,6 +325,39 @@ class LiveActivityManager: ObservableObject {
+         }
+     }
+     
++    // MARK: - Periodic Updates to Prevent Stale Data
++    
++    private func startPeriodicUpdates() {
++        periodicUpdateTimer?.invalidate()
++        
++        print("🔄 LiveActivityManager: Starting periodic updates every 30 seconds")
++        
++        // Update every 30 seconds to prevent isDataStale (60s threshold)
++        periodicUpdateTimer = Timer.scheduledTimer(withTimeInterval: 30.0, repeats: true) { [weak self] _ in
++            guard let self = self,
++                  let activity = self.currentActivity,
++                  activity.activityState == .active,
++                  !activity.content.state.isPaused else {
++                return
++            }
++            
++            print("🔄 LiveActivityManager: Sending periodic update to prevent stale data")
++            
++            // Just update the activity with current state to refresh lastKnownGoodUpdate
++            self.updateActivity(isPaused: false)
++        }
++        
++        // Run timer in common modes to ensure it fires
++        RunLoop.current.add(periodicUpdateTimer!, forMode: .common)
++    }
++    
++    private func stopPeriodicUpdates() {
++        print("🛑 LiveActivityManager: Stopping periodic updates")
++        periodicUpdateTimer?.invalidate()
++        periodicUpdateTimer = nil
++    }
++    
++    // MARK: - End Activity
++    
+     func endCurrentActivity(immediately: Bool = false) async {
+         guard let activity = currentActivity else { return }
+         
+@@ -329,6 +367,9 @@ class LiveActivityManager: ObservableObject {
+         // Stop monitoring
+         LiveActivityMonitor.shared.stopMonitoring(activityId: activity.id)
+         
++        // Stop periodic updates
++        stopPeriodicUpdates()
++        
+         // Stop push updates
+         LiveActivityPushService.shared.stopPushUpdates()
+         
+@@ -407,6 +448,9 @@ class LiveActivityManager: ObservableObject {
+         // Stop monitoring
+         LiveActivityMonitor.shared.stopMonitoring(activityId: activity.id)
+         
++        // Stop periodic updates
++        stopPeriodicUpdates()
++        
+         // Stop push updates
+         LiveActivityPushService.shared.stopPushUpdates()
+         
