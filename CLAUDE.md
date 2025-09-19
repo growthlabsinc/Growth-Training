@@ -6,6 +6,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a **native iOS Swift/SwiftUI application** with comprehensive Firebase backend integration. The app focuses on timer functionality with sophisticated **Live Activities** and **Dynamic Island** support. Built with **iOS 16.0+ minimum target** using **Swift 5.10+**.
 
+### CRITICAL: Project Status
+**This is a 100% functional brownfield project.** All features are fully implemented and working. When working in this codebase:
+- **DO NOT** change any UI functionality or behavior
+- **DO NOT** modify core app logic or features
+- **DO NOT** refactor working code unless explicitly requested
+- **ONLY** update Firebase configuration, API keys, and environment settings when needed
+- **ONLY** update content, branding, and text when requested
+- The app is production-ready and live - preserve all existing functionality
+
 ### Key Technologies
 - **SwiftUI** with **Combine** for reactive programming
 - **ActivityKit** for Live Activities and Dynamic Island
@@ -25,7 +34,7 @@ This is a **native iOS Swift/SwiftUI application** with comprehensive Firebase b
 ```swift
 enum FirebaseEnvironment: String {
     case development = "dev"
-    case staging = "staging"  
+    case staging = "staging"
     case production = "prod"
 }
 ```
@@ -70,6 +79,32 @@ rm -rf ~/Library/Developer/Xcode/DerivedData
 
 # Firebase connection testing
 ./test_firebase_connection.js
+```
+
+### Firebase Functions (Node.js 20)
+```bash
+cd functions
+npm install
+
+# Start emulators for local testing
+npm run serve
+
+# Deploy all functions to production
+npm run deploy
+
+# Deploy specific functions
+firebase deploy --only functions:functionName
+
+# Deploy only the AI Coach function
+firebase deploy --only functions:generateAIResponse
+
+# View function logs
+npm run logs
+# or for specific function
+firebase functions:log --only generateAIResponse
+
+# Deploy knowledge base content
+node deployPelvicFloorKnowledge.js  # or other deployment scripts
 ```
 
 ## Live Activity Architecture
@@ -256,7 +291,7 @@ node deployPelvicFloorKnowledge.js  # or other deployment scripts
 
 ### Key Directories to Know
 - `Growth/Features/Timer/` - Timer functionality and Live Activities
-- `Growth/Core/Networking/` - Firebase client and App Check configuration  
+- `Growth/Core/Networking/` - Firebase client and App Check configuration
 - `GrowthTimerWidget/` - Widget extension for Live Activities
 - `functions/` - Firebase Cloud Functions (Node.js)
 - `scripts/` - Utility scripts for various development tasks

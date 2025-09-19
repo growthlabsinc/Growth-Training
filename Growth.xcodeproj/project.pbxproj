@@ -82,12 +82,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Config/InfoPlist.xcconfig,
-				"Resources/Plist/App/Info (1).plist",
-				"Resources/Plist/App/Info 2.plist",
 				Resources/Plist/App/Info.plist,
-				"Resources/Plist/Widget/Info (1).plist",
-				"Resources/Plist/Widget/Info 2.plist",
-				"Resources/Plist/Widget/Info 3.plist",
 				Resources/Plist/Widget/Info.plist,
 			);
 			target = 7F45FC5E2DCD768A00B4BEC9 /* Growth */;
@@ -549,7 +544,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.1.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.growthlabs.growthmethod;
+				PRODUCT_BUNDLE_IDENTIFIER = com.growthlabs.growthtraining;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "";
@@ -592,7 +587,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.1.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.growthlabs.growthmethod;
+				PRODUCT_BUNDLE_IDENTIFIER = com.growthlabs.growthtraining;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "";
@@ -625,7 +620,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.1.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.growthlabs.growthmethod.GrowthTimerWidget;
+				PRODUCT_BUNDLE_IDENTIFIER = com.growthlabs.growthtraining.GrowthTimerWidget;
 				PRODUCT_MODULE_NAME = GrowthWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -660,7 +655,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.1.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.growthlabs.growthmethod.GrowthTimerWidget;
+				PRODUCT_BUNDLE_IDENTIFIER = com.growthlabs.growthtraining.GrowthTimerWidget;
 				PRODUCT_MODULE_NAME = GrowthTimerWidgetExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
