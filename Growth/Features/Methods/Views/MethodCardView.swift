@@ -86,11 +86,11 @@ struct MethodCardView: View {
     MethodCardView(method: GrowthMethod(
         id: "preview1",
         stage: 1,
-        title: "Angion Method 1.0",
-        methodDescription: "A technique for improving vascular health",
+        title: "Basic Manual Stretch",
+        methodDescription: "The fundamental length exercise for tissue elongation",
         instructionsText: "Follow the instructions...",
-        estimatedDurationMinutes: 20,
-        categories: ["Vascular"]
+        estimatedDurationMinutes: 10,
+        categories: ["Length"]
     ))
     .padding()
 }

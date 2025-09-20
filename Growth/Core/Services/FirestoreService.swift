@@ -606,13 +606,13 @@ class FirestoreService {
         
         // Define the allowed articles for the Learn tab
         let allowedArticleTitles = [
-            "Beginner's Guide to The Angion Method: Unlocking Your Growth Potential",
-            "Preparing for Angion: Foundations for Health and Growth",
-            "Intermediate Angion: Mastering the Angion Method 2.0",
-            "Intermediate Angion: Cardiovascular Training for Organ Building",
-            "Advanced Angion: The Vascion (Angion Method 3.0) – Apex of Male Enhancement",
-            "The Angion Method – An Evolving Approach to Male Vascular Health and Growth",
-            "The Core Mechanisms of Blood Vessel Growth: Glycocalyx, Shear Stress, and Smooth Muscles",
+            "Beginner's Guide to PE Training: Unlocking Your Growth Potential",
+            "Preparing for PE: Foundations for Health and Growth",
+            "Intermediate PE: Mastering Length and Girth Techniques",
+            "Intermediate PE: Progressive Training for Size Development",
+            "Advanced PE: Advanced Techniques for Maximum Gains",
+            "PE Methods – An Evolving Approach to Male Enhancement and Growth",
+            "The Core Mechanisms of Tissue Expansion and Growth",
             "Holistic Male Sexual Health and Growth: Diet, Exercise, and Lifestyle"
         ]
         

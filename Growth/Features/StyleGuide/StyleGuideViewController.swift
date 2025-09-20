@@ -357,7 +357,7 @@ class StyleGuideViewController: UIViewController {
         workoutCardStack.distribution = .fillEqually
         
         let workoutTitle = UILabel()
-        workoutTitle.text = "Angion Method - Level 1"
+        workoutTitle.text = "PE Training - Beginner"
         workoutTitle.font = UIFont.growth(style: .h3)
         workoutTitle.textColor = AppColors.darkText
         workoutTitle.textAlignment = .center
