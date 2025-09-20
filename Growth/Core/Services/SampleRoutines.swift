@@ -226,7 +226,6 @@ struct SampleRoutines {
                     additionalNotes: "Review weekly progress."
                 )
             ],
-            focusAreas: ["expansion", "vascular", "advanced"],
             createdAt: Date(),
             updatedAt: Date()
         )
@@ -238,7 +237,6 @@ struct SampleRoutines {
             description: "Intensive 14-day protocol for rapid initial gains.",
             difficultyLevel: "Intermediate",
             schedule: createTwoWeekSchedule(),
-            focusAreas: ["rapid-gains", "intensive"],
             createdAt: Date(),
             updatedAt: Date()
         )
