@@ -162,3 +162,6 @@ DerivedData/
 # Service account keys
 keys/
 *.serviceaccount.json
+
+# Node modules backup
+functions_backup/node_modules_old/

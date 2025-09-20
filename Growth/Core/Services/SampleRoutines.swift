@@ -11,6 +11,8 @@ struct SampleRoutines {
             name: "Standard Growth Routine",
             description: "A balanced weekly routine based on the 1on1off principle, focusing on growth methods for optimal development and recovery.",
             difficultyLevel: "Beginner",
+            createdAt: Date(),
+            updatedAt: Date(),
             schedule: [
                 DaySchedule(
                     id: "day1",
@@ -84,6 +86,8 @@ struct SampleRoutines {
             name: "Beginner Express",
             description: "Fast-track routine for beginners who want quicker results with consistent daily practice.",
             difficultyLevel: "Beginner",
+            createdAt: Date(),
+            updatedAt: Date(),
             schedule: [
                 DaySchedule(
                     id: "day1",
@@ -158,6 +162,8 @@ struct SampleRoutines {
             description: "High-intensity routine for experienced practitioners seeking maximum gains.",
             difficultyLevel: "Advanced",
             focusAreas: ["expansion", "vascular", "advanced"],
+            createdAt: Date(),
+            updatedAt: Date(),
             schedule: [
                 DaySchedule(
                     id: "day1",
@@ -232,6 +238,8 @@ struct SampleRoutines {
             description: "Intensive 14-day protocol for rapid initial gains.",
             difficultyLevel: "Intermediate",
             focusAreas: ["rapid-gains", "intensive"],
+            createdAt: Date(),
+            updatedAt: Date(),
             schedule: createTwoWeekSchedule()
         )
 

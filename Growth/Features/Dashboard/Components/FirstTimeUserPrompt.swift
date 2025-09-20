@@ -40,8 +40,8 @@ struct FirstTimeUserPrompt: View {
             switch initialMethod {
             case "angio_pumping":
                 return "Begin with Angio Pumping - a gentle starting point for your vascular health journey"
-            case , "am1":
-                return "Start with Angion Method 1.0 - the foundation of your growth journey"
+            case "s2s_stretch":
+                return "Start with S2S Stretches - the foundation of your growth journey"
             default:
                 return "Your personalized starting point is ready"
             }

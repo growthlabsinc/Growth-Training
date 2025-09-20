@@ -147,7 +147,7 @@ class GrowthMethodService {
             if let fetchError = error {
                 Logger.error("GrowthMethodService: Firestore error while fetching method \(id): \(fetchError.localizedDescription)")
                 // Try local sample fallback
-                if let sample = SampleGrowthMethods.method(for: id) {
+                if let sample = SampleGrowthMethods.getSampleGrowthMethod(for: id) {
                     completion(.success(sample))
                     return
                 }
@@ -157,7 +157,7 @@ class GrowthMethodService {
             
             guard let document = documentSnapshot, document.exists else {
                 // Try local sample fallback
-                if let sample = SampleGrowthMethods.method(for: id) {
+                if let sample = SampleGrowthMethods.getSampleGrowthMethod(for: id) {
                     completion(.success(sample))
                     return
                 }
