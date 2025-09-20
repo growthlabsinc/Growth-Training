@@ -11,8 +11,6 @@ struct SampleRoutines {
             name: "Standard Growth Routine",
             description: "A balanced weekly routine based on the 1on1off principle, focusing on growth methods for optimal development and recovery.",
             difficultyLevel: "Beginner",
-            createdAt: Date(),
-            updatedAt: Date(),
             schedule: [
                 DaySchedule(
                     id: "day1",
@@ -77,7 +75,9 @@ struct SampleRoutines {
                     isRestDay: false,
                     additionalNotes: "Take measurements and photos for progress tracking."
                 )
-            ]
+            ],
+            createdAt: Date(),
+            updatedAt: Date()
         )
 
         // Beginner Express Routine
@@ -86,8 +86,6 @@ struct SampleRoutines {
             name: "Beginner Express",
             description: "Fast-track routine for beginners who want quicker results with consistent daily practice.",
             difficultyLevel: "Beginner",
-            createdAt: Date(),
-            updatedAt: Date(),
             schedule: [
                 DaySchedule(
                     id: "day1",
@@ -152,7 +150,9 @@ struct SampleRoutines {
                     isRestDay: true,
                     additionalNotes: "Prepare for next week."
                 )
-            ]
+            ],
+            createdAt: Date(),
+            updatedAt: Date()
         )
 
         // Advanced Intensive Routine
@@ -161,9 +161,6 @@ struct SampleRoutines {
             name: "Advanced Intensive",
             description: "High-intensity routine for experienced practitioners seeking maximum gains.",
             difficultyLevel: "Advanced",
-            focusAreas: ["expansion", "vascular", "advanced"],
-            createdAt: Date(),
-            updatedAt: Date(),
             schedule: [
                 DaySchedule(
                     id: "day1",
@@ -228,7 +225,10 @@ struct SampleRoutines {
                     isRestDay: true,
                     additionalNotes: "Review weekly progress."
                 )
-            ]
+            ],
+            focusAreas: ["expansion", "vascular", "advanced"],
+            createdAt: Date(),
+            updatedAt: Date()
         )
 
         // Two Week Transformation
@@ -237,10 +237,10 @@ struct SampleRoutines {
             name: "Two Week Transformation",
             description: "Intensive 14-day protocol for rapid initial gains.",
             difficultyLevel: "Intermediate",
+            schedule: createTwoWeekSchedule(),
             focusAreas: ["rapid-gains", "intensive"],
             createdAt: Date(),
-            updatedAt: Date(),
-            schedule: createTwoWeekSchedule()
+            updatedAt: Date()
         )
 
         return dict
