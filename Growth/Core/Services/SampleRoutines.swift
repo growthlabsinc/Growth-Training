@@ -17,7 +17,7 @@ struct SampleRoutines {
                     dayNumber: 1,
                     dayName: "Day 1: Heavy Day",
                     description: "Perform Angio Pumping or Angion Method 1.0/2.0, plus optional pumping and S2S stretches.",
-                    methodIds: ["angio_pumping", "am1_0", "am2_0"],
+                    methodIds: ["angio_pumping", , ],
                     isRestDay: false,
                     additionalNotes: "Keep session under 30 minutes."
                 ),
@@ -35,7 +35,7 @@ struct SampleRoutines {
                     dayNumber: 3,
                     dayName: "Day 3: Moderate Day",
                     description: "Angion Method 2.0 and S2S stretches. Optional light pumping.",
-                    methodIds: ["am2_0", "s2s_stretch"],
+                    methodIds: [, "s2s_stretch"],
                     isRestDay: false,
                     additionalNotes: "Focus on form over intensity."
                 ),
@@ -53,7 +53,7 @@ struct SampleRoutines {
                     dayNumber: 5,
                     dayName: "Day 5: Light Day",
                     description: "S2S stretches and optional light Angion work.",
-                    methodIds: ["s2s_stretch", "am1_0"],
+                    methodIds: ["s2s_stretch", ],
                     isRestDay: false,
                     additionalNotes: "Keep it light, focus on recovery."
                 ),
@@ -93,7 +93,7 @@ struct SampleRoutines {
                     dayNumber: 1,
                     dayName: "Day 1: Introduction",
                     description: "Start with basic Angion Method 1.0 to learn the fundamentals.",
-                    methodIds: ["am1_0"],
+                    methodIds: [],
                     isRestDay: false,
                     additionalNotes: "Focus on technique, not intensity. 15-20 minutes max."
                 ),
@@ -111,7 +111,7 @@ struct SampleRoutines {
                     dayNumber: 3,
                     dayName: "Day 3: Stretching Focus",
                     description: "Introduction to S2S stretches with light AM1.0.",
-                    methodIds: ["s2s_stretch", "am1_0"],
+                    methodIds: ["s2s_stretch", ],
                     isRestDay: false,
                     additionalNotes: "Gentle stretching, no forcing."
                 ),
@@ -129,7 +129,7 @@ struct SampleRoutines {
                     dayNumber: 5,
                     dayName: "Day 5: Assessment",
                     description: "Light session to assess progress and comfort level.",
-                    methodIds: ["am1_0"],
+                    methodIds: [],
                     isRestDay: false,
                     additionalNotes: "Note any improvements in technique or comfort."
                 )
@@ -151,7 +151,7 @@ struct SampleRoutines {
                     dayNumber: 1,
                     dayName: "Day 1: Power Day",
                     description: "Advanced Angion Methods with focus on intensity.",
-                    methodIds: ["am2_0", "am2_5", "angio_pumping"],
+                    methodIds: [, "am2_5", "angio_pumping"],
                     isRestDay: false,
                     additionalNotes: "30-40 minute session. Monitor fatigue."
                 ),
@@ -178,7 +178,7 @@ struct SampleRoutines {
                     dayNumber: 4,
                     dayName: "Day 4: Technique Day",
                     description: "Focus on perfecting AM2.5 technique.",
-                    methodIds: ["am2_5", "am2_0"],
+                    methodIds: ["am2_5", ],
                     isRestDay: false,
                     additionalNotes: "Quality over quantity. Perfect form."
                 ),
@@ -196,7 +196,7 @@ struct SampleRoutines {
                     dayNumber: 6,
                     dayName: "Day 6: Endurance",
                     description: "Longer session focusing on endurance.",
-                    methodIds: ["am2_0", "s2s_stretch", "angio_pumping"],
+                    methodIds: [, "s2s_stretch", "angio_pumping"],
                     isRestDay: false,
                     additionalNotes: "40-45 minutes. Pace yourself."
                 ),
@@ -227,7 +227,7 @@ struct SampleRoutines {
                     dayNumber: 1,
                     dayName: "Day 1: Maximum Intensity",
                     description: "Full spectrum training with all advanced methods.",
-                    methodIds: ["am2_5", "am3_0", "angio_pumping", "s2s_stretch"],
+                    methodIds: ["am2_5", , "angio_pumping", "s2s_stretch"],
                     isRestDay: false,
                     additionalNotes: "45-60 minutes. Full intensity."
                 ),
@@ -236,7 +236,7 @@ struct SampleRoutines {
                     dayNumber: 2,
                     dayName: "Day 2: Recovery Methods",
                     description: "Active recovery with light methods.",
-                    methodIds: ["am1_0", "s2s_stretch"],
+                    methodIds: [, "s2s_stretch"],
                     isRestDay: false,
                     additionalNotes: "20-30 minutes. Focus on blood flow."
                 ),
@@ -245,7 +245,7 @@ struct SampleRoutines {
                     dayNumber: 3,
                     dayName: "Day 3: Power Focus",
                     description: "High-intensity Angion Method 3.0 focus.",
-                    methodIds: ["am3_0", "am2_5"],
+                    methodIds: [, "am2_5"],
                     isRestDay: false,
                     additionalNotes: "35-45 minutes. Maximum effort."
                 ),
@@ -263,7 +263,7 @@ struct SampleRoutines {
                     dayNumber: 5,
                     dayName: "Day 5: Endurance Challenge",
                     description: "Extended session for endurance building.",
-                    methodIds: ["am2_5", "am2_0", "angio_pumping", "s2s_stretch"],
+                    methodIds: ["am2_5", , "angio_pumping", "s2s_stretch"],
                     isRestDay: false,
                     additionalNotes: "60+ minutes. Pace strategically."
                 ),
@@ -341,7 +341,7 @@ struct SampleRoutines {
         // Week 4 Pattern: Mon(Rest), Tue(Rest), Wed(Rest), Thu(Rest), Fri(Rest), Sat(Rest), Sun(Rest) - Recovery week
         
         // Method IDs for Janus Protocol
-        let sabreMethods = ["sabre_type_a", "sabre_type_b", "sabre_type_c", "sabre_type_d"] // All 4 SABRE variations
+        let sabreMethods = [, , , ] // All 4 SABRE variations
         let bfrMethods = ["bfr_cyclic_bending", "bfr_glans_pulsing"]
         
         // Helper function to get Angion methods based on progression
@@ -357,17 +357,17 @@ struct SampleRoutines {
             let dayNumber = cycle * 28 + (week - 1) * 7 + 1
             
             if dayNumber <= 14 {
-                return ["am1_0"] // First 2 weeks: AM1 only
+                return [] // First 2 weeks: AM1 only
             } else if dayNumber <= 21 {
-                return ["am2_0"] // Week 3: AM2 only
+                return [] // Week 3: AM2 only
             } else if dayNumber <= 35 {
-                return ["am1_0", "am2_0"] // Weeks 4-5: AM1 & AM2
+                return [, ] // Weeks 4-5: AM1 & AM2
             } else if dayNumber <= 42 {
-                return ["am3_0"] // Week 6: AM3 only
+                return [] // Week 6: AM3 only
             } else if dayNumber <= 56 {
-                return ["am1_0", "am2_0", "am3_0"] // Weeks 7-8: All three
+                return [, , ] // Weeks 7-8: All three
             } else {
-                return ["am2_0", "am3_0"] // Weeks 9+: AM2 & AM3
+                return [, ] // Weeks 9+: AM2 & AM3
             }
         }
         
@@ -603,19 +603,19 @@ struct SampleRoutines {
             // Week 1
             DaySchedule(id: "tw_day1", dayNumber: 1, dayName: "Week 1, Day 1: Foundation", 
                        description: "Establish baseline with core methods.", 
-                       methodIds: ["am1_0", "s2s_stretch"], isRestDay: false,
+                       methodIds: [, "s2s_stretch"], isRestDay: false,
                        additionalNotes: "Start conservative, focus on form."),
             DaySchedule(id: "tw_day2", dayNumber: 2, dayName: "Week 1, Day 2: Rest", 
                        description: "Rest and recover.", methodIds: nil, isRestDay: true, additionalNotes: nil),
             DaySchedule(id: "tw_day3", dayNumber: 3, dayName: "Week 1, Day 3: Progress", 
                        description: "Introduce AM2.0 with stretching.", 
-                       methodIds: ["am2_0", "s2s_stretch"], isRestDay: false,
+                       methodIds: [, "s2s_stretch"], isRestDay: false,
                        additionalNotes: "Note differences from Day 1."),
             DaySchedule(id: "tw_day4", dayNumber: 4, dayName: "Week 1, Day 4: Rest", 
                        description: "Rest and recover.", methodIds: nil, isRestDay: true, additionalNotes: nil),
             DaySchedule(id: "tw_day5", dayNumber: 5, dayName: "Week 1, Day 5: Integration", 
                        description: "Combine methods learned so far.", 
-                       methodIds: ["am1_0", "am2_0", "angio_pumping"], isRestDay: false,
+                       methodIds: [, , "angio_pumping"], isRestDay: false,
                        additionalNotes: "30 minute session max."),
             DaySchedule(id: "tw_day6", dayNumber: 6, dayName: "Week 1, Day 6: Active Recovery", 
                        description: "Light stretching only.", 
@@ -627,17 +627,17 @@ struct SampleRoutines {
             // Week 2
             DaySchedule(id: "tw_day8", dayNumber: 8, dayName: "Week 2, Day 1: Advancement", 
                        description: "Introduce AM2.5 if ready.", 
-                       methodIds: ["am2_0", "am2_5", "angio_pumping"], isRestDay: false,
+                       methodIds: [, "am2_5", "angio_pumping"], isRestDay: false,
                        additionalNotes: "Only add AM2.5 if comfortable."),
             DaySchedule(id: "tw_day9", dayNumber: 9, dayName: "Week 2, Day 2: Rest", 
                        description: "Rest and recover.", methodIds: nil, isRestDay: true, additionalNotes: nil),
             DaySchedule(id: "tw_day10", dayNumber: 10, dayName: "Week 2, Day 3: Intensity", 
                        description: "Higher intensity session.", 
-                       methodIds: ["am2_5", "am2_0", "s2s_stretch"], isRestDay: false,
+                       methodIds: ["am2_5", , "s2s_stretch"], isRestDay: false,
                        additionalNotes: "Push harder but maintain form."),
             DaySchedule(id: "tw_day11", dayNumber: 11, dayName: "Week 2, Day 4: Recovery", 
                        description: "Active recovery day.", 
-                       methodIds: ["am1_0", "s2s_stretch"], isRestDay: false,
+                       methodIds: [, "s2s_stretch"], isRestDay: false,
                        additionalNotes: "Light session only."),
             DaySchedule(id: "tw_day12", dayNumber: 12, dayName: "Week 2, Day 5: Peak", 
                        description: "Peak performance day.", 
@@ -647,7 +647,7 @@ struct SampleRoutines {
                        description: "Rest before final assessment.", methodIds: nil, isRestDay: true, additionalNotes: nil),
             DaySchedule(id: "tw_day14", dayNumber: 14, dayName: "Week 2, Day 7: Assessment", 
                        description: "Final session to assess progress.", 
-                       methodIds: ["am2_0", "s2s_stretch"], isRestDay: false,
+                       methodIds: [, "s2s_stretch"], isRestDay: false,
                        additionalNotes: "Compare to Week 1 performance.")
         ]
     }

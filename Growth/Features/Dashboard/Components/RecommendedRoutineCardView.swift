@@ -165,10 +165,10 @@ struct RecommendedRoutineCardView_Previews: PreviewProvider {
         let sampleRoutine = Routine(
             id: "standard_growth_routine",
             name: "Standard Growth Routine",
-            description: "A balanced weekly routine based on the 1on1off principle, focusing on Angion Methods for optimal vascular development and recovery.",
+            description: "A balanced weekly routine based on the 1on1off principle, focusing on growth methods for optimal development and recovery.",
             difficultyLevel: "Beginner",
             schedule: [
-                DaySchedule(id: "day1", dayNumber: 1, dayName: "Day 1: Heavy Day", description: "Perform Angio Pumping or Angion Method 1.0/2.0, plus optional pumping and S2S stretches.", methodIds: ["angio_pumping", "am1_0", "am2_0"], isRestDay: false, additionalNotes: "Keep session under 30 minutes."),
+                DaySchedule(id: "day1", dayNumber: 1, dayName: "Day 1: Heavy Day", description: "Perform Angio Pumping plus S2S stretches and BFR techniques.", methodIds: ["angio_pumping", "s2s_stretch", "bfr_cyclic_bending"], isRestDay: false, additionalNotes: "Keep session under 30 minutes."),
                 DaySchedule(id: "day2", dayNumber: 2, dayName: "Day 2: Rest", description: "Rest and recover.", methodIds: nil, isRestDay: true, additionalNotes: nil)
             ],
             createdAt: Date(),

@@ -10,7 +10,6 @@ import Foundation
 // Enum to define different query categories
 enum AIQueryCategory {
     case growthMethodGuidance
-    case angionMethodMedical // Specifically for Angion method and erectile function questions
     case appNavigation
     case generalWellnessInScope
     case progressTracking // Future
@@ -61,23 +60,6 @@ class PromptTemplateService {
             - If the query asks for steps, list them clearly.
             - If the query asks for benefits, summarize them.
             - If the context does not contain the answer, state that the information isn't available for this specific method in the knowledge base.
-            """
-        ),
-        .angionMethodMedical: AIPromptTemplate(
-            name: "AngionMethodMedicalQuery",
-            category: .angionMethodMedical,
-            systemMessage: baseSystemPrompt,
-            userMessageTemplate: """
-            Context from Knowledge Base (Angion Method - Medical/Erectile Function):
-            {{retrieved_angion_medical_details}}
-
-            User Query: {{user_query}}
-
-            Based on the provided Angion Method knowledge base content, answer the user's query about erectile function, vascular health, or related sexual wellness topics.
-            - Provide clear, evidence-based information from the Angion Method knowledge base
-            - Include the medical disclaimer as specified in your system prompt
-            - If appropriate, suggest relevant Angion method stages based on the user's described situation
-            - If the specific information isn't in the knowledge base, state what information is available and still include the disclaimer
             """
         ),
         .appNavigation: AIPromptTemplate(
@@ -178,13 +160,7 @@ class PromptTemplateService {
     func categorizeQuery(_ query: String) -> AIQueryCategory {
         let lowercasedQuery = query.lowercased()
 
-        // Check for Angion method medical queries first (erection, ED, vascular health)
-        let angionMedicalKeywords = ["erection", "erectile", "ed", "penis", "vascular", "blood flow", "arterial", "venous", "impotence", "sexual health", "glans", "corpora", "dorsal vein", "angion", "vascion", "am1", "am2", "am3", "method 1", "method 2", "method 3", "bulbo-dorsal", "angio pumping"]
-        if angionMedicalKeywords.contains(where: { lowercasedQuery.contains($0) }) {
-            return .angionMethodMedical
-        }
-
-        // General medical advice that's NOT Angion method related should be out of scope
+        // General medical advice should be out of scope
         if lowercasedQuery.contains("medical") || lowercasedQuery.contains("doctor") || lowercasedQuery.contains("diagnose") || lowercasedQuery.contains("symptom") {
             return .outOfScope
         }

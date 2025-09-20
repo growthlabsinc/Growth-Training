@@ -96,20 +96,11 @@ class SessionHistoryViewModel: ObservableObject {
         
         // Fallback to common method ID mappings
         switch id {
-        case "am1_0", "angion_method_1_0": return "Angion Method 1.0"
-        case "am2_0", "angion_method_2_0": return "Angion Method 2.0"
-        case "am2_5", "angion_method_2_5": return "Angion Method 2.5"
-        case "am3_0", "angion_method_3_0", "vascion": return "AM 3.0 - Vascion"
         case "angio_pumping": return "Angio Pumping"
-        case "angio_wheel": return "Angio Wheel"
         case "s2s_stretch": return "S2S Stretch"
         case "s2s_advanced": return "S2S Advanced"
         case "bfr_cyclic_bending": return "BFR Cyclic Bending"
         case "bfr_glans_pulsing": return "BFR Glans Pulsing"
-        case "sabre_type_a": return "SABRE Type A"
-        case "sabre_type_b": return "SABRE Type B"
-        case "sabre_type_c": return "SABRE Type C"
-        case "sabre_type_d": return "SABRE Type D"
         default: return "Method"
         }
     }

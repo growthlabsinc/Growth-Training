@@ -114,14 +114,10 @@ struct GrowthMethodDetailView: View {
                         .aspectRatio(contentMode: .fill)
                         .frame(maxWidth: .infinity, maxHeight: 280)
                         .clipped()
-                } else if method.id == "am1_0" || method.title.lowercased().contains("angion method 1.0") {
-                    Image("am1_0")
                         .resizable()
                         .aspectRatio(contentMode: .fill)
                         .frame(maxWidth: .infinity, maxHeight: 280)
                         .clipped()
-                } else if method.id == "am2_0" || method.title.lowercased().contains("angion method 2.0") {
-                    Image("am2_0")
                         .resizable()
                         .aspectRatio(contentMode: .fill)
                         .frame(maxWidth: .infinity, maxHeight: 280)

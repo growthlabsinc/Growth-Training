@@ -135,21 +135,6 @@ struct MethodOverviewCard: View {
                     Image("angio_pumping")
                         .resizable()
                         .scaledToFill()
-                } else if method.id == "am1_0" || method.title.lowercased().contains("angion method 1.0") {
-                    // Show Angion Method 1.0 specific image
-                    Image("am1_0")
-                        .resizable()
-                        .scaledToFill()
-                } else if method.id == "am2_0" || method.title.lowercased().contains("angion method 2.0") {
-                    // Show Angion Method 2.0 specific image
-                    Image("am2_0")
-                        .resizable()
-                        .scaledToFill()
-                } else if method.id == "am2_5" || method.title.lowercased().contains("angion method 2.5") {
-                    // Show Angion Method 2.5 specific image
-                    Image("am2_5")
-                        .resizable()
-                        .scaledToFill()
                 } else if let urlString = method.visualPlaceholderUrl, let url = URL(string: urlString) {
                     AsyncImage(url: url) { phase in
                         switch phase {

@@ -1,0 +1,14 @@
+# Reddit Wiki Scraper Requirements
+
+# For Playwright-based scraping (more robust, handles JavaScript)
+playwright==1.40.0
+playwright-stealth==1.0.6
+
+# For JSON API approach (simpler, faster)
+requests==2.31.0
+
+# Optional: For Reddit API access using PRAW
+praw==7.7.1
+
+# Common utilities
+python-dotenv==1.0.0

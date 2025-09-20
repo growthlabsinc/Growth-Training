@@ -239,12 +239,11 @@ struct SessionCard: View {
     private func methodName(for id: String) -> String {
         // Map method IDs to display names
         switch id {
-        case "angion_method_1_0": return "AM 1.0"
-        case "angion_method_2_0": return "AM 2.0"
-        case "angion_method_2_5": return "AM 2.5"
+        case "s2s_stretch": return "S2S Stretches"
+        case "s2s_advanced": return "Advanced S2S"
+        case "bfr_cyclic_bending": return "BFR Cyclic Bending"
         case "angio_pumping": return "Angio Pumping"
-        case "vascion": return "AM 3.0 - Vascion"
-        case "angio_wheel": return "Angio Wheel"
+        case "bfr_glans_pulsing": return "BFR Glans Pulsing"
         default: return "Method"
         }
     }
@@ -283,7 +282,7 @@ struct DailyDrillDownView_Previews: PreviewProvider {
                 startTime: Date().addingTimeInterval(-3600 * 8),
                 endTime: Date().addingTimeInterval(-3600 * 8 + 1500),
                 userNotes: "Great session, felt energized",
-                methodId: "angion_method_2_0",
+                methodId: "s2s_stretch",
                 moodBefore: .neutral,
                 moodAfter: .positive,
                 intensity: 7

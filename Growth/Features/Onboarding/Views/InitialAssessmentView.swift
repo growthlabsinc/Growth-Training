@@ -25,7 +25,7 @@ struct InitialAssessmentView: View {
     
     // Method IDs from the system
     private let angioPumpingMethodId = "angio_pumping"
-    private let angionMethod1Id = "am1_0"
+    private let s2sStretchMethodId = "s2s_stretch" 
     
     var body: some View {
         VStack(spacing: 0) {
@@ -176,7 +176,7 @@ struct InitialAssessmentView: View {
         }
         
         // Determine method ID based on selection
-        let methodId = result == needsAssistanceResult ? angioPumpingMethodId : angionMethod1Id
+        let methodId = result == needsAssistanceResult ? angioPumpingMethodId : s2sStretchMethodId
         
         // Save assessment to user profile
         saveAssessment(result: result, methodId: methodId)

@@ -5,8 +5,8 @@ struct SampleGrowthMethods {
     private static let samples: [String: GrowthMethod] = {
         var dict: [String: GrowthMethod] = [:]
         // Angion Method 2.0
-        dict["am2_0"] = GrowthMethod(
-            id: "am2_0",
+        dict[] = GrowthMethod(
+            id: ,
             stage: 3,
             classification: "Intermediate",
             title: "Angion Method 2.0",
@@ -34,8 +34,8 @@ struct SampleGrowthMethods {
         )
         
         // Angion Method 1.0
-        dict["angion_method_1_0"] = GrowthMethod(
-            id: "angion_method_1_0",
+        dict[] = GrowthMethod(
+            id: ,
             stage: 2,
             classification: "Foundation",
             title: "Angion Method 1.0",
@@ -49,11 +49,11 @@ struct SampleGrowthMethods {
         )
         
         // Add alias for am1_0
-        dict["am1_0"] = dict["angion_method_1_0"]!
+        dict[] = dict[]!
         
         // Angion Method 2.5
-        dict["angion_method_2_5"] = GrowthMethod(
-            id: "angion_method_2_5",
+        dict[] = GrowthMethod(
+            id: ,
             stage: 4,
             classification: "Intermediate",
             title: "Angion Method 2.5 (Jelq 2.0)",
@@ -67,8 +67,8 @@ struct SampleGrowthMethods {
         )
         
         // Angion Method 3.0 (Vascion)
-        dict["angion_method_3_0"] = GrowthMethod(
-            id: "angion_method_3_0",
+        dict[] = GrowthMethod(
+            id: ,
             stage: 5,
             classification: "Expert",
             title: "Angion Method 3.0 (Vascion)",
@@ -82,7 +82,7 @@ struct SampleGrowthMethods {
         )
         
         // Add alias for vascion
-        dict["vascion"] = dict["angion_method_3_0"]!
+        dict["vascion"] = dict[]!
         
         // BFR Cyclic Bending
         dict["bfr_cyclic_bending"] = GrowthMethod(
@@ -99,8 +99,8 @@ struct SampleGrowthMethods {
         )
         
         // SABRE Type A
-        dict["sabre_type_a"] = GrowthMethod(
-            id: "sabre_type_a",
+        dict[] = GrowthMethod(
+            id: ,
             stage: 2,
             classification: "Foundation",
             title: "SABRE Type A - Low Speed/Low Intensity",
@@ -113,8 +113,8 @@ struct SampleGrowthMethods {
         )
         
         // SABRE Type B
-        dict["sabre_type_b"] = GrowthMethod(
-            id: "sabre_type_b",
+        dict[] = GrowthMethod(
+            id: ,
             stage: 3,
             classification: "Intermediate",
             title: "SABRE Type B - Medium Speed/Medium Intensity",
@@ -127,8 +127,8 @@ struct SampleGrowthMethods {
         )
         
         // SABRE Type C
-        dict["sabre_type_c"] = GrowthMethod(
-            id: "sabre_type_c",
+        dict[] = GrowthMethod(
+            id: ,
             stage: 4,
             classification: "Intermediate",
             title: "SABRE Type C - High Speed/Medium Intensity",
@@ -141,8 +141,8 @@ struct SampleGrowthMethods {
         )
         
         // SABRE Type D
-        dict["sabre_type_d"] = GrowthMethod(
-            id: "sabre_type_d",
+        dict[] = GrowthMethod(
+            id: ,
             stage: 5,
             classification: "Expert",
             title: "SABRE Type D - High Speed/High Intensity",
@@ -199,7 +199,7 @@ struct SampleGrowthMethods {
         )
         
         // Add common aliases
-        dict["m1"] = dict["am2_0"]!  // Common method ID used in test data
+        dict["m1"] = dict[]!  // Common method ID used in test data
         dict["m2"] = dict["s2s_stretch"]!  // Common method ID used in test data
         
         return dict
