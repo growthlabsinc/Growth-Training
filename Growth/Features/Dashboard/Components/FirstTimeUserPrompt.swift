@@ -64,8 +64,8 @@ struct FirstTimeUserPrompt: View {
             switch initialMethod {
             case "angio_pumping":
                 return "Start Angio Pumping"
-            case , "am1":
-                return "Start Angion Method 1.0"
+            case "s2s_stretch":
+                return "Start S2S Stretches"
             default:
                 return "Start Practice"
             }

@@ -90,11 +90,11 @@ class DebugMockDataService {
     private func generateMockSessions(userId: String) {
         #if DEBUG
         let methods = [
-            (, "Angion Method 1.0"),
-            (, "Angion Method 2.0"),
-            (, "Angion Method 3.0"),
-            ("sabre", "SABRE"),
-            ("bfr", "BFR Training")
+            ("s2s_stretch", "S2S Stretches"),
+            ("s2s_advanced", "Advanced S2S"),
+            ("bfr_cyclic_bending", "BFR Cyclic Bending"),
+            ("bfr_glans_pulsing", "BFR Glans Pulsing"),
+            ("angio_pumping", "Angio Pumping")
         ]
         
         let variations = ["Standard", "Modified", "Intensive", "Light Practice", "Extended Session"]

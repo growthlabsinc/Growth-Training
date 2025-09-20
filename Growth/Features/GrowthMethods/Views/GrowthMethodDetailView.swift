@@ -114,20 +114,6 @@ struct GrowthMethodDetailView: View {
                         .aspectRatio(contentMode: .fill)
                         .frame(maxWidth: .infinity, maxHeight: 280)
                         .clipped()
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(maxWidth: .infinity, maxHeight: 280)
-                        .clipped()
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(maxWidth: .infinity, maxHeight: 280)
-                        .clipped()
-                } else if method.id == "am2_5" || method.title.lowercased().contains("angion method 2.5") {
-                    Image("am2_5")
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(maxWidth: .infinity, maxHeight: 280)
-                        .clipped()
                 } else {
                     LinearGradient(
                         gradient: Gradient(colors: [
