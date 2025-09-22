@@ -12,26 +12,40 @@ const searchKnowledgeBase = async (query, db) => {
     // Extract search terms - don't filter out short terms for abbreviations
     const searchTerms = searchQuery.split(/\s+/).filter(term => term.length > 0);
     
-    // Add variations for common abbreviations and related terms
+    // Add variations for common PE abbreviations and related terms
     const expandedTerms = [];
     searchTerms.forEach(term => {
       expandedTerms.push(term);
 
-      // Add variations for AM1, AM2, AM3
-      if (term === 'am1' || term === 'am' || term === '1' || term === '1?') {
-        expandedTerms.push('am1', 'am 1', 'angion method 1', 'angion 1', 'angion', 'method');
-      } else if (term === 'am2' || term === '2' || term === '2?') {
-        expandedTerms.push('am2', 'am 2', 'angion method 2', 'angion 2');
-      } else if (term === 'am3' || term === '3' || term === '3?' || term === 'vascion') {
-        expandedTerms.push('am3', 'am 3', 'angion method 3', 'angion 3', 'vascion');
-      } else if (term.includes('angion')) {
-        expandedTerms.push('angion', 'method', 'am1', 'am2', 'am3');
-      } else if (term === 'pelvic' || term === 'floor' || term === 'tight') {
-        expandedTerms.push('pelvic', 'floor', 'kegel', 'relaxation', 'am2', 'angion');
-      } else if (term === 'warmup' || term === 'warm' || term === 'burst' || term === 'pyramid') {
-        expandedTerms.push('warmup', 'preparation', 'technique', 'progression', 'am1', 'beginner');
-      } else if (term === 'progression' || term === 'weekly' || term === 'add') {
-        expandedTerms.push('progression', 'duration', 'minutes', 'gradual', 'timeline');
+      // Add variations for PE techniques
+      if (term === 'pe' || term === 'penis' || term === 'enlargement') {
+        expandedTerms.push('pe', 'penis', 'enlargement', 'training', 'exercise');
+      } else if (term === 'jelq' || term === 'jelqing') {
+        expandedTerms.push('jelq', 'jelqing', 'girth', 'technique', 'manual');
+      } else if (term === 'stretch' || term === 'stretching') {
+        expandedTerms.push('stretch', 'stretching', 'length', 'manual', 'traction');
+      } else if (term === 'pump' || term === 'pumping') {
+        expandedTerms.push('pump', 'pumping', 'vacuum', 'girth', 'equipment');
+      } else if (term === 'hang' || term === 'hanging') {
+        expandedTerms.push('hang', 'hanging', 'weights', 'length', 'advanced');
+      } else if (term === 'kegel' || term === 'kegels') {
+        expandedTerms.push('kegel', 'kegels', 'eq', 'pelvic', 'floor', 'exercise');
+      } else if (term === 'eq' || term === 'erection' || term === 'quality') {
+        expandedTerms.push('eq', 'erection', 'quality', 'kegel', 'cardiovascular');
+      } else if (term === 'extender' || term === 'ads') {
+        expandedTerms.push('extender', 'ads', 'traction', 'length', 'device');
+      } else if (term === 'clamp' || term === 'clamping') {
+        expandedTerms.push('clamp', 'clamping', 'girth', 'advanced', 'restriction');
+      } else if (term === 'safety' || term === 'safe' || term === 'injury') {
+        expandedTerms.push('safety', 'safe', 'injury', 'prevention', 'medical', 'risk');
+      } else if (term === 'beginner' || term === 'newbie' || term === 'start') {
+        expandedTerms.push('beginner', 'newbie', 'start', 'basic', 'introduction');
+      } else if (term === 'routine' || term === 'program' || term === 'schedule') {
+        expandedTerms.push('routine', 'program', 'schedule', 'progression', 'training');
+      } else if (term === 'gains' || term === 'results' || term === 'growth') {
+        expandedTerms.push('gains', 'results', 'growth', 'progress', 'improvement');
+      } else if (term === 'warmup' || term === 'warm' || term === 'preparation') {
+        expandedTerms.push('warmup', 'warm', 'preparation', 'technique', 'safety');
       }
     });
     
@@ -59,20 +73,40 @@ const searchKnowledgeBase = async (query, db) => {
         if (!processedIds.has(doc.id)) {
           processedIds.add(doc.id);
           
-          // Calculate relevance score
+          // Calculate relevance score with PE-specific enhancements
           let relevanceScore = 0;
           searchTerms.forEach(term => {
             if (data.title && data.title.toLowerCase().includes(term)) relevanceScore += 3;
             if (data.keywords && data.keywords.some(k => k.includes(term))) relevanceScore += 2;
-            if (data.searchableContent && data.searchableContent.includes(term)) relevanceScore += 1;
+            if (data.content && data.content.toLowerCase().includes(term)) relevanceScore += 1;
           });
-          
+
+          // Boost safety content (priority 9-10)
+          const priority = data.priority || 5;
+          if (priority >= 9) {
+            relevanceScore += 5; // Significant boost for safety content
+          } else if (priority >= 7) {
+            relevanceScore += 2; // Moderate boost for high priority content
+          }
+
+          // Category-based boosting for relevant searches
+          const category = data.category || '';
+          if (searchQuery.includes('safety') || searchQuery.includes('injury') || searchQuery.includes('pain')) {
+            if (category === 'safety') relevanceScore += 3;
+          }
+          if (searchQuery.includes('beginner') || searchQuery.includes('start')) {
+            if (category === 'progression') relevanceScore += 2;
+          }
+
           results.push({
             title: data.title,
             snippet: data.content ? data.content.substring(0, 200) + '...' : '',
             confidence: Math.min(0.95, 0.5 + (relevanceScore * 0.1)),
             fullContent: data.content || data.content_text || '',
             type: data.type || data.category || 'knowledge',
+            category: category,
+            priority: priority,
+            relevanceScore: relevanceScore,
             metadata: data.metadata || {}
           });
         }
@@ -110,8 +144,22 @@ const searchKnowledgeBase = async (query, db) => {
       });
     }
     
-    // Sort by confidence and return top results
-    results.sort((a, b) => b.confidence - a.confidence);
+    // Sort by relevance score first, then confidence, prioritizing safety content
+    results.sort((a, b) => {
+      // Prioritize safety content (priority 9-10)
+      if ((a.priority >= 9) && (b.priority < 9)) return -1;
+      if ((b.priority >= 9) && (a.priority < 9)) return 1;
+
+      // Then sort by relevance score
+      if (a.relevanceScore !== b.relevanceScore) {
+        return b.relevanceScore - a.relevanceScore;
+      }
+
+      // Finally by confidence
+      return b.confidence - a.confidence;
+    });
+
+    console.log(`📊 Returning ${Math.min(results.length, 5)} results, sorted by safety priority and relevance`);
     return results.slice(0, 5);
     
   } catch (error) {
