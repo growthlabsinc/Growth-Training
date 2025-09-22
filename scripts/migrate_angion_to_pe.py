@@ -58,7 +58,7 @@ const peExercises = {exercises};
 // Text replacements
 const textReplacements = {text_replacements};
 
-async function migrateExercises() {
+async function migrateExercises() {{
   console.log('🚀 Starting Angion to PE migration...');
 
   // Step 1: Backup existing methods
@@ -66,115 +66,115 @@ async function migrateExercises() {
   const methodsSnapshot = await db.collection('growth_methods').get();
   const backup = [];
 
-  methodsSnapshot.forEach(doc => {
-    backup.push({
+  methodsSnapshot.forEach(doc => {{
+    backup.push({{
       id: doc.id,
       data: doc.data()
-    });
-  });
+    }});
+  }});
 
   // Save backup
-  await db.collection('migration_backups').doc(`backup_${{Date.now()}}`).set({
+  await db.collection('migration_backups').doc(`backup_${{Date.now()}}`).set({{
     timestamp: admin.firestore.FieldValue.serverTimestamp(),
     data: backup,
     type: 'angion_to_pe_migration'
-  });
+  }});
 
   console.log(`✅ Backed up ${{backup.length}} methods`);
 
   // Step 2: Add PE exercises
   console.log('➕ Adding PE exercises...');
-  for (const exercise of peExercises) {
+  for (const exercise of peExercises) {{
     const docRef = db.collection('growth_methods').doc(exercise.id);
-    batch.set(docRef, {
+    batch.set(docRef, {{
       ...exercise,
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       migrated: true,
       migrationDate: admin.firestore.FieldValue.serverTimestamp()
-    });
-  }
+    }});
+  }}
 
   // Step 3: Update user routines
   console.log('🔄 Updating user routines...');
   const routinesSnapshot = await db.collection('routines').get();
 
-  for (const doc of routinesSnapshot.docs) {
+  for (const doc of routinesSnapshot.docs) {{
     const routine = doc.data();
     let updated = false;
 
     // Update exercise IDs
-    if (routine.exercises && Array.isArray(routine.exercises)) {
-      const newExercises = routine.exercises.map(exerciseId => {
-        if (exerciseMappings[exerciseId]) {
+    if (routine.exercises && Array.isArray(routine.exercises)) {{
+      const newExercises = routine.exercises.map(exerciseId => {{
+        if (exerciseMappings[exerciseId]) {{
           updated = true;
           return exerciseMappings[exerciseId].new_id;
-        }
+        }}
         return exerciseId;
-      });
+      }});
 
-      if (updated) {
-        batch.update(doc.ref, {
+      if (updated) {{
+        batch.update(doc.ref, {{
           exercises: newExercises,
           updatedAt: admin.firestore.FieldValue.serverTimestamp(),
           migrated: true
-        });
-      }
-    }
-  }
+        }});
+      }}
+    }}
+  }}
 
   // Step 4: Update user progress
   console.log('📊 Migrating user progress...');
   const sessionsSnapshot = await db.collection('session_logs').get();
 
-  for (const doc of sessionsSnapshot.docs) {
+  for (const doc of sessionsSnapshot.docs) {{
     const session = doc.data();
     let updated = false;
 
     // Update method ID if it's an Angion method
-    if (session.methodId && exerciseMappings[session.methodId]) {
-      batch.update(doc.ref, {
+    if (session.methodId && exerciseMappings[session.methodId]) {{
+      batch.update(doc.ref, {{
         methodId: exerciseMappings[session.methodId].new_id,
         originalMethodId: session.methodId,
         migrated: true,
         migratedAt: admin.firestore.FieldValue.serverTimestamp()
-      });
+      }});
       updated = true;
-    }
-  }
+    }}
+  }}
 
   // Step 5: Update educational content
   console.log('📚 Updating educational content...');
   const articlesSnapshot = await db.collection('educational_resources').get();
 
-  for (const doc of articlesSnapshot.docs) {
+  for (const doc of articlesSnapshot.docs) {{
     const article = doc.data();
     let content = article.content || '';
     let title = article.title || '';
     let updated = false;
 
     // Apply text replacements
-    for (const replacement of textReplacements) {
+    for (const replacement of textReplacements) {{
       const regex = new RegExp(replacement.old, 'gi');
-      if (regex.test(content)) {
+      if (regex.test(content)) {{
         content = content.replace(regex, replacement.new);
         updated = true;
-      }
-      if (regex.test(title)) {
+      }}
+      if (regex.test(title)) {{
         title = title.replace(regex, replacement.new);
         updated = true;
-      }
-    }
+      }}
+    }}
 
-    if (updated) {
-      batch.update(doc.ref, {
+    if (updated) {{
+      batch.update(doc.ref, {{
         content: content,
         title: title,
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         migrated: true
-      });
-    }
-  }
+      }});
+    }}
+  }}
 
   // Commit the batch
   console.log('💾 Committing changes...');
@@ -183,60 +183,60 @@ async function migrateExercises() {
   console.log('✅ Migration completed successfully!');
 
   // Generate migration report
-  const report = {
+  const report = {{
     timestamp: new Date().toISOString(),
     methodsAdded: peExercises.length,
     routinesUpdated: routinesSnapshot.size,
     sessionsUpdated: sessionsSnapshot.size,
     articlesUpdated: articlesSnapshot.size
-  };
+  }};
 
   await db.collection('migration_reports').add(report);
   console.log('📊 Migration Report:', report);
-}
+}}
 
 // Rollback function
-async function rollbackMigration(backupId) {
+async function rollbackMigration(backupId) {{
   console.log('⏮️ Rolling back migration...');
 
   const backup = await db.collection('migration_backups').doc(backupId).get();
-  if (!backup.exists) {
+  if (!backup.exists) {{
     console.error('❌ Backup not found:', backupId);
     return;
-  }
+  }}
 
   const backupData = backup.data();
   const batch = db.batch();
 
   // Restore methods
-  for (const item of backupData.data) {
+  for (const item of backupData.data) {{
     const docRef = db.collection('growth_methods').doc(item.id);
     batch.set(docRef, item.data);
-  }
+  }}
 
   await batch.commit();
   console.log('✅ Rollback completed');
-}
+}}
 
 // Execute migration
-if (process.argv[2] === 'rollback') {
+if (process.argv[2] === 'rollback') {{
   const backupId = process.argv[3];
-  if (!backupId) {
+  if (!backupId) {{
     console.error('❌ Please provide backup ID for rollback');
     process.exit(1);
-  }
+  }}
   rollbackMigration(backupId).catch(console.error);
-} else {
+}} else {{
   migrateExercises()
-    .then(() => {
+    .then(() => {{
       console.log('🎉 Migration completed successfully!');
       process.exit(0);
-    })
-    .catch(error => {
+    }})
+    .catch(error => {{
       console.error('❌ Migration failed:', error);
       process.exit(1);
-    });
-}
+    }});
+}}
 """.format(
         timestamp=datetime.now().isoformat(),
         mappings=json.dumps(mapping['exercise_mappings'], indent=2),
