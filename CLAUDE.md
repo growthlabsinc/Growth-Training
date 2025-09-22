@@ -162,7 +162,7 @@ Located in `/functions/` directory:
 - **Debug tokens** required for development
 - Use `AppCheckDebugView.swift` in Settings → Development Tools for token management
 - Environment variable: `FIRAAppCheckDebugToken` (note the extra 'A')
-- Register debug tokens at: https://console.firebase.google.com/project/growth-70a85/appcheck/apps
+- Register debug tokens at: https://console.firebase.google.com/project/growth-training-app/appcheck/apps
 
 ## State Management
 
@@ -288,6 +288,69 @@ node deployPelvicFloorKnowledge.js  # or other deployment scripts
 - **Debug speed multiplier** available in TimerService for testing (`TimerService.debugSpeedMultiplier`)
 - Extensive **diagnostic scripts** in root directory for troubleshooting
 - **Multi-environment setup** supports development, staging, and production Firebase projects
+
+### Version Control Best Practices
+**IMPORTANT: Always commit and push after completing significant work:**
+
+#### When to Commit and Push
+1. **After Story Completion** - When a story status changes to "Complete" or "Done":
+   - Commit the story file and any implementation files
+   - Use descriptive commit messages with story reference
+   - Push immediately to preserve work
+
+2. **After Major Updates** - Following successful completion of:
+   - Firebase deployments (functions, Firestore rules, indexes)
+   - Knowledge base updates or expansions
+   - Configuration changes (plist files, environment settings)
+   - Significant bug fixes or feature implementations
+   - Script creation or updates that will be reused
+
+3. **After Epic Milestones** - When completing epic-level work:
+   - Commit all related story files together
+   - Include supporting scripts and documentation
+   - Push to create a clear project history
+
+#### Commit Message Format
+```bash
+# For story completion
+git commit -m "✅ Complete Story X.Y: [Story Title]
+
+[Brief description of what was accomplished]
+- Key achievement 1
+- Key achievement 2
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>"
+
+# For major updates
+git commit -m "🔧 [Action]: [Component/Feature]
+
+[What was changed and why]
+- Specific change 1
+- Specific change 2
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>"
+```
+
+#### Commit Workflow
+```bash
+# Check status before committing
+git status
+
+# Stage specific files (preferred over git add .)
+git add [specific files]
+
+# Commit with descriptive message
+git commit -m "[message]"
+
+# Push to remote immediately
+git push origin main
+```
+
+**Note**: Always push after committing to ensure work is backed up and accessible to the team.
 
 ### Key Directories to Know
 - `Growth/Features/Timer/` - Timer functionality and Live Activities
