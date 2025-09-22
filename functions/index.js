@@ -16,7 +16,7 @@ let getFallbackResponse;
 
 // AI Coach function - requires authenticated users only
 exports.generateAIResponse = onCall(
-  { 
+  {
     cors: true,  // Enable CORS for all origins
     region: 'us-central1',  // Explicitly set region
     // Disable App Check requirement for this function

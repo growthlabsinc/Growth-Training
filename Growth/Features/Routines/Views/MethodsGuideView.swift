@@ -12,29 +12,36 @@ struct MethodsGuideView: View {
     @State private var searchText = ""
     @State private var selectedCategory = "All"
     @State private var selectedMethod: GrowthMethod?
-    
+    @State private var showMethodDetail = false
+
     var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                // Search Bar
-                searchBar
-                
-                // Category Filter
-                categoryFilter
-                
-                // Methods Grid
-                methodsGrid
+        ZStack {
+            ScrollView {
+                VStack(spacing: 20) {
+                    // Search Bar
+                    searchBar
+
+                    // Category Filter
+                    categoryFilter
+
+                    // Methods Grid
+                    methodsGrid
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
+            .background(Color(.systemGroupedBackground))
         }
-        .background(Color(.systemGroupedBackground))
-        .navigationDestination(isPresented: .constant(selectedMethod != nil)) {
+        .navigationDestination(isPresented: $showMethodDetail) {
             if let method = selectedMethod {
                 MethodDetailGuideView(method: method) {
+                    showMethodDetail = false
                     selectedMethod = nil
                 }
             }
+        }
+        .onChange(of: selectedMethod) { newValue in
+            showMethodDetail = newValue != nil
         }
         .onAppear {
             viewModel.loadMethods()

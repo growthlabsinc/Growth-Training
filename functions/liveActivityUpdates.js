@@ -9,7 +9,7 @@ const { logger } = require('firebase-functions');
 const EnhancedLogger = require('./utils/enhancedLogger');
 
 // Define the secrets - production only
-const apnsAuthKeyProdSecret = defineSecret('APNS_AUTH_KEY_DQ46FN4PQU'); // Production key only
+const apnsAuthKeySecret = defineSecret('APNS_AUTH_KEY'); // Generic APNS auth key
 const apnsKeyIdSecret = defineSecret('APNS_KEY_ID');
 const apnsTeamIdSecret = defineSecret('APNS_TEAM_ID');
 const apnsTopicSecret = defineSecret('APNS_TOPIC');
@@ -51,16 +51,17 @@ async function initialize() {
     // Load APNs credentials from secrets
     config.apnsTeamId = process.env.APNS_TEAM_ID?.trim();
     config.apnsTopic = process.env.APNS_TOPIC?.trim();
-    
-    // Load production key only
-    const prodKey = process.env.APNS_AUTH_KEY_DQ46FN4PQU;
-    
-    // Set production credentials only
-    config.apnsKey = prodKey;
-    config.apnsKeyId = 'DQ46FN4PQU';
-    
-    logger.log('- Production Key available:', !!prodKey ? '✅ DQ46FN4PQU' : '❌ Not found');
-    logger.log('- Using Key:', config.apnsKeyId);
+    config.apnsKeyId = process.env.APNS_KEY_ID?.trim();
+
+    // Load the generic APNS auth key
+    const authKey = process.env.APNS_AUTH_KEY;
+
+    // Set credentials
+    config.apnsKey = authKey;
+
+    logger.log('- Auth Key available:', !!authKey ? '✅' : '❌ Not found');
+    logger.log('- Key ID:', config.apnsKeyId || 'Not set');
+    logger.log('- Team ID:', config.apnsTeamId || 'Not set');
     
     if (!config.apnsKey) {
       logger.error('❌ [Initialize] No APNS auth keys found in environment');
@@ -643,7 +644,7 @@ exports.updateLiveActivity = onCall(
   { 
     region: 'us-central1',
     secrets: [
-      apnsAuthKeyProdSecret, 
+      apnsAuthKeySecret, 
       apnsKeyIdSecret, 
       apnsTeamIdSecret, 
       apnsTopicSecret
@@ -849,7 +850,7 @@ exports.updateLiveActivityTimer = onCall(
     memory: '256MiB',
     timeoutSeconds: 30,
     secrets: [
-      apnsAuthKeyProdSecret, 
+      apnsAuthKeySecret, 
       apnsKeyIdSecret, 
       apnsTeamIdSecret, 
       apnsTopicSecret
@@ -1059,7 +1060,7 @@ exports.testAPNsConnection = onCall(
   {
     region: 'us-central1',
     secrets: [
-      apnsAuthKeyProdSecret, 
+      apnsAuthKeySecret, 
       apnsKeyIdSecret, 
       apnsTeamIdSecret, 
       apnsTopicSecret
@@ -1142,7 +1143,7 @@ exports.registerLiveActivityPushToken = onCall(
     region: 'us-central1',
     consumeAppCheckToken: false,
     secrets: [
-      apnsAuthKeyProdSecret, 
+      apnsAuthKeySecret, 
       apnsKeyIdSecret, 
       apnsTeamIdSecret, 
       apnsTopicSecret
@@ -1196,7 +1197,7 @@ exports.registerPushToStartToken = onCall(
     region: 'us-central1',
     consumeAppCheckToken: false,
     secrets: [
-      apnsAuthKeyProdSecret, 
+      apnsAuthKeySecret, 
       apnsKeyIdSecret, 
       apnsTeamIdSecret, 
       apnsTopicSecret
@@ -1245,7 +1246,7 @@ exports.onTimerStateChange = onDocumentWritten(
     document: 'activeTimers/{userId}',
     region: 'us-central1',
     secrets: [
-      apnsAuthKeyProdSecret, 
+      apnsAuthKeySecret, 
       apnsKeyIdSecret, 
       apnsTeamIdSecret, 
       apnsTopicSecret
