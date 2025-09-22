@@ -50,7 +50,7 @@ class EnhancedDebugAppCheckProvider: NSObject, AppCheckProvider {
         
         // Only log critical info for new token generation
         Logger.info("🆕 Generated NEW App Check Debug Token: \(newToken)")
-        Logger.info("⚠️ Register at: https://console.firebase.google.com/project/growth-70a85/appcheck/apps")
+        Logger.info("⚠️ Register at: https://console.firebase.google.com/project/growth-training-app/appcheck/apps")
         
         return newToken
     }

@@ -65,7 +65,7 @@ class AppCheckTokenManager {
             if let token = token {
                 Logger.debug("✅ New token generated: \(token.token)")
                 Logger.debug("📋 Register this token in Firebase Console:")
-                Logger.debug("   Project: growth-70a85")
+                Logger.debug("   Project: growth-training-app")
                 Logger.debug("   Bundle ID: com.growthlabs.growthmethod")
                 Logger.debug("   Token: \(token.token)")
                 

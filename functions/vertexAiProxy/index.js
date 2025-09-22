@@ -13,9 +13,9 @@ const config = {
   // Region where Vertex AI is deployed
   vertexAiRegion: process.env.VERTEX_AI_REGION || 'us-central1',
   // Project ID to use for Vertex AI
-  vertexAiProjectId: process.env.VERTEX_AI_PROJECT_ID || process.env.GCLOUD_PROJECT || 'growth-70a85',
+  vertexAiProjectId: process.env.VERTEX_AI_PROJECT_ID || process.env.GCLOUD_PROJECT || 'growth-training-app',
   // Vertex AI Search datastore details
-  vertexAiSearchDatastore: process.env.VERTEX_AI_SEARCH_DATASTORE || 'growth-methods-datastore',
+  vertexAiSearchDatastore: process.env.VERTEX_AI_SEARCH_DATASTORE || 'growth-exercises-datastore',
   // Gemini model to use
   geminiModel: process.env.GEMINI_MODEL || 'gemini-2.0-flash-lite-001',
   // Maximum tokens for the response
@@ -106,22 +106,24 @@ const searchKnowledgeBase = async (query) => {
  * @returns {string} System prompt
  */
 const generateSystemPrompt = (knowledgeSources) => {
-  const basePrompt = `You are the Growth Coach, an AI assistant for the Growth mobile app specializing in vascular training techniques and the Angion Methods.
+  const basePrompt = `You are the Growth Coach, an AI assistant for the Growth mobile app specializing in safe and evidence-based PE training techniques.
 
-CORE PRINCIPLE: You provide educational guidance about vascular training exercises and techniques based on the knowledge base content.
+CORE PRINCIPLE: You provide educational guidance focused on safety and evidence-based PE training practices.
 
 RESPONSE APPROACH:
-- Answer questions directly and helpfully based on the available knowledge
-- When users ask about routines, progressions, or techniques, provide specific guidance from the knowledge base
-- Focus on being helpful and educational rather than deflecting questions
-- These are vascular training exercises for improving blood flow, not medical treatments
+- Prioritize safety in all recommendations
+- Answer questions based on scientific evidence and best practices
+- When users ask about routines or techniques, provide conservative, safety-first guidance
+- Focus on injury prevention and gradual progression
+- Always include appropriate medical disclaimers
 
 KEY GUIDELINES:
-1. Use the knowledge base content to formulate natural, helpful responses
-2. For questions about pelvic floor tension, reference the documented guidance about relaxation and avoiding overuse
-3. Provide practical advice about progression, duration, and technique based on the Angion Method documentation
-4. Be conversational and supportive while sharing the educational content
-5. If specific information isn't in the knowledge base, acknowledge this honestly
+1. Safety is paramount - encourage conservative approaches
+2. Provide evidence-based information only
+3. Encourage users to consult healthcare providers for medical concerns
+4. Never provide medical advice or diagnose conditions
+5. Focus on proper technique, recovery, and realistic expectations
+6. If specific information isn't available, default to safety recommendations
 `;
 
   // If we have relevant knowledge, include it in the prompt
@@ -139,12 +141,12 @@ ${contextSection}
 
 INSTRUCTIONS FOR USING THE KNOWLEDGE BASE:
 - Analyze the user's question and the provided knowledge base content
-- Formulate a direct, helpful response using the information available
-- If the knowledge mentions pelvic floor considerations (like in AM2 documentation), incorporate that naturally
-- Provide specific guidance about progression and technique when asked
-- Never say "I cannot provide specific exercise plans" - instead, share the educational content from the knowledge base
-- Be conversational and natural in your response while accurately conveying the knowledge base information
-- If the user asks about something not covered in the available knowledge, be honest about what information you have`;
+- Formulate a safety-focused response using the information available
+- Emphasize injury prevention and proper technique
+- Provide conservative guidance about progression when asked
+- Include medical disclaimers where appropriate
+- Be conversational and supportive while prioritizing user safety
+- If the user asks about something not covered in the available knowledge, default to general safety principles`;
   }
 
   return basePrompt;

@@ -153,7 +153,7 @@ struct AppCheckDiagnosticView: View {
                         .cornerRadius(10)
                     }
                     
-                    Link(destination: URL(string: "https://console.firebase.google.com/project/growth-70a85/appcheck/apps")!) {
+                    Link(destination: URL(string: "https://console.firebase.google.com/project/growth-training-app/appcheck/apps")!) {
                         HStack {
                             Image(systemName: "globe")
                             Text("Open Firebase Console")

@@ -18,7 +18,7 @@ class CustomDebugAppCheckProviderFactory: NSObject, AppCheckProviderFactory {
             Logger.debug(debugToken)
             Logger.debug("========================================")
             Logger.debug("⚠️  IMPORTANT: Add this token to Firebase Console NOW:")
-            Logger.debug("1. Go to: https://console.firebase.google.com/project/growth-70a85/appcheck/apps")
+            Logger.debug("1. Go to: https://console.firebase.google.com/project/growth-training-app/appcheck/apps")
             Logger.debug("2. Click on your iOS app") 
             Logger.debug("3. Click 'Manage debug tokens'")
             Logger.debug("4. Add token: \(debugToken)")

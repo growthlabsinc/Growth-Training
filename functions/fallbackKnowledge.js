@@ -1,214 +1,194 @@
 /**
  * Fallback knowledge base for AI Coach
  * This provides responses when the Firestore knowledge base is unavailable
+ * Updated: Focused on PE safety and evidence-based training
  */
 
 const fallbackKnowledge = {
-  // AM1/Angion Method 1.0 specific content
-  'am1': {
-    keywords: ['am1', 'am 1', 'angion method 1', 'angion method 1.0', 'beginner method'],
-    response: `AM1 (Angion Method 1.0) is designed for those who can obtain an erection without devices or substances, but cannot yet take their pulse on their dorsal arteries (or the pulse is weak/difficult to detect).
+  // General safety guidelines
+  'safety': {
+    keywords: ['safety', 'safe', 'injury', 'pain', 'hurt', 'damage', 'risk'],
+    response: `**Safety First - PE Training Guidelines:**
 
-**Key Points about AM1:**
+**Stop Immediately If You Experience:**
+• Sharp or severe pain
+• Numbness lasting more than 15 minutes
+• Cold sensation or discoloration
+• Any bleeding or bruising
+• Persistent discomfort after sessions
 
-• **Target**: Manipulates the venous side of circulation through thumb-based techniques
-• **Duration**: Work up to 30-minute sessions gradually  
-• **Position**: Always perform lying down (never seated)
-• **Progression**: Master before moving to AM2 - look for palpable arterial pulse
+**Core Safety Principles:**
+1. **Start Conservative**: Begin with minimal intensity and duration
+2. **Progress Gradually**: Increase by no more than 10% weekly
+3. **Listen to Your Body**: Discomfort is okay, pain is not
+4. **Rest is Essential**: Minimum 1-2 rest days per week
+5. **Warmup Always**: Heat application or light massage before training
 
-**Technique Summary:**
-1. Apply lubricant along the dorsal (top) side of the shaft
-2. Use alternating thumb strokes to create a "traveling wave" effect
-3. Maintain 60-80% erection level
-4. Focus on rhythm and consistency
+**Medical Disclaimer:**
+This information is for educational purposes only and does not replace professional medical advice. Consult a healthcare provider before beginning any PE training program, especially if you have existing health conditions.
 
-**Common Issues:**
-- Losing erection during practice is normal with arterial insufficiency
-- This will improve as vascular development progresses
-- Patience and consistency are key
-
-Start with shorter sessions (5-10 minutes) and gradually build up. You're ready for AM2 when you can maintain an erection for 30 minutes and feel a clear pulse in your dorsal arteries.`
+Remember: Patience and consistency are safer than aggressive intensity.`
   },
 
-  // AM2/Angion Method 2.0 content
-  'am2': {
-    keywords: ['am2', 'am 2', 'angion method 2', 'angion method 2.0', 'arterial method'],
-    response: `AM2 (Angion Method 2.0) represents a significant progression, focusing on arterial manipulation rather than venous stimulation.
+  // General PE methodology
+  'methodology': {
+    keywords: ['method', 'technique', 'exercise', 'training', 'routine', 'program'],
+    response: `**PE Training Methodology Overview:**
 
-**Key Differences from AM1:**
-• Requires palpable arterial pulse to begin
-• Works with semi-erect state (not fully hard)
-• Avoid overusing pelvic floor muscles
+**Evidence-Based Approaches:**
+• **Length Training**: Manual stretching, hanging, extending
+• **Girth Training**: Pumping, clamping, manual exercises
+• **EQ Enhancement**: Kegels, cardiovascular fitness, lifestyle factors
 
-**Proper Erection Level:**
-The creator emphasizes using a **semi-erect state** for better blood flow. Many struggle because they try to maintain full erection, which restricts flow.
+**Training Principles:**
+1. **Progressive Overload**: Gradually increase stress on tissues
+2. **Recovery Focus**: Growth occurs during rest periods
+3. **Consistency**: Regular practice yields better results than intensity
+4. **Individual Response**: Results vary based on genetics and dedication
 
-**Common Challenge - Pelvic Floor:**
-The #1 issue when transitioning from AM1 to AM2 is overusing kegel muscles, which:
-- Makes maintaining erection difficult
-- Causes loss of fullness
-- Restricts the blood flow you're trying to enhance
-
-**Best Practice:**
-- Lie back on your bed
-- Keep pelvic floor relaxed
-- Start with semi-erect/heavily engorged state
-- Focus on the arterial "wave" effect
-
-The jump from AM1 to AM2 is large - expect challenges initially. Flattened CS and shriveled glans are normal at first and will improve with practice.`
-  },
-
-  // Abbreviations and terminology
-  'abbreviations': {
-    keywords: ['abbreviation', 'what is', 'what does', 'mean', 'terminology', 'cc', 'cs', 'bfr', 'eq', 'sabre'],
-    response: `**Common Abbreviations in Growth Methods:**
-
-**Method Terms:**
-• **AM** - Angion Method: Primary vascular training methodology
-• **SABRE** - Strike Activated Bayliss Response Exercise: Advanced percussion technique
-• **BFR** - Blood Flow Restrictive: Controlled restriction technique
-
-**Anatomical Terms:**
-• **CC** - Corpus Cavernosum: Two side chambers that fill with blood
-• **CS** - Corpus Spongiosum: Bottom chamber containing urethra
-• **BC** - Bulbospongiosus Muscle: Pelvic floor muscle
-• **IC** - Ischiocavernosus Muscle: Helps maintain erections
-
-**Measurement Terms:**
-• **BPEL** - Bone Pressed Erect Length
-• **NBPEL** - Non Bone Pressed Erect Length
-• **EG** - Erect Girth
-
-**Function Terms:**
-• **EQ** - Erection Quality (rated 1-10)
-• **ED** - Erectile Dysfunction
-• **NO** - Nitric Oxide: Crucial for vessel dilation
-
-Remember: Focus on understanding concepts, not just memorizing terms. The Angion Method prioritizes functional improvements and vascular health over cosmetic changes.`
-  },
-
-  // Vascion/AM3 content
-  'vascion': {
-    keywords: ['vascion', 'am3', 'am 3', 'angion method 3', 'corpus spongiosum'],
-    response: `Vascion (Angion Method 3.0) is the advanced technique focusing specifically on the Corpus Spongiosum (CS) through rapid finger stimulation.
-
-**Prerequisites:**
-- Strong arterial development from AM2
-- Excellent erection quality
-- CS is prominent and responsive
-
-**Technique:**
-• Use alternating middle finger strikes on the CS
-• Create a "drumming" effect from base to glans
-• Maintain rapid rhythm (2-3 strikes per second)
-• Work along the CS groove
-
-**Key Points:**
-- Most intense of the hand-based methods
-- Requires excellent coordination
-- Start slowly to develop proper rhythm
-- Can practice on forearm first
-
-Only attempt Vascion after mastering AM2. The intense stimulation can cause vessel spasm or inflammation if attempted too early. This technique represents peak manual vascular stimulation.`
-  },
-
-  // SABRE techniques
-  'sabre': {
-    keywords: ['sabre', 'strike', 'percussion', 'bayliss', 'advanced technique'],
-    response: `SABRE (Strike Activated Bayliss Response Exercise) is an advanced technique that uses controlled percussion to stimulate vascular development.
-
-**CRITICAL WARNING**: SABRE is a double-edged sword - extremely effective but potentially dangerous. Improper use can cause blood vessel damage. Proceed with extreme caution.
-
-**Key Concepts:**
-• Uses controlled strikes to create fluid displacement
-• Combines shear stress AND cyclic stretch
-• Bypasses normal tissue limitations
-• Requires mastery of AM1 and AM2 first
-
-**Execution Basics:**
-- Always at 100% erection
-- Lying down position only
-- Target base where penis meets pubic bone
-- Light taps (like knocking on door)
-- Start VERY gentle, progress slowly
-- Sessions: 20-30 minutes
+**Typical Progression:**
+• Beginner: 3 months foundation building
+• Intermediate: 6-12 months focused training
+• Advanced: Maintenance and specialized techniques
 
 **Important Notes:**
-- You don't need to maintain erection throughout
-- Focus on tissue fullness, not erection
-- 1-on-2-off schedule (more rest than Angion Methods)
-- Any pain means stop immediately
+- Start with manual exercises before equipment
+- Master basics before attempting advanced techniques
+- Document progress with measurements monthly
+- Realistic expectations: 0.5-1.5 inches over 12-18 months
 
-SABRE represents cutting-edge vascular enhancement but demands respect, patience, and intelligent application.`
+Always prioritize safety over aggressive gains.`
   },
 
-  // Progression timeline
+  // Equipment guidance
+  'equipment': {
+    keywords: ['pump', 'hanger', 'extender', 'device', 'equipment', 'tool'],
+    response: `**PE Equipment Guidelines:**
+
+**Common Equipment Types:**
+• **Pumps**: Create vacuum for expansion training
+• **Hangers**: Apply traction for length work
+• **Extenders**: Provide consistent stretch over time
+• **Clamps**: Advanced girth technique (use with caution)
+
+**Equipment Safety:**
+1. **Quality Matters**: Invest in reputable equipment
+2. **Start Light**: Begin with minimal pressure/weight
+3. **Time Limits**: Follow manufacturer guidelines
+4. **Hygiene**: Keep equipment clean and sanitized
+5. **Inspection**: Check for damage before each use
+
+**General Guidelines:**
+- Manual exercises first, equipment later
+- Never exceed recommended pressures/weights
+- Stop if you experience pain or numbness
+- Allow tissue recovery between sessions
+
+**Warning**: Improper equipment use can cause permanent injury. When in doubt, err on the side of caution.`
+  },
+
+  // Progression and results
   'progression': {
-    keywords: ['timeline', 'progression', 'results', 'how long', 'when will'],
-    response: `**Vascularity Progression Timeline:**
+    keywords: ['results', 'gains', 'progress', 'timeline', 'how long', 'when will'],
+    response: `**PE Progression & Results Timeline:**
 
-**Early Stage (Weeks 1-4):**
-• Return/improvement of morning erections
-• Better frequency and strength
-• Initial vein visibility
+**Realistic Expectations:**
 
-**Middle Stage (Weeks 4-8):**
-• Morning erections persist longer
-• Develop "morning soreness" (positive sign)
-• Noticeably fuller erections
-• Improved flaccid hang
+**Early Phase (Months 1-3):**
+• Improved erection quality
+• Better blood flow
+• Minor temporary expansion
+• Establishing routine consistency
 
-**Advanced Stage (Week 8+):**
-• Visible throbbing with pulse
-• Consistent fullness throughout day
-• Partners notice improvements
+**Development Phase (Months 4-9):**
+• First measurable gains (0.25-0.5")
+• Improved stamina
+• Better vascular health
+• Technique refinement
 
-**Functional Improvements:**
-• Faster arousal response
-• Quicker recovery between sessions
-• Enhanced sensitivity
-• Better control and awareness
+**Advanced Phase (Months 10+):**
+• Continued gradual gains
+• Plateau periods are normal
+• Focus shifts to maintenance
+• Total realistic gains: 0.5-1.5" length, 0.25-0.75" girth
 
-**Important Notes:**
-1. Functionality improves before size
-2. Timeline varies by individual
-3. Consistency is key
-4. Patience required - major changes take months
+**Key Factors for Success:**
+1. Consistency over intensity
+2. Proper recovery between sessions
+3. Good overall health habits
+4. Realistic expectations
+5. Patient, gradual progression
 
-Focus on functional gains - they indicate healthy progression and lead to sustainable improvements.`
+Remember: Results vary significantly between individuals. Focus on the process, not just outcomes.`
   },
 
   // General help
   'help': {
-    keywords: ['help', 'what can', 'how to use', 'getting started'],
-    response: `I'm your Growth Coach, here to help you understand and practice Growth Methods safely and effectively.
+    keywords: ['help', 'what can', 'how to use', 'getting started', 'coach'],
+    response: `I'm your PE Training Coach, focused on safe and evidence-based training guidance.
 
 **I can help you with:**
 
-**Growth Methods:**
-• AM1, AM2, Vascion techniques
-• SABRE advanced methods
-• Proper progression paths
-• Technique troubleshooting
+**Training Guidance:**
+• Safe exercise techniques
+• Progression planning
+• Equipment recommendations
+• Recovery protocols
 
-**Understanding Terms:**
-• Method abbreviations (AM, CS, CC, etc.)
-• Anatomical terminology
-• Measurement standards
+**Safety & Health:**
+• Injury prevention
+• Warning signs to watch for
+• When to take breaks
+• Medical considerations
 
-**Progress & Safety:**
-• Expected timelines
-• Safety guidelines
-• When to advance stages
-• Common mistakes to avoid
+**Progress Tracking:**
+• Measurement techniques
+• Realistic timelines
+• Plateau management
+• Goal setting
 
 **Best Practices:**
-• Always perform exercises lying down
-• Start with appropriate stage for your level
-• Be patient - progression takes time
+• Always warm up before training
+• Start with beginner techniques
+• Document your progress
+• Prioritize recovery
 • Stop if you experience pain
 
-What specific aspect would you like to explore?`
+**Medical Disclaimer:**
+This guidance is educational only. Consult healthcare providers for medical advice.
+
+What specific aspect of PE training would you like to explore?`
+  },
+
+  // Abbreviations and terminology
+  'abbreviations': {
+    keywords: ['abbreviation', 'what is', 'what does', 'mean', 'terminology', 'bpel', 'eq'],
+    response: `**Common PE Terminology:**
+
+**Measurement Terms:**
+• **BPEL** - Bone Pressed Erect Length
+• **NBPEL** - Non Bone Pressed Erect Length
+• **EG** - Erect Girth (circumference)
+• **BPFSL** - Bone Pressed Flaccid Stretched Length
+
+**Anatomical Terms:**
+• **CC** - Corpus Cavernosum (erectile chambers)
+• **CS** - Corpus Spongiosum (contains urethra)
+• **Tunica** - Tough tissue surrounding erectile chambers
+• **Glans** - Head of the penis
+
+**Training Terms:**
+• **EQ** - Erection Quality (1-10 scale)
+• **PI** - Physiological Indicators (signs of overtraining)
+• **Newbie Gains** - Initial gains in first months
+• **Plateau** - Period of no measurable gains
+
+**Safety Terms:**
+• **Discoloration** - Darkening from broken capillaries
+• **Edema** - Fluid buildup (temporary swelling)
+• **Thrombosed** - Blocked vein (requires rest)
+
+Understanding proper terminology helps track progress and communicate effectively about training.`
   }
 };
 
@@ -219,7 +199,7 @@ What specific aspect would you like to explore?`
  */
 function getFallbackResponse(query) {
   const lowerQuery = query.toLowerCase();
-  
+
   // Check each knowledge category
   for (const [category, data] of Object.entries(fallbackKnowledge)) {
     // Check if any keywords match
@@ -228,9 +208,23 @@ function getFallbackResponse(query) {
       return data.response;
     }
   }
-  
-  // Default response if no specific match
-  return null;
+
+  // Default safety response if no specific match
+  return `I understand you're looking for PE training guidance. While I search for specific information, please remember:
+
+**Core Safety Principles:**
+• Start conservatively and progress gradually
+• Stop immediately if you experience pain
+• Allow adequate recovery between sessions
+• Consult a healthcare provider for medical concerns
+
+For specific guidance, please rephrase your question or ask about:
+• Safety guidelines
+• Training methodology
+• Equipment usage
+• Progress expectations
+
+Your safety is the top priority in any training program.`;
 }
 
 module.exports = {

@@ -81,7 +81,7 @@ class AppCheckDiagnostics {
             switch report.errorType {
             case .tokenNotRegistered:
                 recommendations.append("Register debug token '\(report.debugToken ?? "N/A")' in Firebase Console.")
-                recommendations.append("Go to: https://console.firebase.google.com/project/growth-70a85/appcheck/apps")
+                recommendations.append("Go to: https://console.firebase.google.com/project/growth-training-app/appcheck/apps")
             case .appNotConfigured:
                 recommendations.append("App Check may not be properly configured in Firebase Console.")
             case .unknown:
