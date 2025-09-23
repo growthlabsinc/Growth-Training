@@ -165,3 +165,8 @@ keys/
 
 # Node modules backup
 functions_backup/node_modules_old/
+
+# Service account keys
+service-account*.json
+*-service-account.json
+serviceAccountKey.json

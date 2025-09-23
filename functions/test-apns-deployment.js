@@ -8,7 +8,7 @@ async function testAPNsConnection() {
     const idToken = process.env.FIREBASE_TEST_TOKEN || '';
     
     const response = await axios.post(
-      'https://us-central1-growth-70a85.cloudfunctions.net/testAPNsConnection',
+      'https://us-central1-growth-training-app.cloudfunctions.net/testAPNsConnection',
       {},
       {
         headers: {

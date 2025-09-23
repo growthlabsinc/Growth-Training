@@ -8,7 +8,7 @@ async function testUpdateLiveActivity() {
     console.log('Test 1: Calling with empty data (should fail)...');
     try {
       const response1 = await axios.post(
-        'https://us-central1-growth-70a85.cloudfunctions.net/updateLiveActivity',
+        'https://us-central1-growth-training-app.cloudfunctions.net/updateLiveActivity',
         {
           data: {}
         },
@@ -29,7 +29,7 @@ async function testUpdateLiveActivity() {
     console.log('Test 2: Calling with all required parameters (mock data)...');
     try {
       const response2 = await axios.post(
-        'https://us-central1-growth-70a85.cloudfunctions.net/updateLiveActivity',
+        'https://us-central1-growth-training-app.cloudfunctions.net/updateLiveActivity',
         {
           data: {
             pushToken: 'test-push-token-12345',
@@ -62,7 +62,7 @@ async function testUpdateLiveActivity() {
     console.log('Test 3: Calling without pushToken (should attempt lookup)...');
     try {
       const response3 = await axios.post(
-        'https://us-central1-growth-70a85.cloudfunctions.net/updateLiveActivity',
+        'https://us-central1-growth-training-app.cloudfunctions.net/updateLiveActivity',
         {
           data: {
             // No pushToken provided - function should look it up

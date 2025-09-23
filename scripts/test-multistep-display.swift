@@ -16,8 +16,8 @@ struct GrowthMethod {
 }
 
 // Test data
-let angionMethod = GrowthMethod(
-    title: "Angion Method 1.0",
+let peMethod = GrowthMethod(
+    title: "PE Foundation Method",
     steps: [
         MethodStep(stepNumber: 1, title: "Preparation", description: "Get ready", duration: 60),
         MethodStep(stepNumber: 2, title: "Warm Up", description: "Start slowly", duration: 300),
@@ -60,7 +60,7 @@ func displayMethod(_ method: GrowthMethod) {
 print("Testing Multi-Step Display Logic\n")
 print("================================\n")
 
-displayMethod(angionMethod)
+displayMethod(peMethod)
 displayMethod(legacyMethod)
 
 print("✅ Test complete - multi-step logic verified")

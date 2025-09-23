@@ -14,7 +14,7 @@ The app with bundle ID `com.growthlabs.growthmethod` and app ID `1:645068839446:
 ### Option 1: Configure App Check Properly (Recommended)
 
 1. **Go to Firebase Console**
-   - Navigate to https://console.firebase.google.com/project/growth-70a85
+   - Navigate to https://console.firebase.google.com/project/growth-training-app
    - Go to **App Check** section (under Build)
 
 2. **Register Your iOS App**

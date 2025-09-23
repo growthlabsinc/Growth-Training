@@ -7,7 +7,7 @@ echo ""
 
 # Test with curl (should now work with the IAM bindings)
 echo "Testing direct HTTP call..."
-curl -X POST https://us-central1-growth-70a85.cloudfunctions.net/generateAIResponse \
+curl -X POST https://us-central1-growth-training-app.cloudfunctions.net/generateAIResponse \
   -H "Content-Type: application/json" \
   -d '{"data":{"query":"Hello"}}' \
   -w "\n\nHTTP Status: %{http_code}\n" \

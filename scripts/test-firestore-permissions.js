@@ -22,7 +22,7 @@ try {
 
   admin.initializeApp({
     credential: credential,
-    projectId: 'growth-70a85'
+    projectId: 'growth-training-app'
   });
 } catch (error) {
   console.error('Error initializing Firebase Admin SDK:', error);

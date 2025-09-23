@@ -24,8 +24,8 @@ echo "✅ Firebase authentication confirmed"
 echo ""
 
 # Set the project
-echo "🔧 Setting Firebase project to growth-70a85..."
-firebase use growth-70a85
+echo "🔧 Setting Firebase project to growth-training-app..."
+firebase use growth-training-app
 
 echo ""
 echo "📚 Running knowledge base update script..."

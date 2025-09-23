@@ -13,7 +13,7 @@ async function uploadWithSDK() {
     
     // Initialize with application default credentials
     const app = admin.default.initializeApp({
-      projectId: 'growth-70a85'
+      projectId: 'growth-training-app'
     });
     
     const db = admin.default.firestore();

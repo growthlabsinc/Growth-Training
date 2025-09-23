@@ -11,7 +11,7 @@ const environments = {
     // Vertex AI settings
     vertexAiRegion: 'us-central1',
     vertexAiProjectId: 'growth-app-dev',
-    vertexAiSearchDatastore: 'growth-methods-dev',
+    vertexAiSearchDatastore: 'growth-exercises-dev',
     
     // Gemini model settings
     geminiModel: 'gemini-2.0-flash-lite-001',
@@ -35,7 +35,7 @@ const environments = {
     // Vertex AI settings
     vertexAiRegion: 'us-central1',
     vertexAiProjectId: 'growth-app-prod',
-    vertexAiSearchDatastore: 'growth-methods-prod',
+    vertexAiSearchDatastore: 'growth-exercises-prod',
     
     // Gemini model settings
     geminiModel: 'gemini-2.0-flash-lite-001',

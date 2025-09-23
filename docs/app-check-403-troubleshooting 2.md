@@ -15,7 +15,7 @@ Firebase App Check: Token verification error: 403
 **Issue**: The app with bundle ID `com.growthlabs.growthmethod` is not registered for App Check.
 
 **Solution**:
-1. Go to [Firebase Console App Check](https://console.firebase.google.com/project/growth-70a85/appcheck/apps)
+1. Go to [Firebase Console App Check](https://console.firebase.google.com/project/growth-training-app/appcheck/apps)
 2. Click on your iOS app
 3. Enable App Check if not already enabled
 4. Choose "App Attest" as the provider for production

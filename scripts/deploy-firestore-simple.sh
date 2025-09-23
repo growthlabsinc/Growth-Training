@@ -24,7 +24,7 @@ const serviceAccount = require('./service-account-key.json');
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  projectId: 'growth-70a85'
+  projectId: 'growth-training-app'
 });
 
 const db = admin.firestore();
@@ -260,7 +260,7 @@ EOF
 
 echo -e "\n📋 Manual Deployment Instructions:"
 echo "1. Go to Firebase Console: https://console.firebase.google.com"
-echo "2. Select project: growth-70a85"
+echo "2. Select project: growth-training-app"
 echo "3. Navigate to Firestore Database"
 echo "4. Find the 'growthMethods' collection"
 echo "5. Update these documents:"

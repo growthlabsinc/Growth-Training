@@ -10,7 +10,7 @@ All Firebase Functions have been successfully fixed and deployed. The errors tha
 - **Fix Applied**: Migrated from Firebase Functions v1 to v2, replaced `functions.config()` with Secret Manager
 - **Status**: Successfully deployed
 - **URL**: https://handleappstorenotification-7lb4hvy3wa-uc.a.run.app
-- **Webhook URL**: https://us-central1-growth-70a85.cloudfunctions.net/handleAppStoreNotification
+- **Webhook URL**: https://us-central1-growth-training-app.cloudfunctions.net/handleAppStoreNotification
 
 ### 2. ✅ updateLiveActivitySimplified  
 - **Previous Errors**: 
@@ -73,7 +73,7 @@ APP_STORE_SHARED_SECRET       ✅ Configured
 - [ ] Start a timer and verify Live Activity updates work without APNs errors
 - [ ] Test subscription receipt validation
 - [ ] Configure App Store webhook URL in App Store Connect:
-      `https://us-central1-growth-70a85.cloudfunctions.net/handleAppStoreNotification`
+      `https://us-central1-growth-training-app.cloudfunctions.net/handleAppStoreNotification`
 
 ## Monitoring
 

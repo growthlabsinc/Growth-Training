@@ -12,7 +12,7 @@ The debug token `4C4C2F26-8881-4144-9B48-6FD556A0CD3D` needs to be properly regi
 
 ### 1. Add Debug Token to Firebase Console
 
-1. Go to [Firebase Console](https://console.firebase.google.com/project/growth-70a85/appcheck/apps)
+1. Go to [Firebase Console](https://console.firebase.google.com/project/growth-training-app/appcheck/apps)
 2. Select your iOS app
 3. Click the **3 dots menu** → **Manage debug tokens**
 4. Click **Add debug token**

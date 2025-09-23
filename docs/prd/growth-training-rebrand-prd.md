@@ -9,7 +9,7 @@ This PRD outlines the comprehensive rebranding of the existing iOS application f
 ### Current State
 - **Product Name**: Angion Method App
 - **Target Community**: r/AngionMethod (ED exercises)
-- **Firebase Project**: growth-70a85
+- **Firebase Project**: growth-training-app
 - **Bundle ID**: com.growthlabs.growthmethod
 
 ### Target State

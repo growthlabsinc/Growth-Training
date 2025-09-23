@@ -98,7 +98,7 @@ Look for any Firebase configuration errors in the Xcode console
 ### 3. Verify Connection
 The app should connect to the new Firebase project:
 - Project: `growth-training-app`
-- Instead of the old: `growth-70a85`
+- Instead of the old: `growth-training-app`
 
 ## Troubleshooting
 

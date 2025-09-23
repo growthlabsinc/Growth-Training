@@ -5,7 +5,7 @@ Since the `legalDocuments` collection doesn't exist, you need to create it manua
 ## Step-by-Step Instructions:
 
 ### 1. Open Firebase Console
-Go to: https://console.firebase.google.com/project/growth-70a85/firestore/data
+Go to: https://console.firebase.google.com/project/growth-training-app/firestore/data
 
 ### 2. Create the Collection
 1. Click **"+ Start collection"**

@@ -3,7 +3,7 @@
 # Script to fix Firebase Functions authentication issues
 # This allows the generateAIResponse function to be called without authentication
 
-PROJECT_ID="growth-70a85"
+PROJECT_ID="growth-training-app"
 FUNCTION_NAME="generateAIResponse"
 REGION="us-central1"
 

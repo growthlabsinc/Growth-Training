@@ -36,7 +36,7 @@ CURRENT_PROJECT=$(firebase use 2>/dev/null | grep "Active Project:" | cut -d' ' 
 if [ -z "$CURRENT_PROJECT" ]; then
     echo -e "${YELLOW}⚠️  No active Firebase project${NC}"
     echo "Setting default project..."
-    firebase use growth-70a85
+    firebase use growth-training-app
 else
     echo -e "${GREEN}✓ Active project: $CURRENT_PROJECT${NC}"
 fi
@@ -83,7 +83,7 @@ echo "======================================"
 echo ""
 echo -e "${YELLOW}IMPORTANT: Manual steps required in Firebase Console${NC}"
 echo ""
-echo "1. Open: https://console.firebase.google.com/project/growth-70a85/appcheck"
+echo "1. Open: https://console.firebase.google.com/project/growth-training-app/appcheck"
 echo ""
 echo "2. Register your iOS app if not already done:"
 echo "   - Click on your iOS app (com.growthtraining.Growth)"
@@ -114,7 +114,7 @@ echo "=================================="
 echo "Summary of Changes Made:"
 echo "=================================="
 echo "✅ Firebase CLI verified"
-echo "✅ Project set to growth-70a85"
+echo "✅ Project set to growth-training-app"
 echo "✅ Security rules deployed (without App Check)"
 echo "✅ Cloud Functions deployed"
 echo "✅ Anonymous auth disabled in app"

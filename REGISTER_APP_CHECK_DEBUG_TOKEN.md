@@ -8,7 +8,7 @@ The app is failing with App Check authentication errors. You need to register th
 ## Steps to Register
 
 1. Go to Firebase Console: https://console.firebase.google.com
-2. Select your project: `growth-70a85`
+2. Select your project: `growth-training-app`
 3. Navigate to **App Check** in the left sidebar
 4. Click on your iOS app (`com.growthlabs.growthmethod`)
 5. Click on the **3 dots menu** (⋮) next to your app

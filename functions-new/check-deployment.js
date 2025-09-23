@@ -1,7 +1,7 @@
 const https = require('https');
 
 // Check if the function is responding
-const functionUrl = 'https://us-central1-growth-70a85.cloudfunctions.net/manageLiveActivityUpdates';
+const functionUrl = 'https://us-central1-growth-training-app.cloudfunctions.net/manageLiveActivityUpdates';
 
 const testData = JSON.stringify({
   data: {
@@ -12,7 +12,7 @@ const testData = JSON.stringify({
 });
 
 const options = {
-  hostname: 'us-central1-growth-70a85.cloudfunctions.net',
+  hostname: 'us-central1-growth-training-app.cloudfunctions.net',
   path: '/manageLiveActivityUpdates',
   method: 'POST',
   headers: {

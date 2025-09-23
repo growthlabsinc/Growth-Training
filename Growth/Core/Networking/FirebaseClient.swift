@@ -166,7 +166,7 @@ class FirebaseClient {
             Logger.debug(debugToken)
             Logger.debug("========================================")
             Logger.debug("⚠️  Add this token to Firebase Console:")
-            Logger.debug("1. Go to: https://console.firebase.google.com/project/growth-70a85/appcheck/apps")
+            Logger.debug("1. Go to: https://console.firebase.google.com/project/growth-training-app/appcheck/apps")
             Logger.debug("2. Click on your iOS app")
             Logger.debug("3. Click 'Manage debug tokens'")
             Logger.debug("4. Add this token with a descriptive name")
@@ -230,7 +230,7 @@ class FirebaseClient {
             } else if let token = token {
                 Logger.debug("✅ New token generated: \(token.token)")
                 Logger.debug("📋 Register this NEW token in Firebase Console:")
-                Logger.debug("   https://console.firebase.google.com/project/growth-70a85/appcheck/apps")
+                Logger.debug("   https://console.firebase.google.com/project/growth-training-app/appcheck/apps")
             }
         }
         #endif
@@ -258,7 +258,7 @@ class FirebaseClient {
                     if let debugToken = UserDefaults.standard.string(forKey: "FIRAAppCheckDebugToken") {
                         Logger.debug("   Token to register: \(debugToken)")
                     }
-                    Logger.debug("   1. Go to: https://console.firebase.google.com/project/growth-70a85/appcheck/apps")
+                    Logger.debug("   1. Go to: https://console.firebase.google.com/project/growth-training-app/appcheck/apps")
                     Logger.debug("   2. Click on your iOS app")
                     Logger.debug("   3. Click 'Manage debug tokens'")
                     Logger.debug("   4. Add the token above\n")

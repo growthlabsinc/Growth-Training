@@ -21,7 +21,7 @@
 The app code is correct, but Firebase Console configuration is needed:
 
 1. **Go to Firebase Console**
-   - https://console.firebase.google.com/project/growth-70a85/appcheck
+   - https://console.firebase.google.com/project/growth-training-app/appcheck
 
 2. **Configure Your App**
    - Find app: `com.growthlabs.growthmethod` 

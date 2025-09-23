@@ -28,7 +28,7 @@ collectAPNsDiagnostics({
 
 ## Method 2: Using Firebase Console
 
-1. Go to [Firebase Console](https://console.firebase.google.com/project/growth-70a85/functions)
+1. Go to [Firebase Console](https://console.firebase.google.com/project/growth-training-app/functions)
 2. Find `collectAPNsDiagnostics` in the functions list
 3. Click on it and go to the "Testing" tab
 4. Enter this JSON:

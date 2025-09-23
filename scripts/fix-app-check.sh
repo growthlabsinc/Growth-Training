@@ -19,7 +19,7 @@ firebase use
 # Get the project ID
 PROJECT_ID=$(firebase use | grep -oE 'growth-[a-z0-9]+' | head -1)
 if [ -z "$PROJECT_ID" ]; then
-    PROJECT_ID="growth-70a85"
+    PROJECT_ID="growth-training-app"
 fi
 
 echo ""

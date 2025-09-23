@@ -12,7 +12,7 @@ Firebase Functions v2 (which you're using) runs on Cloud Run, which has its own 
 ## Solutions (Choose One)
 
 ### Solution 1: Fix Cloud Run Permissions (Recommended)
-Go to: https://console.cloud.google.com/run/detail/us-central1/generateairesponse/permissions?project=growth-70a85
+Go to: https://console.cloud.google.com/run/detail/us-central1/generateairesponse/permissions?project=growth-training-app
 
 1. Click "ADD PRINCIPAL"
 2. Enter: `allUsers`

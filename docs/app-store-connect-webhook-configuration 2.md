@@ -15,7 +15,7 @@ Webhooks are essential for real-time subscription status updates. This guide cov
 
 Your production webhook URL is:
 ```
-https://us-central1-growth-70a85.cloudfunctions.net/handleAppStoreNotification
+https://us-central1-growth-training-app.cloudfunctions.net/handleAppStoreNotification
 ```
 
 ## Configuration Steps
@@ -36,7 +36,7 @@ https://us-central1-growth-70a85.cloudfunctions.net/handleAppStoreNotification
 
 3. **Configure Production Server URL**
    - Click "Edit" next to "Production Server URL"
-   - Enter: `https://us-central1-growth-70a85.cloudfunctions.net/handleAppStoreNotification`
+   - Enter: `https://us-central1-growth-training-app.cloudfunctions.net/handleAppStoreNotification`
    - Click "Save"
 
 4. **Configure Sandbox Server URL** (Optional but recommended)

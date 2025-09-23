@@ -3,7 +3,7 @@ const admin = require('firebase-admin');
 // Initialize Firebase Admin
 if (!admin.apps.length) {
   admin.initializeApp({
-    projectId: 'growth-70a85'
+    projectId: 'growth-training-app'
   });
 }
 

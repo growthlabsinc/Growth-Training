@@ -20,7 +20,7 @@ async function getAccessToken() {
 }
 
 async function setFunctionPublic() {
-  const projectId = 'growth-70a85';
+  const projectId = 'growth-training-app';
   const functionName = 'generateAIResponse';
   const region = 'us-central1';
   

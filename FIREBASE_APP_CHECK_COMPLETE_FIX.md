@@ -11,7 +11,7 @@ The app is receiving App Check errors because the new bundle ID `com.growthlabs.
 ### 1. Firebase Console Configuration
 
 1. **Go to Firebase Console**
-   - Navigate to https://console.firebase.google.com/project/growth-70a85
+   - Navigate to https://console.firebase.google.com/project/growth-training-app
    - Go to Project Settings → General tab
 
 2. **Add the iOS App**

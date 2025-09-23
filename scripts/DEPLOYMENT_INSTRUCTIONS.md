@@ -7,7 +7,7 @@ Since direct Firebase deployment requires service account credentials, here are 
 ### Option 1: Firebase Console (Recommended)
 
 1. **Open Firebase Console**
-   - Go to: https://console.firebase.google.com/project/growth-70a85/firestore/data/~2FgrowthMethods
+   - Go to: https://console.firebase.google.com/project/growth-training-app/firestore/data/~2FgrowthMethods
 
 2. **Update Each Method**
    - Click on each method document ID
@@ -33,7 +33,7 @@ Since direct Firebase deployment requires service account credentials, here are 
 ### Option 2: Firebase Admin SDK (Requires Service Account)
 
 1. **Get Service Account Key**
-   - Go to: https://console.firebase.google.com/project/growth-70a85/settings/serviceaccounts/adminsdk
+   - Go to: https://console.firebase.google.com/project/growth-training-app/settings/serviceaccounts/adminsdk
    - Click "Generate new private key"
    - Save as `scripts/service-account-key.json`
 
@@ -49,7 +49,7 @@ If you have Firebase CLI access with proper permissions:
 
 ```bash
 # Set the project
-firebase use growth-70a85
+firebase use growth-training-app
 
 # Deploy using Functions (if you have deployment access)
 cd functions

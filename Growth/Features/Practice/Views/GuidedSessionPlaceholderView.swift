@@ -292,7 +292,7 @@ struct QuickSessionMenuView: View {
                 id: "quick1",
                 stage: 1,
                 classification: "Beginner",
-                title: "Angion Method 1.0",
+                title: "PE Foundation Method",
                 methodDescription: "Basic blood flow enhancement",
                 instructionsText: "Start with basic movements",
                 estimatedDurationMinutes: 20,

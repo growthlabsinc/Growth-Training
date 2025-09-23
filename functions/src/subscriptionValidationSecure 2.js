@@ -27,7 +27,7 @@ async function loadSecrets() {
   }
 
   try {
-    const projectId = process.env.GCLOUD_PROJECT || 'growth-70a85';
+    const projectId = process.env.GCLOUD_PROJECT || 'growth-training-app';
     
     // Load App Store config
     const [configVersion] = await secretClient.accessSecretVersion({

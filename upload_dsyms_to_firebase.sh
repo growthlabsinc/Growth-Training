@@ -57,4 +57,4 @@ fi
 echo ""
 echo "=================================================="
 echo "🎉 Upload complete! Check Firebase Console in a few minutes."
-echo "   https://console.firebase.google.com/project/growth-70a85/crashlytics"
+echo "   https://console.firebase.google.com/project/growth-training-app/crashlytics"

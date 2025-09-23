@@ -7,7 +7,7 @@ Your Cloud Functions are receiving invalid App Check tokens because:
 
 ## Step 1: Register Debug Token in Firebase Console
 
-1. Go to [Firebase Console > App Check](https://console.firebase.google.com/project/growth-70a85/appcheck)
+1. Go to [Firebase Console > App Check](https://console.firebase.google.com/project/growth-training-app/appcheck)
 2. Click on your **iOS app**
 3. Click the **menu (3 dots)** → **Manage debug tokens**
 4. Click **Add debug token**

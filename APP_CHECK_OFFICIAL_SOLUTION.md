@@ -25,7 +25,7 @@ You need to add the `-FIRDebugEnabled` launch argument:
 
 ## Step 3: Register the Token
 
-1. Go to Firebase Console: https://console.firebase.google.com/project/growth-70a85/appcheck/apps
+1. Go to Firebase Console: https://console.firebase.google.com/project/growth-training-app/appcheck/apps
 2. Click on your iOS app
 3. Click the overflow menu (⋮) → **Manage debug tokens**
 4. Click **Add debug token**

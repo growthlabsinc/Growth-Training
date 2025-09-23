@@ -11,7 +11,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // Initialize Firebase Admin
 const app = initializeApp({
-  projectId: 'growth-70a85'
+  projectId: 'growth-training-app'
 });
 
 const db = getFirestore();
@@ -45,7 +45,7 @@ async function deployLegalDocuments() {
   
   console.log('\n✅ All legal documents have been deployed to Firestore!');
   console.log('\nYou can verify them at:');
-  console.log('https://console.firebase.google.com/project/growth-70a85/firestore/data/~2FlegalDocuments');
+  console.log('https://console.firebase.google.com/project/growth-training-app/firestore/data/~2FlegalDocuments');
   
   process.exit(0);
 }

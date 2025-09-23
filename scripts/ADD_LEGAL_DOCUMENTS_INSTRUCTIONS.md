@@ -4,7 +4,7 @@ The app is trying to fetch legal documents but they don't exist in Firestore yet
 
 ## Option 1: Using Firebase Console (Recommended)
 
-1. Go to the Firebase Console: https://console.firebase.google.com/project/growth-70a85/firestore
+1. Go to the Firebase Console: https://console.firebase.google.com/project/growth-training-app/firestore
 
 2. Create a new collection called `legalDocuments` if it doesn't exist
 
@@ -22,7 +22,7 @@ The app is trying to fetch legal documents but they don't exist in Firestore yet
 ## Option 2: Using Firebase Admin SDK
 
 1. Create a service account key:
-   - Go to https://console.firebase.google.com/project/growth-70a85/settings/serviceaccounts/adminsdk
+   - Go to https://console.firebase.google.com/project/growth-training-app/settings/serviceaccounts/adminsdk
    - Click "Generate new private key"
    - Save the JSON file
 

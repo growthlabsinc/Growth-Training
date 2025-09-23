@@ -79,8 +79,8 @@ firebase functions:log --only validateSubscriptionReceipt
      - Elite Monthly ($19.99)
 
 3. **Server Notifications** ✓
-   - Production: `https://us-central1-growth-70a85.cloudfunctions.net/handleAppStoreNotification`
-   - Sandbox: `https://us-central1-growth-70a85.cloudfunctions.net/handleAppStoreNotificationSandbox`
+   - Production: `https://us-central1-growth-training-app.cloudfunctions.net/handleAppStoreNotification`
+   - Sandbox: `https://us-central1-growth-training-app.cloudfunctions.net/handleAppStoreNotificationSandbox`
 
 4. **Shared Secret** ✓
    - Generated and configured: a0023e4976154ebe84aa547f475e20d1

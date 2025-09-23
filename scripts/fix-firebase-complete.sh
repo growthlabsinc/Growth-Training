@@ -16,7 +16,7 @@ echo -e "${YELLOW}Step 1: Checking current Firebase project...${NC}"
 CURRENT_PROJECT=$(firebase use 2>/dev/null | head -n1 | xargs)
 if [ -z "$CURRENT_PROJECT" ]; then
     echo -e "${RED}No active Firebase project found!${NC}"
-    echo "Please run: firebase use growth-70a85"
+    echo "Please run: firebase use growth-training-app"
     exit 1
 fi
 echo -e "${GREEN}Active project: $CURRENT_PROJECT${NC}"

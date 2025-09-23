@@ -84,7 +84,7 @@ Product IDs:
 - **Shared Secret**: Configured for webhook verification
 
 ### Firebase Functions
-- **Project**: growth-70a85
+- **Project**: growth-training-app
 - **Region**: us-central1
 - **Endpoints**:
   - Receipt Validation: `validateSubscriptionReceipt`

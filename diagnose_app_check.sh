@@ -11,7 +11,7 @@ if [ $? -eq 0 ]; then
     echo "✅ Found debug token: $TOKEN"
     echo ""
     echo "⚠️  Make sure this token is registered in Firebase Console:"
-    echo "   https://console.firebase.google.com/project/growth-70a85/appcheck/apps"
+    echo "   https://console.firebase.google.com/project/growth-training-app/appcheck/apps"
 else
     echo "❌ No debug token found in UserDefaults"
     echo "   The app will generate one on next run"

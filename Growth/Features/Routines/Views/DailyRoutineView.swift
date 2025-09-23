@@ -1915,7 +1915,7 @@ private struct LifecycleModifier: ViewModifier {
 
 #if DEBUG
 #Preview {
-    let schedule = DaySchedule(id: "d3", dayNumber: 3, dayName: "Day 3: Moderate Day", description: "Angion Method 2.0 and S2S stretches. Optional light pumping.", methodIds: ["m1", "m2"], isRestDay: false, additionalNotes: nil)
+    let schedule = DaySchedule(id: "d3", dayNumber: 3, dayName: "Day 3: Moderate Day", description: "PE Advanced Method and S2S stretches. Optional light pumping.", methodIds: ["m1", "m2"], isRestDay: false, additionalNotes: nil)
     let routinesViewModel = RoutinesViewModel(userId: "preview_user")
     NavigationStack {
         DailyRoutineView(schedule: schedule, routinesViewModel: routinesViewModel)

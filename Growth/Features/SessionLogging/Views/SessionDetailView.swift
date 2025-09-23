@@ -163,7 +163,7 @@ struct SessionDetailView_Previews: PreviewProvider {
         let mockMethod = GrowthMethod(
             id: "previewMethod1",
             stage: 1,
-            title: "Angion Method 1.0",
+            title: "PE Foundation Method",
             methodDescription: "A foundational method for beginners to improve vascular health through specific manual exercises.",
             instructionsText: "1. Preparation: Ensure you're in a comfortable, private setting. Have a towel and lubricant ready.\n2. Warm-up: Perform a 5-minute gentle massage to increase blood flow to the area.\n3. Main Exercise: Apply light to moderate pressure using circular motions along the targeted vessels for 10 minutes. Focus on consistent rhythm and pressure.\n4. Cool Down: Perform gentle stretching for 2-3 minutes to relax the area.",
             visualPlaceholderUrl: nil, // No image for preview

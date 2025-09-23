@@ -18,7 +18,7 @@ if ! command -v gcloud &> /dev/null; then
     exit 1
 fi
 
-PROJECT_ID="growth-70a85"
+PROJECT_ID="growth-training-app"
 
 echo "📋 Setting up secrets for project: $PROJECT_ID"
 

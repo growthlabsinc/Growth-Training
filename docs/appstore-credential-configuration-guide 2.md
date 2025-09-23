@@ -5,7 +5,7 @@
 Before starting, ensure you have:
 1. Admin access to App Store Connect
 2. Firebase CLI installed and authenticated
-3. Access to the Growth Firebase project (growth-70a85)
+3. Access to the Growth Firebase project (growth-training-app)
 4. The App Store Connect API private key (.p8 file)
 
 ## Step 1: Generate App Store Connect API Key
@@ -129,12 +129,12 @@ Before starting, ensure you have:
 
 2. **Configure Production URL**
    ```
-   https://us-central1-growth-70a85.cloudfunctions.net/handleAppStoreNotification
+   https://us-central1-growth-training-app.cloudfunctions.net/handleAppStoreNotification
    ```
 
 3. **Configure Sandbox URL**
    ```
-   https://us-central1-growth-70a85.cloudfunctions.net/handleAppStoreNotificationSandbox
+   https://us-central1-growth-training-app.cloudfunctions.net/handleAppStoreNotificationSandbox
    ```
 
 4. **Select notification types**
@@ -174,7 +174,7 @@ Before starting, ensure you have:
 1. **Test webhook endpoint**
    ```bash
    # This should return a 200 status
-   curl -I https://us-central1-growth-70a85.cloudfunctions.net/handleAppStoreNotification
+   curl -I https://us-central1-growth-training-app.cloudfunctions.net/handleAppStoreNotification
    ```
 
 2. **Test with a sandbox purchase**
@@ -190,7 +190,7 @@ Before starting, ensure you have:
    ```
 
 2. **Check metrics dashboard**
-   - Open: https://console.firebase.google.com/project/growth-70a85/functions/logs
+   - Open: https://console.firebase.google.com/project/growth-training-app/functions/logs
    - Filter by: `validateSubscriptionReceipt`
 
 3. **Verify webhook delivery**

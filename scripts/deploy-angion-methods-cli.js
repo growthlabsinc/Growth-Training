@@ -13,9 +13,9 @@ const __dirname = path.dirname(__filename);
 // Firebase configuration - using development
 const firebaseConfig = {
   apiKey: "AIzaSyC-iNr6VkDx38j2g-rPoH1CRYV8XlQTVpY",
-  authDomain: "growth-70a85.firebaseapp.com",
-  projectId: "growth-70a85",
-  storageBucket: "growth-70a85.appspot.com",
+  authDomain: "growth-training-app.firebaseapp.com",
+  projectId: "growth-training-app",
+  storageBucket: "growth-training-app.appspot.com",
   messagingSenderId: "645068839446",
   appId: "1:645068839446:ios:778265634d87eb7ef89fdd"
 };

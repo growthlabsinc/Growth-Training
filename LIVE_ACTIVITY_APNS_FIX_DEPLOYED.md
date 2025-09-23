@@ -22,7 +22,7 @@ token = await generateAPNsToken(true); // Always use production key
 ## Deployment Status
 ✅ Successfully deployed at 2025-09-10 04:17 UTC
 - Function: `updateLiveActivity(us-central1)` 
-- Project: `growth-70a85`
+- Project: `growth-training-app`
 
 ## Testing Instructions
 1. Run the app from Xcode in debug mode
@@ -39,7 +39,7 @@ token = await generateAPNsToken(true); // Always use production key
 ## Monitoring
 Check Firebase Functions logs:
 ```bash
-firebase functions:log --only updateLiveActivity --lines 50 --project growth-70a85
+firebase functions:log --only updateLiveActivity --lines 50 --project growth-training-app
 ```
 
 Look for successful updates without `BadDeviceToken` or `BadEnvironmentKeyInToken` errors.

@@ -33,12 +33,12 @@ All product IDs have been updated to use the correct bundle ID prefix:
 
 #### Production URL
 ```
-https://us-central1-growth-70a85.cloudfunctions.net/handleAppStoreNotification
+https://us-central1-growth-training-app.cloudfunctions.net/handleAppStoreNotification
 ```
 
 #### Sandbox URL
 ```
-https://us-central1-growth-70a85.cloudfunctions.net/handleAppStoreNotificationSandbox
+https://us-central1-growth-training-app.cloudfunctions.net/handleAppStoreNotificationSandbox
 ```
 
 ### Step 3: Enable Notification Types
@@ -66,10 +66,10 @@ Click **Save** to activate the webhook notifications.
 ### 1. Test Webhook Endpoints
 ```bash
 # Test production endpoint
-curl -I https://us-central1-growth-70a85.cloudfunctions.net/handleAppStoreNotification
+curl -I https://us-central1-growth-training-app.cloudfunctions.net/handleAppStoreNotification
 
 # Test sandbox endpoint
-curl -I https://us-central1-growth-70a85.cloudfunctions.net/handleAppStoreNotificationSandbox
+curl -I https://us-central1-growth-training-app.cloudfunctions.net/handleAppStoreNotificationSandbox
 ```
 
 Both should return `200 OK` status.
@@ -94,9 +94,9 @@ firebase functions:log --only validateSubscriptionReceipt,handleAppStoreNotifica
 ## 📊 Monitoring Dashboard
 
 View real-time metrics and logs:
-- [Firebase Console](https://console.firebase.google.com/project/growth-70a85/functions)
-- [Function Logs](https://console.firebase.google.com/project/growth-70a85/functions/logs)
-- [Firestore Users Collection](https://console.firebase.google.com/project/growth-70a85/firestore/data/~2Fusers)
+- [Firebase Console](https://console.firebase.google.com/project/growth-training-app/functions)
+- [Function Logs](https://console.firebase.google.com/project/growth-training-app/functions/logs)
+- [Firestore Users Collection](https://console.firebase.google.com/project/growth-training-app/firestore/data/~2Fusers)
 
 ## ✅ Verification Checklist
 

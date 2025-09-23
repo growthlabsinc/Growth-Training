@@ -157,7 +157,7 @@ final class EducationalResourceDetailViewModelTests: XCTestCase {
                 contentText: "Updated content.",
                 category: .basics,
                 visualPlaceholderUrl: "https://example.com/updated.jpg",
-                localImageName: "beginners-guide-angion"
+                localImageName: "vascular_basics"
             )
             self.mockService.mockResource = updatedResource
             

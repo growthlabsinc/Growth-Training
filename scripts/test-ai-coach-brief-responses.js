@@ -9,7 +9,7 @@ const serviceAccount = require('./service-account.json');
 // Initialize Firebase Admin
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  projectId: 'growth-70a85',
+  projectId: 'growth-training-app',
 });
 
 // Test queries

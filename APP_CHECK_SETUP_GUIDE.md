@@ -44,7 +44,7 @@ DCE45C4B-XXXX-XXXX-XXXX-XXXXXXXXXXXX
 ### Step 3: Add Token to Firebase Console
 
 1. Copy the debug token from the console
-2. Go to: https://console.firebase.google.com/project/growth-70a85/appcheck/apps
+2. Go to: https://console.firebase.google.com/project/growth-training-app/appcheck/apps
 3. Click on your iOS app (com.growthlabs.growthmethod)
 4. Click "Manage debug tokens"
 5. Click "Add debug token"

@@ -12,7 +12,7 @@ async function testAM1Search() {
   
   const options = {
     hostname: 'firestore.googleapis.com',
-    path: '/v1/projects/growth-70a85/databases/(default)/documents/ai_coach_knowledge',
+    path: '/v1/projects/growth-training-app/databases/(default)/documents/ai_coach_knowledge',
     method: 'GET',
     headers: { 'Authorization': `Bearer ${accessToken}` }
   };

@@ -84,17 +84,17 @@ Enhanced with:
 
 #### Live Activity Updates
 ```bash
-firebase functions:log --only updateLiveActivity --lines 100 --project growth-70a85
+firebase functions:log --only updateLiveActivity --lines 100 --project growth-training-app
 ```
 
 Filter for specific request:
 ```bash
-firebase functions:log --only updateLiveActivity --project growth-70a85 | grep "requestId: xyz123"
+firebase functions:log --only updateLiveActivity --project growth-training-app | grep "requestId: xyz123"
 ```
 
 #### StoreKit Operations
 ```bash
-firebase functions:log --only validateSubscriptionReceipt,handleAppStoreNotification --lines 100 --project growth-70a85
+firebase functions:log --only validateSubscriptionReceipt,handleAppStoreNotification --lines 100 --project growth-training-app
 ```
 
 ### Log Format Examples

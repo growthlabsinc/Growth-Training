@@ -313,7 +313,7 @@ Please add these 4 missing routines to the Firebase Console:
 
 ## How to Add to Firebase
 
-1. Go to [Firebase Console](https://console.firebase.google.com/project/growth-70a85/firestore/data/~2Froutines)
+1. Go to [Firebase Console](https://console.firebase.google.com/project/growth-training-app/firestore/data/~2Froutines)
 2. Click "Add document" for each routine
 3. Use the document ID specified above
 4. Copy and paste the JSON data

@@ -10,7 +10,7 @@ App Check protects your Firebase backend from:
 ## Steps to Configure App Check Properly
 
 ### 1. Open Firebase Console
-Go to: https://console.firebase.google.com/project/growth-70a85/appcheck
+Go to: https://console.firebase.google.com/project/growth-training-app/appcheck
 
 ### 2. Register Your App
 1. Click on the **"Apps"** tab

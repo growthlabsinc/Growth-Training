@@ -8,7 +8,7 @@ Your Firebase callable function is returning UNAUTHENTICATED even though you're 
 ### Option 1: Via Google Cloud Console (Recommended)
 
 1. **Go to Cloud Run in Google Cloud Console:**
-   https://console.cloud.google.com/run?project=growth-70a85
+   https://console.cloud.google.com/run?project=growth-training-app
 
 2. **Find your function:**
    Look for `generateairesponse` in the list

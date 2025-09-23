@@ -85,7 +85,7 @@ struct UpNextPreview: View {
                 id: "preview1",
                 stage: 2,
                 classification: "Intermediate",
-                title: "Angion Method 2.0",
+                title: "PE Advanced Method",
                 methodDescription: "Intermediate circular movements for enhanced circulation",
                 instructionsText: "Sample instructions",
                 estimatedDurationMinutes: 15,

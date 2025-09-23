@@ -50,7 +50,7 @@ The deployment logs now show proper secret configuration:
   "key": "APNS_AUTH_KEY",
   "secret": "APNS_AUTH_KEY",
   "version": "5",
-  "projectId": "growth-70a85"
+  "projectId": "growth-training-app"
 }]
 ```
 

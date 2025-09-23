@@ -7,7 +7,7 @@
 **Debug Token to Register:** `2FD85673-2A8A-42F9-88D4-7A393DBD5872`
 
 ### Steps to Fix:
-1. Go to Firebase Console: https://console.firebase.google.com/project/growth-70a85/appcheck/apps
+1. Go to Firebase Console: https://console.firebase.google.com/project/growth-training-app/appcheck/apps
 2. Select your iOS app (com.growthlabs.growthmethod)
 3. Click "Manage debug tokens"
 4. Add new token: `2FD85673-2A8A-42F9-88D4-7A393DBD5872`
@@ -72,7 +72,7 @@ service cloud.firestore {
 ```
 
 ### Steps to Update:
-1. Go to: https://console.firebase.google.com/project/growth-70a85/firestore/rules
+1. Go to: https://console.firebase.google.com/project/growth-training-app/firestore/rules
 2. Replace existing rules with above
 3. Click "Publish"
 

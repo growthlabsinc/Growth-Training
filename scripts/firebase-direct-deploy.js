@@ -85,7 +85,7 @@ for (const method of methods) {
     console.log(`   ⏳ Updating in Firestore...`);
     
     // Build the Firebase CLI command
-    const command = `firebase firestore:set growthMethods/${method.id} < ${tempFile} --merge --project growth-70a85`;
+    const command = `firebase firestore:set growthMethods/${method.id} < ${tempFile} --merge --project growth-training-app`;
     
     try {
       execSync(command, { stdio: 'pipe' });

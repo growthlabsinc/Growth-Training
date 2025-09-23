@@ -2,7 +2,7 @@
 
 ## Step 1: Add Documents via Firebase Console
 
-1. Open Firebase Console: https://console.firebase.google.com/project/growth-70a85/firestore/data
+1. Open Firebase Console: https://console.firebase.google.com/project/growth-training-app/firestore/data
 
 2. Click "+ Start collection"
 
@@ -287,7 +287,7 @@ By using the Growth app, you acknowledge that you have read, understood, and agr
 
 ### Create Firestore Index:
 Click this link from the error log:
-https://console.firebase.google.com/v1/r/project/growth-70a85/firestore/indexes?create_composite=ClBwcm9qZWN0cy9ncm93dGgtNzBhODUvZGF0YWJhc2VzLyhkZWZhdWx0KS9jb2xsZWN0aW9uR3JvdXBzL3Nlc3Npb25Mb2dzL2luZGV4ZXMvXxABGgoKBnVzZXJJZBABGg0KCXN0YXJ0VGltZRABGgwKCF9fbmFtZV9fEAE
+https://console.firebase.google.com/v1/r/project/growth-training-app/firestore/indexes?create_composite=ClBwcm9qZWN0cy9ncm93dGgtNzBhODUvZGF0YWJhc2VzLyhkZWZhdWx0KS9jb2xsZWN0aW9uR3JvdXBzL3Nlc3Npb25Mb2dzL2luZGV4ZXMvXxABGgoKBnVzZXJJZBABGg0KCXN0YXJ0VGltZRABGgwKCF9fbmFtZV9fEAE
 
 ### Enable In-App Messaging API (Optional):
 https://console.developers.google.com/apis/api/firebaseinappmessaging.googleapis.com/overview?project=645068839446

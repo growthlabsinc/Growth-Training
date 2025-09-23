@@ -61,19 +61,19 @@ echo "Storing APNs key in Google Secret Manager..."
 echo "$KEY_CONTENT" | gcloud secrets create apns-auth-key \
     --data-file=- \
     --replication-policy="automatic" \
-    --project=growth-70a85 \
+    --project=growth-training-app \
     2>/dev/null || echo "Secret already exists, updating..."
 
 # Update if it already exists
 echo "$KEY_CONTENT" | gcloud secrets versions add apns-auth-key \
     --data-file=- \
-    --project=growth-70a85
+    --project=growth-training-app
 
 # Grant Firebase Functions access to the secret
 gcloud secrets add-iam-policy-binding apns-auth-key \
-    --member="serviceAccount:growth-70a85@appspot.gserviceaccount.com" \
+    --member="serviceAccount:growth-training-app@appspot.gserviceaccount.com" \
     --role="roles/secretmanager.secretAccessor" \
-    --project=growth-70a85
+    --project=growth-training-app
 
 echo ""
 echo "✅ APNs configuration complete!"

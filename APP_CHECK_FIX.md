@@ -20,7 +20,7 @@ Failed to validate AppCheck token. FirebaseAppCheckError: Decoding App Check tok
    🔑 Debug Token: [YOUR-DEBUG-TOKEN-HERE]
    ```
 3. Add to Firebase Console:
-   - Go to: https://console.firebase.google.com/project/growth-70a85/appcheck/apps
+   - Go to: https://console.firebase.google.com/project/growth-training-app/appcheck/apps
    - Select iOS app
    - Click "Manage debug tokens"
    - Add the token with a descriptive name (e.g., "Developer Simulator")

@@ -29,12 +29,12 @@ echo -e "${GREEN}✅ Firebase authentication confirmed${NC}"
 # Step 2: Set the project
 echo ""
 echo "🔧 Step 2: Setting Firebase project..."
-firebase use growth-70a85
+firebase use growth-training-app
 if [ $? -ne 0 ]; then
     echo -e "${RED}❌ Failed to set Firebase project${NC}"
     exit 1
 fi
-echo -e "${GREEN}✅ Project set to growth-70a85${NC}"
+echo -e "${GREEN}✅ Project set to growth-training-app${NC}"
 
 # Step 3: Check for Google Application Default Credentials
 echo ""

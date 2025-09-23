@@ -13,8 +13,8 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Configuration
-WEBHOOK_URL="https://us-central1-growth-70a85.cloudfunctions.net/handleAppStoreNotification"
-FIREBASE_PROJECT="growth-70a85"
+WEBHOOK_URL="https://us-central1-growth-training-app.cloudfunctions.net/handleAppStoreNotification"
+FIREBASE_PROJECT="growth-training-app"
 
 # Function to print colored output
 print_status() {

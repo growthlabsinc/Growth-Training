@@ -387,3 +387,64 @@ This codebase represents enterprise-level iOS development with sophisticated Liv
 - **Darwin Notifications**: Removed in favor of direct Live Activity updates via push
 - **Knowledge Base RAG**: AI Coach searches Firestore before generating responses
 - **Routine Adherence**: Counts ANY session before routine selection date as valid adherence
+
+## Security Best Practices
+
+### Critical Security Requirements
+**NEVER expose or hardcode sensitive credentials in the codebase:**
+
+#### Sensitive Data That Must Be Protected
+1. **APNS Private Keys** (*.p8 files)
+   - Store in Google Secret Manager or Firebase Functions config
+   - Never commit to version control
+   - Never hardcode in source files
+
+2. **Firebase Service Account Keys**
+   - Use Application Default Credentials when possible
+   - Store service account JSON files securely
+   - Never commit service-account-key.json files
+
+3. **API Keys**
+   - Restrict API keys to specific iOS bundle IDs
+   - Use Firebase App Check for additional security
+   - Store sensitive keys in iOS Keychain
+
+#### Secure Credential Management
+1. **For Firebase Functions**:
+   ```bash
+   # Use Secret Manager for sensitive data
+   firebase functions:secrets:set SECRET_NAME
+   ```
+
+2. **For iOS App**:
+   - Use Keychain Services for sensitive data
+   - GoogleService-Info.plist is okay to commit (contains public keys)
+   - Use environment-specific plist files for different environments
+
+3. **For Local Development**:
+   - Use .env files (never commit)
+   - Use gcloud application default credentials
+   - Keep sensitive files in .gitignore
+
+#### Security Checklist Before Commits
+- [ ] No private keys (*.p8, *.p12) in codebase
+- [ ] No service account JSON files committed
+- [ ] No hardcoded secrets in JavaScript/Swift files
+- [ ] All API keys are restricted in Firebase Console
+- [ ] Secrets are stored in Secret Manager or Keychain
+- [ ] .gitignore includes all sensitive file patterns
+
+#### Firebase Functions v2 IAM Configuration
+- Functions require `allUsers` invoker permission for Cloud Run services
+- This is NOT a security issue - authentication is handled inside the function
+- Always check `request.auth` or `context.auth` in function code
+- Use Firebase App Check for additional security layer
+
+#### If Credentials Are Exposed
+1. **Immediately revoke** the exposed credentials
+2. **Generate new credentials** in Firebase/Apple Developer Console
+3. **Update Secret Manager** with new credentials
+4. **Redeploy functions** with new secrets
+5. **Audit access logs** for unauthorized usage
+
+### Following conventions

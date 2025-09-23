@@ -399,7 +399,6 @@ class TodayViewViewModel: ObservableObject {
     }
     
     private func updateWeeklyMinutes() {
-        let calendar = Calendar.current
         let today = Date()
 
         // Get start of current week - using gregorian calendar with Monday as first day

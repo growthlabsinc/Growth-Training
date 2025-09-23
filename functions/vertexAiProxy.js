@@ -7,7 +7,7 @@ const { VertexAI } = require('@google-cloud/vertexai');
 const { getFallbackResponse } = require('./fallbackKnowledge');
 
 // Initialize Vertex AI
-const PROJECT_ID = process.env.GCLOUD_PROJECT || 'growth-70a85';
+const PROJECT_ID = process.env.GCLOUD_PROJECT || 'growth-training-app';
 const LOCATION = 'us-central1';
 const MODEL = 'gemini-1.5-flash';
 

@@ -1,9 +1,9 @@
 const admin = require('firebase-admin');
-const serviceAccount = require('./functions/growth-70a85-firebase-adminsdk-1uzmo-ce0b3f36f2.json');
+const serviceAccount = require('./functions/growth-training-app-firebase-adminsdk-1uzmo-ce0b3f36f2.json');
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: 'https://growth-70a85.firebaseio.com'
+  databaseURL: 'https://growth-training-app.firebaseio.com'
 });
 
 const db = admin.firestore();

@@ -94,6 +94,6 @@ Each will have its own GoogleService-Info.plist file generated in Story 1.5.
 
 ## Important Notes
 - This is a brownfield project - preserve all existing functionality
-- The app currently uses Firebase project: growth-70a85 (to be migrated)
+- The app currently uses Firebase project: growth-training-app (to be migrated)
 - DO NOT modify core app logic or UI functionality
 - ONLY update Firebase configuration and environment settings

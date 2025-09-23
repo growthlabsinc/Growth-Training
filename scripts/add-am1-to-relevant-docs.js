@@ -9,7 +9,7 @@ import { promisify } from 'util';
 import https from 'https';
 
 const execAsync = promisify(exec);
-const PROJECT_ID = 'growth-70a85';
+const PROJECT_ID = 'growth-training-app';
 const COLLECTION = 'ai_coach_knowledge';
 
 async function getAccessToken() {

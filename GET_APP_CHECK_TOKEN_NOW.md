@@ -45,7 +45,7 @@ The token might have been printed when you first launched the app. Check earlier
 
 ## Once You Have the Token
 
-1. Go to: https://console.firebase.google.com/project/growth-70a85/appcheck/apps
+1. Go to: https://console.firebase.google.com/project/growth-training-app/appcheck/apps
 2. Find your iOS app (com.growthlabs.growthmethod)
 3. Click ⋮ → "Manage debug tokens"
 4. Add your token

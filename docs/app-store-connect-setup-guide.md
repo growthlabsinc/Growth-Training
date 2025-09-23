@@ -90,8 +90,8 @@ Create three auto-renewable subscriptions:
 
 1. Navigate to "App Information" → "App Store Server Notifications"
 2. Configure:
-   - **Production Server URL**: `https://us-central1-growth-70a85.cloudfunctions.net/handleAppStoreNotification`
-   - **Sandbox Server URL**: `https://us-central1-growth-70a85.cloudfunctions.net/handleAppStoreNotificationSandbox`
+   - **Production Server URL**: `https://us-central1-growth-training-app.cloudfunctions.net/handleAppStoreNotification`
+   - **Sandbox Server URL**: `https://us-central1-growth-training-app.cloudfunctions.net/handleAppStoreNotificationSandbox`
    - **Version**: Version 2
 
 ### 6. Generate Shared Secret

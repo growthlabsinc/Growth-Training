@@ -78,7 +78,7 @@ async function exportForFirebase() {
     console.log('📋 Manual Import Instructions:');
     console.log('==============================\n');
     console.log('1. Go to Firebase Console:');
-    console.log('   https://console.firebase.google.com/project/growth-70a85/firestore\n');
+    console.log('   https://console.firebase.google.com/project/growth-training-app/firestore\n');
     
     console.log('2. Create the collection:');
     console.log('   - Click "Start collection"');
@@ -114,7 +114,7 @@ async function exportForFirebase() {
 }
 
 async function generateCurlCommands(data) {
-  const PROJECT_ID = "growth-70a85";
+  const PROJECT_ID = "growth-training-app";
   const COLLECTION = "ai_coach_knowledge";
   
   const commands = [

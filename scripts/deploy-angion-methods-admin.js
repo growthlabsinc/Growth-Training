@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Configuration
-const PROJECT_ID = 'growth-70a85';
+const PROJECT_ID = 'growth-training-app';
 const SERVICE_ACCOUNT_PATH = process.env.GOOGLE_APPLICATION_CREDENTIALS || 
   path.join(__dirname, '..', 'service-account-key.json');
 

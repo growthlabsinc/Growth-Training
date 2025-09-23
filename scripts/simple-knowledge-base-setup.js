@@ -21,7 +21,7 @@ async function initializeApp() {
       const serviceAccount = require(process.env.GOOGLE_APPLICATION_CREDENTIALS);
       admin.initializeApp({
         credential: admin.credential.cert(serviceAccount),
-        projectId: 'growth-70a85'
+        projectId: 'growth-training-app'
       });
       return true;
     }
@@ -29,7 +29,7 @@ async function initializeApp() {
     // Method 2: Try using default credentials (works on Google Cloud)
     try {
       admin.initializeApp({
-        projectId: 'growth-70a85'
+        projectId: 'growth-training-app'
       });
       console.log('Using default application credentials');
       return true;
@@ -41,14 +41,14 @@ async function initializeApp() {
     console.log('❌ No authentication method available\n');
     console.log('To set up authentication, you have two options:\n');
     console.log('Option 1: Download a service account key');
-    console.log('1. Go to: https://console.firebase.google.com/project/growth-70a85/settings/serviceaccounts/adminsdk');
+    console.log('1. Go to: https://console.firebase.google.com/project/growth-training-app/settings/serviceaccounts/adminsdk');
     console.log('2. Click "Generate new private key"');
     console.log('3. Save the JSON file somewhere secure');
     console.log('4. Run: export GOOGLE_APPLICATION_CREDENTIALS="/path/to/your-key.json"');
     console.log('5. Run this script again\n');
     
     console.log('Option 2: Set up manually in Firebase Console');
-    console.log('1. Go to: https://console.firebase.google.com/project/growth-70a85/firestore');
+    console.log('1. Go to: https://console.firebase.google.com/project/growth-training-app/firestore');
     console.log('2. Create a new collection called "ai_coach_knowledge"');
     console.log('3. Use the import feature to upload the knowledge base data\n');
     

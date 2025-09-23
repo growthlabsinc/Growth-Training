@@ -107,7 +107,7 @@
 
 2. Verify Firebase Storage upload (if using):
    ```bash
-   gsutil ls gs://growth-70a85.appspot.com/keys/
+   gsutil ls gs://growth-training-app.appspot.com/keys/
    ```
 
 3. Update key path in config:
@@ -145,7 +145,7 @@
 
 3. Test with curl:
    ```bash
-   curl -X POST https://us-central1-growth-70a85.cloudfunctions.net/validateSubscriptionReceipt \
+   curl -X POST https://us-central1-growth-training-app.cloudfunctions.net/validateSubscriptionReceipt \
      -H "Content-Type: application/json" \
      -H "Authorization: Bearer YOUR_ID_TOKEN" \
      -d '{"receiptData":"BASE64_RECEIPT"}'
@@ -160,8 +160,8 @@
 
 **Resolution Steps:**
 1. Verify webhook URLs in App Store Connect:
-   - Production: `https://us-central1-growth-70a85.cloudfunctions.net/handleAppStoreNotification`
-   - Sandbox: `https://us-central1-growth-70a85.cloudfunctions.net/handleAppStoreNotificationSandbox`
+   - Production: `https://us-central1-growth-training-app.cloudfunctions.net/handleAppStoreNotification`
+   - Sandbox: `https://us-central1-growth-training-app.cloudfunctions.net/handleAppStoreNotificationSandbox`
 
 2. Check notification types enabled:
    - All subscription event types should be checked
@@ -299,7 +299,7 @@ firebase functions:config:get
 firebase functions:log --only validateSubscriptionReceipt
 
 # Test webhook endpoint
-curl -X POST https://us-central1-growth-70a85.cloudfunctions.net/test
+curl -X POST https://us-central1-growth-training-app.cloudfunctions.net/test
 
 # Validate credentials
 cd functions && node scripts/validate-credentials.js
@@ -334,10 +334,10 @@ firebase functions:config:unset circuitbreaker && firebase deploy --only functio
 
 ## Monitoring Links
 
-- [Firebase Console](https://console.firebase.google.com/project/growth-70a85)
+- [Firebase Console](https://console.firebase.google.com/project/growth-training-app)
 - [App Store Connect](https://appstoreconnect.apple.com)
 - [Subscription Dashboard](https://growth.app/admin/subscriptions)
-- [Error Tracking](https://console.firebase.google.com/project/growth-70a85/crashlytics)
+- [Error Tracking](https://console.firebase.google.com/project/growth-training-app/crashlytics)
 
 ---
 

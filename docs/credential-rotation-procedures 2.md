@@ -269,8 +269,8 @@ If issues occur during rotation:
 
 ### Dashboard URLs
 - [Real-time Metrics](https://growth.app/admin/metrics)
-- [Firebase Console](https://console.firebase.google.com/project/growth-70a85)
-- [Error Logs](https://console.firebase.google.com/project/growth-70a85/functions/logs)
+- [Firebase Console](https://console.firebase.google.com/project/growth-training-app)
+- [Error Logs](https://console.firebase.google.com/project/growth-training-app/functions/logs)
 
 ## Security Considerations
 

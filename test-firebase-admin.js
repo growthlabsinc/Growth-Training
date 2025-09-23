@@ -1,10 +1,10 @@
 const admin = require('firebase-admin');
-const serviceAccount = require('./growth-70a85-firebase-adminsdk-s2g2d-4cd96e9e82.json');
+const serviceAccount = require('./growth-training-app-firebase-adminsdk-s2g2d-4cd96e9e82.json');
 
 // Initialize Firebase Admin
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  projectId: 'growth-70a85'
+  projectId: 'growth-training-app'
 });
 
 const functions = admin.functions();

@@ -219,7 +219,7 @@ struct ExpandedMethodRow: View {
                 method: GrowthMethod(
                     id: "1",
                     stage: 1,
-                    title: "Angion Method 1.0",
+                    title: "PE Foundation Method",
                     methodDescription: "Basic circular movements for vascular development",
                     instructionsText: "Instructions here",
                     estimatedDurationMinutes: 15,
@@ -266,7 +266,7 @@ struct ExpandedMethodRow: View {
                 method: GrowthMethod(
                     id: "3",
                     stage: 2,
-                    title: "Angion Method 2.0",
+                    title: "PE Advanced Method",
                     methodDescription: "Advanced circular movements with increased intensity",
                     instructionsText: "Instructions here",
                     estimatedDurationMinutes: 20,

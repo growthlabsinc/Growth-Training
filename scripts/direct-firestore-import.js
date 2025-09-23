@@ -13,7 +13,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const PROJECT_ID = 'growth-70a85';
+const PROJECT_ID = 'growth-training-app';
 const COLLECTION_NAME = 'ai_coach_knowledge';
 
 async function initializeFirebase() {
@@ -78,7 +78,7 @@ async function importKnowledgeBase() {
   if (!initialized) {
     console.error('\n❌ Could not initialize Firebase Admin SDK');
     console.log('\n📋 Manual Import Instructions:');
-    console.log('1. Go to: https://console.firebase.google.com/project/growth-70a85/firestore');
+    console.log('1. Go to: https://console.firebase.google.com/project/growth-training-app/firestore');
     console.log('2. Create collection "ai_coach_knowledge"');
     console.log('3. Use the import feature with: ai_coach_knowledge_export.json\n');
     process.exit(1);

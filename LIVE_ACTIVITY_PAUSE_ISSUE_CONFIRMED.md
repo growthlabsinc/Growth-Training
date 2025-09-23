@@ -18,7 +18,7 @@ When the Live Activity pause button is pressed:
 
 3. **Race condition error appears**:
    ```
-   GTMSessionFetcher 0x121e01680 (https://us-central1-growth-70a85.cloudfunctions.net/updateLiveActivitySimplified) was already running
+   GTMSessionFetcher 0x121e01680 (https://us-central1-growth-training-app.cloudfunctions.net/updateLiveActivitySimplified) was already running
    ```
 
 4. **Second update overwrites with nil pausedAt**:

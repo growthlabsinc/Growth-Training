@@ -8,10 +8,10 @@ const admin = require('firebase-admin');
 
 // Initialize admin if not already
 if (!admin.apps.length) {
-  const serviceAccount = require('./growth-70a85-firebase-adminsdk-fbsvc-a9a1390b26.json');
+  const serviceAccount = require('./growth-training-app-firebase-adminsdk-fbsvc-a9a1390b26.json');
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    projectId: 'growth-70a85'
+    projectId: 'growth-training-app'
   });
 }
 

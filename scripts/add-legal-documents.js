@@ -11,7 +11,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // Initialize Firebase Admin
 const app = initializeApp({
-  projectId: 'growth-70a85'
+  projectId: 'growth-training-app'
 });
 
 const db = getFirestore();

@@ -5,7 +5,7 @@ The Reset Today's Routine feature requires a composite index in Firestore for th
 
 ## Error Message
 ```
-The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/growth-70a85/firestore/indexes?create_composite=...
+The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/growth-training-app/firestore/indexes?create_composite=...
 ```
 
 ## Solution

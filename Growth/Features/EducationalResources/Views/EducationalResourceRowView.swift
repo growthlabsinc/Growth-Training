@@ -95,7 +95,7 @@ struct EducationalResourceRowView_Previews: PreviewProvider {
                 contentText: "This is a long text for the article...",
                 category: .basics,
                 visualPlaceholderUrl: nil,
-                localImageName: "beginners-guide-angion"
+                localImageName: "vascular_basics"
             )
         )
         .padding()

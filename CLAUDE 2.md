@@ -127,7 +127,7 @@ Located in `/functions/` directory:
 - **Debug tokens** required for development
 - Use `AppCheckDebugView.swift` in Settings → Development Tools for token management
 - Environment variable: `FIRAAppCheckDebugToken` (note the extra 'A')
-- Register debug tokens at: https://console.firebase.google.com/project/growth-70a85/appcheck/apps
+- Register debug tokens at: https://console.firebase.google.com/project/growth-training-app/appcheck/apps
 
 ## State Management
 

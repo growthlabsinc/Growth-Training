@@ -38,7 +38,7 @@ We've implemented a comprehensive solution for the App Check 403 "App attestatio
 **Register the debug token in Firebase Console:**
 
 1. Token to register: `DC769389-3431-4556-A9BB-44B79AF64E65`
-2. Go to: https://console.firebase.google.com/project/growth-70a85/appcheck/apps
+2. Go to: https://console.firebase.google.com/project/growth-training-app/appcheck/apps
 3. Click on your iOS app
 4. Click "Manage debug tokens"
 5. Add the token with a descriptive name

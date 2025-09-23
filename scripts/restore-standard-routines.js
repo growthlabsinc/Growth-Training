@@ -9,12 +9,12 @@ const __dirname = dirname(__filename);
 
 // Load service account
 const serviceAccount = JSON.parse(
-  readFileSync(join(__dirname, '../growth-70a85-firebase-adminsdk-zpnea-e7bc8b5c93.json'), 'utf8')
+  readFileSync(join(__dirname, '../growth-training-app-firebase-adminsdk-zpnea-e7bc8b5c93.json'), 'utf8')
 );
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://growth-70a85.firebaseio.com"
+  databaseURL: "https://growth-training-app.firebaseio.com"
 });
 
 const db = admin.firestore();

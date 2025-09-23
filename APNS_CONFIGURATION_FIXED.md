@@ -42,9 +42,9 @@ const KEY_ID = process.env.APNS_KEY_ID?.trim() || '55LZB28UY2';
 ### Secrets Properly Loaded:
 ```json
 "secretEnvironmentVariables": [
-  {"version": "21", "key": "APNS_AUTH_KEY", "projectId": "growth-70a85", "secret": "APNS_AUTH_KEY"},
-  {"version": "16", "key": "APNS_KEY_ID", "projectId": "growth-70a85", "secret": "APNS_KEY_ID"},
-  {"version": "3", "key": "APNS_TEAM_ID", "projectId": "growth-70a85", "secret": "APNS_TEAM_ID"}
+  {"version": "21", "key": "APNS_AUTH_KEY", "projectId": "growth-training-app", "secret": "APNS_AUTH_KEY"},
+  {"version": "16", "key": "APNS_KEY_ID", "projectId": "growth-training-app", "secret": "APNS_KEY_ID"},
+  {"version": "3", "key": "APNS_TEAM_ID", "projectId": "growth-training-app", "secret": "APNS_TEAM_ID"}
 ]
 ```
 

@@ -37,4 +37,4 @@ echo "✓ Medical Disclaimer created"
 
 echo -e "\n✅ All legal documents have been created in Firestore!"
 echo -e "\nYou can verify them at:"
-echo "https://console.firebase.google.com/project/growth-70a85/firestore/data/~2FlegalDocuments"
+echo "https://console.firebase.google.com/project/growth-training-app/firestore/data/~2FlegalDocuments"

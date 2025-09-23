@@ -42,7 +42,7 @@ firebase deploy --only functions:handleAppStoreNotification
 
 ### Option 3: Use Firebase Console
 1. Go to [Firebase Console](https://console.firebase.google.com)
-2. Select your project: growth-70a85
+2. Select your project: growth-training-app
 3. Navigate to Functions
 4. Check deployment status
 

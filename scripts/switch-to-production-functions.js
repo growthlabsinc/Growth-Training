@@ -27,7 +27,7 @@ console.log('   - User must be signed in with email/password');
 console.log('   - Anonymous users are not allowed\n');
 
 console.log('2. Check Firebase Console:');
-console.log('   - Auth providers: https://console.firebase.google.com/project/growth-70a85/authentication/providers');
+console.log('   - Auth providers: https://console.firebase.google.com/project/growth-training-app/authentication/providers');
 console.log('   - Ensure Email/Password is enabled\n');
 
 console.log('3. Clear App Data:');

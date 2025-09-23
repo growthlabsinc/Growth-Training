@@ -23,7 +23,7 @@ const data = JSON.parse(fs.readFileSync("ai_coach_knowledge_export.json", "utf8"
 const documents = [];
 for (const [docId, docData] of Object.entries(data)) {
     documents.push({
-        __name__: `projects/growth-70a85/databases/(default)/documents/ai_coach_knowledge/${docId}`,
+        __name__: `projects/growth-training-app/databases/(default)/documents/ai_coach_knowledge/${docId}`,
         fields: convertToFirestoreFormat(docData)
     });
 }
@@ -76,7 +76,7 @@ if command -v gcloud &> /dev/null; then
         echo "⚠️  Could not get access token automatically"
         echo ""
         echo "Manual import required:"
-        echo "1. Go to: https://console.firebase.google.com/project/growth-70a85/firestore"
+        echo "1. Go to: https://console.firebase.google.com/project/growth-training-app/firestore"
         echo "2. Create collection: ai_coach_knowledge"
         echo "3. Use the import feature with: ai_coach_knowledge_export.json"
     else
@@ -85,7 +85,7 @@ if command -v gcloud &> /dev/null; then
         echo "⚠️  Automated import not fully implemented"
         echo ""
         echo "Please import manually:"
-        echo "1. Go to: https://console.firebase.google.com/project/growth-70a85/firestore"
+        echo "1. Go to: https://console.firebase.google.com/project/growth-training-app/firestore"
         echo "2. Create collection: ai_coach_knowledge"
         echo "3. Use the import feature with the prepared file"
     fi
@@ -96,7 +96,7 @@ else
     echo "================================"
     echo ""
     echo "1. Open Firebase Console:"
-    echo "   https://console.firebase.google.com/project/growth-70a85/firestore"
+    echo "   https://console.firebase.google.com/project/growth-training-app/firestore"
     echo ""
     echo "2. Create new collection:"
     echo "   - Click 'Start collection'"

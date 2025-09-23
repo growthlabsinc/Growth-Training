@@ -61,6 +61,6 @@ fi
 echo ""
 echo "=================================================="
 echo "🎉 Upload complete! Check Firebase Console."
-echo "   https://console.firebase.google.com/project/growth-70a85/crashlytics"
+echo "   https://console.firebase.google.com/project/growth-training-app/crashlytics"
 echo ""
 echo "The 7 crashes from version 1.1.0 should now be processed."

@@ -179,8 +179,8 @@ async function validateSubscriptionProducts(token) {
 function validateWebhookConfig() {
   console.log('\n🔔 Validating webhook configuration...\n');
   
-  const webhookUrl = 'https://us-central1-growth-70a85.cloudfunctions.net/handleAppStoreNotification';
-  const sandboxUrl = 'https://us-central1-growth-70a85.cloudfunctions.net/handleAppStoreNotificationSandbox';
+  const webhookUrl = 'https://us-central1-growth-training-app.cloudfunctions.net/handleAppStoreNotification';
+  const sandboxUrl = 'https://us-central1-growth-training-app.cloudfunctions.net/handleAppStoreNotificationSandbox';
   
   console.log('📋 Webhook URLs configured:');
   console.log(`   Production: ${webhookUrl}`);

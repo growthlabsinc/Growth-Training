@@ -19,7 +19,7 @@ class GrowthMethodService {
     private let db = Firestore.firestore()
     
     /// Collection name for growth methods in Firestore
-    private let collectionName = "growthMethods"
+    private let collectionName = "growth_exercises"
     
     /// In-memory cache for growth methods
     private var methodsCache = NSCache<NSString, NSArray>()

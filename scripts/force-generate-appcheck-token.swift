@@ -31,7 +31,7 @@ guard let appDefaults = UserDefaults(suiteName: bundleId) else {
     
     print("\n📋 Next steps:")
     print("1. Copy the token above")
-    print("2. Go to: https://console.firebase.google.com/project/growth-70a85/appcheck/apps")
+    print("2. Go to: https://console.firebase.google.com/project/growth-training-app/appcheck/apps")
     print("3. Click on your iOS app → Manage debug tokens")
     print("4. Add this token with a descriptive name")
     print("5. Restart the app")
@@ -62,7 +62,7 @@ if let existingToken = appDefaults.string(forKey: tokenKey) {
 
 print("\n📋 Next steps:")
 print("1. Copy the token above")
-print("2. Go to: https://console.firebase.google.com/project/growth-70a85/appcheck/apps")
+print("2. Go to: https://console.firebase.google.com/project/growth-training-app/appcheck/apps")
 print("3. Click on your iOS app → Manage debug tokens")
 print("4. Add this token with a descriptive name")
 print("5. Restart the app if you generated a new token")

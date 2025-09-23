@@ -51,7 +51,7 @@ For Firebase callable functions, the recommended approach is Option 1 (allUsers)
    ```bash
    # Ensure you're logged in and have the right project
    gcloud auth login
-   gcloud config set project growth-70a85
+   gcloud config set project growth-training-app
 
    # Add IAM binding
    gcloud run services add-iam-policy-binding generateairesponse \

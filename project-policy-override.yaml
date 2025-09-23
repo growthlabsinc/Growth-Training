@@ -1,0 +1,5 @@
+name: projects/growth-training-app/policies/iam.allowedPolicyMemberDomains
+spec:
+  inheritFromParent: false
+  rules:
+    - allowAll: true

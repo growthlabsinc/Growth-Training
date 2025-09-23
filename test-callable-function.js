@@ -13,7 +13,7 @@ const requestData = {
 };
 
 const options = {
-  hostname: 'us-central1-growth-70a85.cloudfunctions.net',
+  hostname: 'us-central1-growth-training-app.cloudfunctions.net',
   path: '/collectAPNsDiagnostics',
   method: 'POST',
   headers: {

@@ -33,7 +33,7 @@ Button("Get App Check Token") {
 ## Configuring App Check in Firebase Console
 
 ### Option A: Add Debug Token (Recommended)
-1. Go to: https://console.firebase.google.com/project/growth-70a85/appcheck/apps
+1. Go to: https://console.firebase.google.com/project/growth-training-app/appcheck/apps
 2. Find your iOS app (com.growthlabs.growthmethod)
 3. Click the three dots menu → "Manage debug tokens"
 4. Click "Add debug token"
@@ -41,7 +41,7 @@ Button("Get App Check Token") {
 6. Save
 
 ### Option B: Temporarily Disable App Check (Quick Fix)
-1. Go to: https://console.firebase.google.com/project/growth-70a85/appcheck/apis
+1. Go to: https://console.firebase.google.com/project/growth-training-app/appcheck/apis
 2. Find "Cloud Functions"
 3. Click on it
 4. Change enforcement from "Enforced" to "Unenforced"

@@ -15,7 +15,7 @@ const execAsync = promisify(exec);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const PROJECT_ID = 'growth-70a85';
+const PROJECT_ID = 'growth-training-app';
 const COLLECTION = 'ai_coach_knowledge';
 
 async function getAccessToken() {

@@ -8,9 +8,9 @@ import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 // Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyBP4SlK2K_CWYPXCPRj1FLjW_PF8BFgLLY",
-  authDomain: "growth-70a85.firebaseapp.com",
-  projectId: "growth-70a85",
-  storageBucket: "growth-70a85.firebasestorage.app",
+  authDomain: "growth-training-app.firebaseapp.com",
+  projectId: "growth-training-app",
+  storageBucket: "growth-training-app.firebasestorage.app",
   messagingSenderId: "39532219396",
   appId: "1:39532219396:ios:57e5b967c949e1b9f42d48"
 };
@@ -310,7 +310,7 @@ async function addLegalDocuments() {
       } catch (error) {
         console.error(`✗ Error adding ${docData.title}:`, error.message);
         console.log(`\nTo add legal documents, you can:`);
-        console.log(`1. Use Firebase Console: https://console.firebase.google.com/project/growth-70a85/firestore`);
+        console.log(`1. Use Firebase Console: https://console.firebase.google.com/project/growth-training-app/firestore`);
         console.log(`2. Navigate to 'legalDocuments' collection (create if needed)`);
         console.log(`3. Add documents with IDs: privacy_policy, terms_of_use, disclaimer`);
         console.log(`4. Copy the content from this script\n`);

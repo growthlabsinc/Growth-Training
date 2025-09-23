@@ -3,21 +3,21 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>645068839446-e2hieedodcgv06djtr02adbiv7cmv2ub.apps.googleusercontent.com</string>
+	<string>997901246801-t5it06c0qjaqusqsifu31lskb4aj56gu.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.645068839446-e2hieedodcgv06djtr02adbiv7cmv2ub</string>
+	<string>com.googleusercontent.apps.997901246801-t5it06c0qjaqusqsifu31lskb4aj56gu</string>
 	<key>API_KEY</key>
-	<string>AIzaSyAG_6EUgBI75ICsMqNwZJGKOHH9y3Q8-To</string>
+	<string>AIzaSyAjE0ojXLB6hnme7BmOPCvsRapujs-1DkQ</string>
 	<key>GCM_SENDER_ID</key>
-	<string>645068839446</string>
+	<string>997901246801</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.growthlabs.growthmethod.staging</string>
+	<string>com.growthlabs.growthtraining</string>
 	<key>PROJECT_ID</key>
-	<string>growth-70a85</string>
+	<string>growth-training-app</string>
 	<key>STORAGE_BUCKET</key>
-	<string>growth-70a85.firebasestorage.app</string>
+	<string>growth-training-app.firebasestorage.app</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -29,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:645068839446:ios:7782656347bee14bfc3337</string>
+	<string>1:997901246801:ios:449529031faf1c23503370</string>
 </dict>
 </plist>

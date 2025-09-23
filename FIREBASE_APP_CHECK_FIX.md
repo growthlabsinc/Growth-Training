@@ -9,7 +9,7 @@ The app is getting App Check errors because the new bundle ID hasn't been regist
 ## Solution
 
 1. **Go to Firebase Console**
-   - Navigate to https://console.firebase.google.com/project/growth-70a85
+   - Navigate to https://console.firebase.google.com/project/growth-training-app
    - Go to App Check section
 
 2. **Register the new bundle ID**

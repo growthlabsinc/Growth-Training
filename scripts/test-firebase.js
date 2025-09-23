@@ -3,7 +3,7 @@ import { getFirestore, collection, addDoc } from 'firebase/firestore';
 import { initializeApp } from 'firebase/app';
 
 const firebaseConfig = {
-  projectId: 'growth-70a85'
+  projectId: 'growth-training-app'
 };
 
 const app = initializeApp(firebaseConfig);

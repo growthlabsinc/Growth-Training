@@ -14,7 +14,7 @@ if [ -z "$ID_TOKEN" ]; then
     echo ""
     echo "📝 Manual Deployment Instructions:"
     echo "1. Go to Firebase Console: https://console.firebase.google.com"
-    echo "2. Select project: growth-70a85"
+    echo "2. Select project: growth-training-app"
     echo "3. Navigate to Firestore Database"
     echo "4. Find the 'growthMethods' collection"
     echo ""
@@ -30,7 +30,7 @@ if [ -z "$ID_TOKEN" ]; then
     echo "   scripts/firebase-deploy-data/"
 else
     # Call the deployed function
-    FUNCTION_URL="https://us-central1-growth-70a85.cloudfunctions.net/deployAngionMethods"
+    FUNCTION_URL="https://us-central1-growth-training-app.cloudfunctions.net/deployAngionMethods"
     
     echo "📡 Calling deployment function..."
     curl -X POST "$FUNCTION_URL" \

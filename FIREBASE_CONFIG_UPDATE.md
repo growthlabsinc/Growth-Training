@@ -17,7 +17,7 @@ Successfully updated Firebase configuration for the new bundle identifier `com.g
 - **CLIENT_ID**: Changed from `645068839446-e2hieedodcgv06djtr02adbiv7cmv2ub` to `645068839446-ornmecs6mg94okaqlp11oj6ouu1af74r`
 - **GOOGLE_APP_ID**: Changed from `1:645068839446:ios:7782656347bee14bfc3337` to `1:645068839446:ios:c49ec579111e8a65fc3337`
 - **BUNDLE_ID**: Changed from `com.growthtraining.Growth` to `com.growthlabs.growthmethod`
-- **Project ID**: Remains the same - `growth-70a85`
+- **Project ID**: Remains the same - `growth-training-app`
 
 ### 3. Info.plist Update
 - Updated Google Sign-In URL scheme to match new CLIENT_ID

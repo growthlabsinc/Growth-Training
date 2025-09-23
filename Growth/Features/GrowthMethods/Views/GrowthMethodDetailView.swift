@@ -204,7 +204,9 @@ struct GrowthMethodDetailView: View {
                         Spacer()
                         
                         // Show citation badge for vascular/flow-mediated methods
-                        if method.title.lowercased().contains("angion") ||
+                        if method.title.lowercased().contains("pe") ||
+                           method.title.lowercased().contains("penile") ||
+                           method.title.lowercased().contains("enlargement") ||
                            method.title.lowercased().contains("vascular") ||
                            method.methodDescription.contains("flow") ||
                            method.methodDescription.contains("shear stress") ||
@@ -229,7 +231,9 @@ struct GrowthMethodDetailView: View {
                         .fixedSize(horizontal: false, vertical: true)
                     
                     // Add citation link for methods with scientific basis
-                    if method.title.lowercased().contains("angion") ||
+                    if method.title.lowercased().contains("pe") ||
+                       method.title.lowercased().contains("penile") ||
+                       method.title.lowercased().contains("enlargement") ||
                        method.methodDescription.contains("vascular") {
                         NavigationLink(destination: AllCitationsView()) {
                             HStack(spacing: 4) {

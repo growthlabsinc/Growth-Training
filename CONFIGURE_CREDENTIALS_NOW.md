@@ -67,12 +67,12 @@ In App Store Connect > Users and Access > Integrations:
 
 **Production URL:**
 ```
-https://us-central1-growth-70a85.cloudfunctions.net/handleAppStoreNotification
+https://us-central1-growth-training-app.cloudfunctions.net/handleAppStoreNotification
 ```
 
 **Sandbox URL:**
 ```
-https://us-central1-growth-70a85.cloudfunctions.net/handleAppStoreNotificationSandbox
+https://us-central1-growth-training-app.cloudfunctions.net/handleAppStoreNotificationSandbox
 ```
 
 Enable ALL notification types!

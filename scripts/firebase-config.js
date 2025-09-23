@@ -12,9 +12,9 @@ dotenv.config({ path: join(__dirname, '..', '.env') });
 export const firebaseConfigs = {
   production: {
     apiKey: process.env.FIREBASE_API_KEY,
-    authDomain: process.env.FIREBASE_AUTH_DOMAIN || 'growth-70a85.firebaseapp.com',
-    projectId: process.env.FIREBASE_PROJECT_ID || 'growth-70a85',
-    storageBucket: process.env.FIREBASE_STORAGE_BUCKET || 'growth-70a85.appspot.com',
+    authDomain: process.env.FIREBASE_AUTH_DOMAIN || 'growth-training-app.firebaseapp.com',
+    projectId: process.env.FIREBASE_PROJECT_ID || 'growth-training-app',
+    storageBucket: process.env.FIREBASE_STORAGE_BUCKET || 'growth-training-app.appspot.com',
     messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID || '876570095367',
     appId: process.env.FIREBASE_APP_ID || '1:876570095367:ios:9bb52de88be4d6f95354d8',
     measurementId: process.env.FIREBASE_MEASUREMENT_ID

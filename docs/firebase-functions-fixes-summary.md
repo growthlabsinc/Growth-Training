@@ -84,7 +84,7 @@ APP_STORE_SHARED_SECRET       # For receipt validation
 After deployment:
 
 1. **Test App Store Webhook**:
-   - The webhook URL is: `https://us-central1-growth-70a85.cloudfunctions.net/handleAppStoreNotification`
+   - The webhook URL is: `https://us-central1-growth-training-app.cloudfunctions.net/handleAppStoreNotification`
    - Configure this URL in App Store Connect
 
 2. **Test Live Activity Updates**:

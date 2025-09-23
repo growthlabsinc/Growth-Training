@@ -7,12 +7,12 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Initialize Firebase Admin SDK with service account
-const serviceAccountPath = '/Users/tradeflowj/Downloads/growth-70a85-firebase-adminsdk-fbsvc-854a45a4b3.json';
+const serviceAccountPath = '/Users/tradeflowj/Downloads/growth-training-app-firebase-adminsdk-fbsvc-854a45a4b3.json';
 const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'));
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  projectId: 'growth-70a85'
+  projectId: 'growth-training-app'
 });
 
 const db = admin.firestore();

@@ -15,7 +15,7 @@ const path = require('path');
 try {
   // Try to use application default credentials
   admin.initializeApp({
-    projectId: 'growth-70a85'
+    projectId: 'growth-training-app'
   });
 } catch (error) {
   console.error('Failed to initialize Firebase Admin. Make sure you have proper credentials set up.');

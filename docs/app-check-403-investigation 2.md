@@ -12,7 +12,7 @@ We're experiencing persistent App Check 403 errors despite having registered deb
 ## Recent Changes
 - Restored dev APNs key (55LZB28UY2) and updated secrets
 - Redeployed updateLiveActivitySimplified with dev key
-- Both environments (dev and prod) use the same Firebase project: growth-70a85
+- Both environments (dev and prod) use the same Firebase project: growth-training-app
 
 ## Debug Token Verification
 ```bash
@@ -48,7 +48,7 @@ The token might not have propagated yet. Try:
 
 ### 4. Wrong Firebase App
 Check if the app is connecting to the correct Firebase project:
-- Both dev and prod use: growth-70a85
+- Both dev and prod use: growth-training-app
 - Verify in Firebase Console that you're looking at the right project
 
 ## Next Steps

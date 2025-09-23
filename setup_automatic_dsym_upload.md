@@ -54,7 +54,7 @@ Run the script we just created:
 
 ## Verify in Firebase Console
 
-1. Go to: https://console.firebase.google.com/project/growth-70a85/crashlytics
+1. Go to: https://console.firebase.google.com/project/growth-training-app/crashlytics
 2. Check that crashes now show symbolicated stack traces
 3. The "unprocessed crashes" warning should disappear
 

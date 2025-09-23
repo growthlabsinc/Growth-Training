@@ -3,7 +3,7 @@ const admin = require('firebase-admin');
 // Initialize Firebase Admin
 if (!admin.apps.length) {
   admin.initializeApp({
-    projectId: 'growth-70a85'
+    projectId: 'growth-training-app'
   });
 }
 
@@ -22,7 +22,7 @@ async function debugMethods() {
 
   for (const id of methodIds) {
     try {
-      const doc = await db.collection('growthMethods').doc(id).get();
+      const doc = await db.collection('growth_exercises').doc(id).get();
       if (doc.exists) {
         const data = doc.data();
         console.log(`\n📋 ${id}:`);
@@ -56,7 +56,7 @@ async function debugMethods() {
   }
   
   console.log('\n\n📊 Checking one full document structure...');
-  const sampleDoc = await db.collection('growthMethods').doc('angion_method_1_0').get();
+  const sampleDoc = await db.collection('growth_exercises').doc('kegel_exercises').get();
   if (sampleDoc.exists) {
     const data = sampleDoc.data();
     console.log(JSON.stringify(data, null, 2));

@@ -36,7 +36,7 @@ async function getSharedSecret() {
   try {
     const { SecretManagerServiceClient } = require('@google-cloud/secret-manager');
     const client = new SecretManagerServiceClient();
-    const projectId = process.env.GCLOUD_PROJECT || 'growth-70a85';
+    const projectId = process.env.GCLOUD_PROJECT || 'growth-training-app';
     
     const [version] = await client.accessSecretVersion({
       name: `projects/${projectId}/secrets/appstore-shared-secret/versions/latest`,

@@ -17,7 +17,7 @@ if [ $? -eq 0 ] && [ ! -z "$TOKEN" ]; then
     echo "========================================"
     echo ""
     echo "📋 To use this token:"
-    echo "1. Go to: https://console.firebase.google.com/project/growth-70a85/appcheck/apps"
+    echo "1. Go to: https://console.firebase.google.com/project/growth-training-app/appcheck/apps"
     echo "2. Find your iOS app (com.growthlabs.growthmethod)"
     echo "3. Click the three dots menu → 'Manage debug tokens'"
     echo "4. Click 'Add debug token'"

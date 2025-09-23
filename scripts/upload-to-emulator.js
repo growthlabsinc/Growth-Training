@@ -8,7 +8,7 @@ const __dirname = path.dirname(__filename);
 
 // Initialize Firebase Admin SDK for emulator
 const app = admin.initializeApp({
-  projectId: 'growth-70a85'
+  projectId: 'growth-training-app'
 });
 
 // Connect to emulator

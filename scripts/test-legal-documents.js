@@ -7,9 +7,9 @@ import { getFirestore, doc, getDoc } from 'firebase/firestore';
 // Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyBP4SlK2K_CWYPXCPRj1FLjW_PF8BFgLLY",
-  authDomain: "growth-70a85.firebaseapp.com",
-  projectId: "growth-70a85",
-  storageBucket: "growth-70a85.firebasestorage.app",
+  authDomain: "growth-training-app.firebaseapp.com",
+  projectId: "growth-training-app",
+  storageBucket: "growth-training-app.firebasestorage.app",
   messagingSenderId: "39532219396",
   appId: "1:39532219396:ios:57e5b967c949e1b9f42d48"
 };
@@ -43,7 +43,7 @@ async function checkLegalDocuments() {
   }
   
   console.log('\nIf documents are missing, add them via Firebase Console:');
-  console.log('https://console.firebase.google.com/project/growth-70a85/firestore/data');
+  console.log('https://console.firebase.google.com/project/growth-training-app/firestore/data');
 }
 
 checkLegalDocuments();

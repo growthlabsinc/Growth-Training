@@ -13,7 +13,7 @@ The multi-step method data is ready to deploy to Firebase\!
 ## Deploy via Firebase Console (5 minutes)
 
 1. Open https://console.firebase.google.com
-2. Select project: **growth-70a85**
+2. Select project: **growth-training-app**
 3. Go to **Firestore Database**
 4. Find **growthMethods** collection
 

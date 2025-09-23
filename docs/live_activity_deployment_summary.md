@@ -15,10 +15,10 @@
 - **Topic**: com.growth.push-type.liveactivity ✓
 
 ### Deployment Details:
-- **Project**: growth-70a85
+- **Project**: growth-training-app
 - **Region**: us-central1
 - **Runtime**: Node.js 20 (2nd Gen)
-- **Console**: https://console.firebase.google.com/project/growth-70a85/overview
+- **Console**: https://console.firebase.google.com/project/growth-training-app/overview
 
 ## How the System Works:
 

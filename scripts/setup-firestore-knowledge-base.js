@@ -10,7 +10,7 @@ const fs = require('fs').promises;
 const path = require('path');
 
 // Configuration
-const PROJECT_ID = 'growth-70a85';
+const PROJECT_ID = 'growth-training-app';
 const KNOWLEDGE_COLLECTION = 'ai_coach_knowledge';
 
 async function initializeFirebase() {

@@ -30,7 +30,7 @@ After comparing `growth-fresh` with `growth-backup-22aug2025`, the following cri
 4. **Deployed all functions** to Firebase
 
 ### Deployment Status
-All functions successfully deployed to Firebase project `growth-70a85`:
+All functions successfully deployed to Firebase project `growth-training-app`:
 
 ```
 ✅ checkUsernameAvailability   - Callable function for username validation
@@ -46,7 +46,7 @@ The deployment automatically configured:
 - Access to `APP_STORE_CONNECT_KEY_ID` secret
 - Access to `APP_STORE_CONNECT_ISSUER_ID` secret  
 - Access to `APP_STORE_SHARED_SECRET` secret
-- Webhook URL: `https://us-central1-growth-70a85.cloudfunctions.net/handleAppStoreNotification`
+- Webhook URL: `https://us-central1-growth-training-app.cloudfunctions.net/handleAppStoreNotification`
 
 ### Impact
 These functions are critical for:

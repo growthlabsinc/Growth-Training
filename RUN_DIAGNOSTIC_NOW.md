@@ -13,7 +13,7 @@ Since you started a timer, here's how to run the diagnostic:
 
 ## Option 2: Use Firebase Console
 
-1. Go to [Firebase Console](https://console.firebase.google.com/project/growth-70a85/functions)
+1. Go to [Firebase Console](https://console.firebase.google.com/project/growth-training-app/functions)
 2. Click on `collectAPNsDiagnostics` function
 3. Go to the "Testing" tab
 4. Enter this JSON (replace YOUR_PUSH_TOKEN with the actual token):

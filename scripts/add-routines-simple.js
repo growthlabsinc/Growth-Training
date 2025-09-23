@@ -5,7 +5,7 @@ const { getFirestore } = require('firebase-admin/firestore');
 // Initialize Firebase Admin with default credentials from environment
 if (!getApps().length) {
   initializeApp({
-    projectId: 'growth-70a85',
+    projectId: 'growth-training-app',
   });
 }
 

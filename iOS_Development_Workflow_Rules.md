@@ -560,7 +560,7 @@ open /Applications/Utilities/Console.app
 ./fix_app_check_debug_token.sh
 
 # Verify token registration
-curl -X POST https://firebaseappcheck.googleapis.com/v1/projects/growth-70a85/apps/[APP_ID]:exchangeDebugToken
+curl -X POST https://firebaseappcheck.googleapis.com/v1/projects/growth-training-app/apps/[APP_ID]:exchangeDebugToken
 ```
 
 #### Firestore Connection Issues

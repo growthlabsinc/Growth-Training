@@ -3,7 +3,7 @@
 ## Problem
 Getting App Check attestation errors:
 - Error: "App attestation failed" with HTTP 403
-- URL: `https://firebaseappcheck.googleapis.com/v1/projects/growth-70a85/apps/1:645068839446:ios:c49ec579111e8a65fc3337:exchangeDeviceCheckToken`
+- URL: `https://firebaseappcheck.googleapis.com/v1/projects/growth-training-app/apps/1:645068839446:ios:c49ec579111e8a65fc3337:exchangeDeviceCheckToken`
 
 ## Root Cause
 The app is trying to use DeviceCheck provider instead of Debug provider. This happens because:
@@ -49,7 +49,7 @@ After ~2 seconds, you'll see:
 ```
 
 #### Step 4: Add to Firebase Console
-1. Go to: https://console.firebase.google.com/project/growth-70a85/appcheck/apps
+1. Go to: https://console.firebase.google.com/project/growth-training-app/appcheck/apps
 2. Click on your iOS app (com.growthlabs.growthmethod)
 3. Click the three dots menu (⋮) → "Manage debug tokens"
 4. Click "Add debug token"
