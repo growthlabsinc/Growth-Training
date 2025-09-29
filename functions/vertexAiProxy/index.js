@@ -2,6 +2,7 @@ const { HttpsError } = require('firebase-functions/v2/https');
 const { SecretManagerServiceClient } = require('@google-cloud/secret-manager');
 const { VertexAI } = require('@google-cloud/vertexai');
 const admin = require('firebase-admin');
+const { filterResponse } = require('./responseFilter');
 
 // Initialize Firebase Admin if not already initialized
 if (!admin.apps.length) {
@@ -301,10 +302,22 @@ const generateAIResponse = async (data, context) => {
       aiText = 'Sorry, I encountered an issue processing your request.';
     }
     
+    // Apply response filtering for safety
+    const userContext = {
+      userId: data.userId || 'anonymous',
+      conversationId: data.conversationId,
+      sessionType: data.sessionType || 'general',
+      userExperienceLevel: data.userExperienceLevel || 'beginner'
+    };
+
+    const filteredResponse = await filterResponse(aiText, userContext);
+
     // Return formatted response
     return {
-      text: aiText,
+      text: filteredResponse.text,
       sources: knowledgeSources.length > 0 ? knowledgeSources : null,
+      wasFiltered: filteredResponse.wasFiltered || false,
+      filterReasons: filteredResponse.filterReasons || []
     };
   } catch (error) {
     console.error(`Error generating AI response: ${error}`);
