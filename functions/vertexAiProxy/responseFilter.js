@@ -141,6 +141,10 @@ async function filterResponse(response, userContext = {}) {
   // Calculate overall risk score (0-100)
   filterResults.riskScore = calculateRiskScore(allResults);
 
+  // Check if medical disclaimers are needed for borderline educational content
+  const needsMedicalDisclaimer = medicalClaimResult.needsDisclaimer ||
+                                  medicalClaimResult.bypassedForEducation;
+
   // Apply conservative override if risk score is high
   if (filterResults.riskScore > 70 || shouldApplyConservativeOverride(allResults)) {
     filterResults.filteredResponse = applyConservativeOverride(response, allResults);
@@ -151,6 +155,11 @@ async function filterResponse(response, userContext = {}) {
     filterResults.filteredResponse = addSafetyDisclaimers(response, allResults);
     filterResults.filtersApplied.push('safety_disclaimers');
     filterResults.requiresLogging = true;
+  } else if (needsMedicalDisclaimer && !medicalClaimResult.detected) {
+    // Add medical disclaimer for educational content
+    filterResults.filteredResponse = addMedicalDisclaimer(response);
+    filterResults.filtersApplied.push('medical_disclaimer');
+    filterResults.requiresLogging = false; // Don't log educational content
   }
 
   // Check if response should be completely blocked
@@ -261,17 +270,56 @@ function detectMedicalClaims(text) {
     filters: [],
     reasons: [],
     severity: 'low',
-    matches: []
+    matches: [],
+    needsDisclaimer: false,
+    bypassedForEducation: false
   };
+
+  // Legitimate educational phrases that should bypass filtering
+  const educationalBypassPhrases = [
+    'may help',
+    'could improve',
+    'might support',
+    'potentially beneficial',
+    'some users report',
+    'research suggests',
+    'studies indicate',
+    'general wellness',
+    'pelvic health',
+    'muscle strength'
+  ];
+
+  // Check if content is educational and should bypass strict filtering
+  const isEducational = educationalBypassPhrases.some(phrase =>
+    text.toLowerCase().includes(phrase)
+  );
+
+  // More sophisticated medical claim patterns
+  const enhancedMedicalPatterns = [
+    /will\s+(cure|fix|heal|eliminate|reverse)\s+(?:your\s+)?(?:ED|erectile|dysfunction)/gi,
+    /guaranteed\s+to\s+(?:cure|fix|heal|work)/gi,
+    /(?:proven|clinically)\s+to\s+(?:cure|treat|heal)/gi,
+    /(?:100%|completely)\s+(?:cure|effective|guaranteed)/gi,
+    /replace\s+(?:medication|drugs|prescription)/gi,
+    /better\s+than\s+(?:viagra|cialis|medication)/gi,
+    /medical\s+(?:treatment|cure|therapy)/gi,
+    /diagnose\s+(?:your|the)\s+(?:condition|problem)/gi
+  ];
 
   // Check medical claim keywords
   FILTER_CATEGORIES.medicalClaims.keywords.forEach(keyword => {
     if (text.toLowerCase().includes(keyword.toLowerCase())) {
-      result.detected = true;
-      result.severity = 'high';
-      result.filters.push('medical_claim');
-      result.reasons.push(`Contains medical claim: ${keyword}`);
-      result.matches.push(keyword);
+      // If educational context, add disclaimer instead of filtering
+      if (isEducational && !['cure', 'guarantee', 'diagnose'].includes(keyword.toLowerCase())) {
+        result.needsDisclaimer = true;
+        result.bypassedForEducation = true;
+      } else {
+        result.detected = true;
+        result.severity = 'high';
+        result.filters.push('medical_claim');
+        result.reasons.push(`Contains medical claim: ${keyword}`);
+        result.matches.push(keyword);
+      }
     }
   });
 
@@ -287,14 +335,30 @@ function detectMedicalClaims(text) {
     }
   });
 
+  // Check enhanced medical patterns
+  enhancedMedicalPatterns.forEach(pattern => {
+    const matches = text.match(pattern);
+    if (matches) {
+      result.detected = true;
+      result.severity = 'critical';
+      result.filters.push('enhanced_medical_pattern');
+      result.reasons.push(`Strong medical claim detected: ${matches[0]}`);
+      result.matches.push(...matches);
+    }
+  });
+
   // Check for unproven method claims
   FILTER_CATEGORIES.unprovenMethods.keywords.forEach(keyword => {
     if (text.toLowerCase().includes(keyword.toLowerCase())) {
-      result.detected = true;
-      result.severity = result.severity === 'high' ? 'high' : 'medium';
-      result.filters.push('unproven_method');
-      result.reasons.push(`Contains unproven method: ${keyword}`);
-      result.matches.push(keyword);
+      if (isEducational) {
+        result.needsDisclaimer = true;
+      } else {
+        result.detected = true;
+        result.severity = result.severity === 'high' ? 'high' : 'medium';
+        result.filters.push('unproven_method');
+        result.reasons.push(`Contains unproven method: ${keyword}`);
+        result.matches.push(keyword);
+      }
     }
   });
 
@@ -310,45 +374,157 @@ function assessInjuryRisk(text, userContext) {
     filters: [],
     reasons: [],
     severity: 'low',
-    riskFactors: []
+    riskFactors: [],
+    riskScore: 0
   };
 
-  const isBeginnerUser = userContext.experienceLevel === 'beginner';
+  const isBeginnerUser = userContext.userExperienceLevel === 'beginner';
+  const isIntermediateUser = userContext.userExperienceLevel === 'intermediate';
 
-  // Check for excessive parameters
-  FILTER_CATEGORIES.excessiveParameters.patterns.forEach(pattern => {
+  // Enhanced risk parameters with thresholds
+  const riskParameters = {
+    duration: {
+      beginner: { warning: 15, danger: 30 },
+      intermediate: { warning: 30, danger: 60 },
+      advanced: { warning: 60, danger: 90 }
+    },
+    intensity: {
+      beginner: { warning: 'moderate', danger: 'high' },
+      intermediate: { warning: 'high', danger: 'extreme' },
+      advanced: { warning: 'very high', danger: 'extreme' }
+    },
+    frequency: {
+      beginner: { warning: 1, danger: 2 },
+      intermediate: { warning: 2, danger: 3 },
+      advanced: { warning: 3, danger: 4 }
+    }
+  };
+
+  const userLevel = userContext.userExperienceLevel || 'beginner';
+  const thresholds = {
+    duration: riskParameters.duration[userLevel] || riskParameters.duration.beginner,
+    intensity: riskParameters.intensity[userLevel] || riskParameters.intensity.beginner,
+    frequency: riskParameters.frequency[userLevel] || riskParameters.frequency.beginner
+  };
+
+  // Check duration parameters
+  const durationPatterns = [
+    /(\d+)\s*hours?/gi,
+    /(\d+)\s*minutes?/gi,
+    /(\d+)\s*mins?/gi
+  ];
+
+  durationPatterns.forEach(pattern => {
+    const matches = [...text.matchAll(pattern)];
+    matches.forEach(match => {
+      let minutes = parseInt(match[1]);
+      if (match[0].includes('hour')) {
+        minutes *= 60;
+      }
+
+      if (minutes > thresholds.duration.danger) {
+        result.detected = true;
+        result.severity = 'critical';
+        result.filters.push('excessive_duration');
+        result.reasons.push(`Duration exceeds limit: ${match[0]}`);
+        result.riskFactors.push({
+          type: 'duration',
+          value: minutes,
+          limit: thresholds.duration.danger,
+          severity: 'critical'
+        });
+        result.riskScore += 30;
+      } else if (minutes > thresholds.duration.warning) {
+        result.detected = true;
+        result.severity = result.severity === 'critical' ? 'critical' : 'high';
+        result.filters.push('high_duration');
+        result.reasons.push(`Duration is high: ${match[0]}`);
+        result.riskFactors.push({
+          type: 'duration',
+          value: minutes,
+          limit: thresholds.duration.warning,
+          severity: 'warning'
+        });
+        result.riskScore += 15;
+      }
+    });
+  });
+
+  // Check frequency parameters
+  const frequencyPatterns = [
+    /(\d+)\s*times?\s*(?:per|a|\/)\s*day/gi,
+    /(\d+)x?\s*(?:daily|per\s*day)/gi,
+    /(?:twice|three\s*times|four\s*times)\s*(?:daily|per\s*day)/gi
+  ];
+
+  frequencyPatterns.forEach(pattern => {
     const matches = text.match(pattern);
     if (matches) {
-      const value = parseInt(matches[1]);
-
-      // Check duration
-      if (pattern.toString().includes('hours') && value > 1) {
-        result.detected = true;
-        result.severity = 'high';
-        result.filters.push('excessive_duration');
-        result.reasons.push(`Excessive duration: ${value} hours`);
-        result.riskFactors.push({ type: 'duration', value, limit: 1 });
+      let frequency = 1;
+      if (matches[0].includes('twice')) frequency = 2;
+      else if (matches[0].includes('three')) frequency = 3;
+      else if (matches[0].includes('four')) frequency = 4;
+      else {
+        const numberMatch = matches[0].match(/\d+/);
+        if (numberMatch) frequency = parseInt(numberMatch[0]);
       }
 
-      // Check frequency
-      if (pattern.toString().includes('times') && value > 2) {
+      if (frequency > thresholds.frequency.danger) {
         result.detected = true;
-        result.severity = 'high';
+        result.severity = 'critical';
         result.filters.push('excessive_frequency');
-        result.reasons.push(`Excessive frequency: ${value} times per day`);
-        result.riskFactors.push({ type: 'frequency', value, limit: 2 });
-      }
-
-      // Check against beginner limits
-      if (isBeginnerUser && pattern.toString().includes('minutes') && value > SAFETY_GUARDRAILS.beginnerLimit) {
+        result.reasons.push(`Frequency exceeds limit: ${frequency} times per day`);
+        result.riskFactors.push({
+          type: 'frequency',
+          value: frequency,
+          limit: thresholds.frequency.danger,
+          severity: 'critical'
+        });
+        result.riskScore += 25;
+      } else if (frequency > thresholds.frequency.warning) {
         result.detected = true;
-        result.severity = 'high';
-        result.filters.push('exceeds_beginner_limit');
-        result.reasons.push(`Exceeds beginner limit: ${value} minutes`);
-        result.riskFactors.push({ type: 'beginner_duration', value, limit: SAFETY_GUARDRAILS.beginnerLimit });
+        result.severity = result.severity === 'critical' ? 'critical' : 'high';
+        result.filters.push('high_frequency');
+        result.reasons.push(`Frequency is high: ${frequency} times per day`);
+        result.riskFactors.push({
+          type: 'frequency',
+          value: frequency,
+          limit: thresholds.frequency.warning,
+          severity: 'warning'
+        });
+        result.riskScore += 15;
       }
     }
   });
+
+  // Check intensity indicators
+  const intensityKeywords = {
+    extreme: ['maximum', 'extreme', 'intense', 'aggressive', 'forceful'],
+    high: ['strong', 'firm', 'vigorous', 'substantial'],
+    moderate: ['moderate', 'gentle', 'comfortable', 'gradual']
+  };
+
+  intensityKeywords.extreme.forEach(keyword => {
+    if (text.toLowerCase().includes(keyword)) {
+      result.detected = true;
+      result.severity = 'critical';
+      result.filters.push('extreme_intensity');
+      result.reasons.push(`Contains extreme intensity indicator: ${keyword}`);
+      result.riskScore += 20;
+    }
+  });
+
+  if (isBeginnerUser) {
+    intensityKeywords.high.forEach(keyword => {
+      if (text.toLowerCase().includes(keyword)) {
+        result.detected = true;
+        result.severity = result.severity === 'critical' ? 'critical' : 'high';
+        result.filters.push('high_intensity_for_beginner');
+        result.reasons.push(`High intensity for beginner: ${keyword}`);
+        result.riskScore += 10;
+      }
+    });
+  }
 
   // Check for missing rest day recommendations
   if (!text.toLowerCase().includes('rest') && !text.toLowerCase().includes('recovery')) {
@@ -495,16 +671,60 @@ function calculateRiskScore(results) {
  * Determine if conservative override should be applied
  */
 function shouldApplyConservativeOverride(results) {
-  // Apply override if any critical severity detected
+  // Enhanced override triggers for ambiguous safety situations
+
+  // 1. Apply override if any critical severity detected
   const hasCritical = results.some(r => r.detected && r.severity === 'critical');
 
-  // Apply override if multiple high severity issues
+  // 2. Apply override if multiple high severity issues
   const highSeverityCount = results.filter(r => r.detected && r.severity === 'high').length;
 
-  // Apply override if mix of issues across categories
+  // 3. Apply override if mix of issues across categories
   const categoriesDetected = results.filter(r => r.detected).length;
 
-  return hasCritical || highSeverityCount >= 2 || categoriesDetected >= 3;
+  // 4. Check for ambiguous content combinations
+  const hasAmbiguousCombination = checkAmbiguousCombinations(results);
+
+  // 5. Check cumulative risk factors
+  const cumulativeRiskScore = results.reduce((sum, r) => {
+    if (r.riskScore) return sum + r.riskScore;
+    if (r.detected) return sum + (r.severity === 'high' ? 20 : 10);
+    return sum;
+  }, 0);
+
+  // Apply conservative override based on multiple criteria
+  return hasCritical ||
+         highSeverityCount >= 2 ||
+         categoriesDetected >= 3 ||
+         hasAmbiguousCombination ||
+         cumulativeRiskScore >= 60;
+}
+
+/**
+ * Check for ambiguous content combinations that warrant conservative override
+ */
+function checkAmbiguousCombinations(results) {
+  const detectedTypes = new Set();
+
+  results.forEach(r => {
+    if (r.detected && r.filters) {
+      r.filters.forEach(filter => {
+        if (filter.includes('medical')) detectedTypes.add('medical');
+        if (filter.includes('duration') || filter.includes('frequency')) detectedTypes.add('parameters');
+        if (filter.includes('intensity') || filter.includes('force')) detectedTypes.add('intensity');
+        if (filter.includes('beginner')) detectedTypes.add('experience');
+      });
+    }
+  });
+
+  // Ambiguous if medical claims + high parameters
+  if (detectedTypes.has('medical') && detectedTypes.has('parameters')) return true;
+
+  // Ambiguous if intensity issues + experience mismatch
+  if (detectedTypes.has('intensity') && detectedTypes.has('experience')) return true;
+
+  // Ambiguous if 3+ different categories present
+  return detectedTypes.size >= 3;
 }
 
 /**
@@ -513,27 +733,93 @@ function shouldApplyConservativeOverride(results) {
 function applyConservativeOverride(response, filterResults) {
   let modifiedResponse = response;
 
-  // Add safety header
+  // Add safety header with escalation notice
   const safetyHeader = `⚠️ **Important Safety Notice**: The following response has been modified for your safety.\n\n`;
 
-  // Replace specific problematic content
+  // Safety buffer parameters - more conservative than normal limits
+  const safetyBuffer = {
+    duration: {
+      beginner: '10-15 minutes',
+      intermediate: '15-25 minutes',
+      advanced: '20-30 minutes'
+    },
+    frequency: {
+      beginner: 'once every other day',
+      intermediate: 'once daily',
+      advanced: 'once or twice daily with rest days'
+    },
+    intensity: {
+      beginner: 'gentle to moderate',
+      intermediate: 'moderate',
+      advanced: 'moderate to firm'
+    },
+    pressure: {
+      beginner: '3-5 HG',
+      intermediate: '5-7 HG',
+      advanced: '7-10 HG'
+    },
+    weight: {
+      beginner: '1-2.5 lbs',
+      intermediate: '2.5-5 lbs',
+      advanced: '5-10 lbs'
+    }
+  };
+
+  // Determine user level for safety buffer
+  const userLevel = filterResults.some(r =>
+    r.filters && r.filters.includes('beginner')
+  ) ? 'beginner' : 'intermediate';
+
+  // Replace specific problematic content with safety buffer values
   filterResults.forEach(result => {
-    if (result.detected && result.matches) {
-      result.matches.forEach(match => {
-        // Replace dangerous content with safer alternatives
-        if (result.filters.includes('excessive_duration')) {
-          modifiedResponse = modifiedResponse.replace(/\d+\s*hours?/gi, '15-30 minutes');
-        }
-        if (result.filters.includes('excessive_frequency')) {
-          modifiedResponse = modifiedResponse.replace(/\d+\s*times?\s*(per|a|\/)\s*day/gi, 'once daily');
-        }
-        if (result.filters.includes('excessive_pressure')) {
-          modifiedResponse = modifiedResponse.replace(/\d+\.?\d*\s*(hg|mercury)/gi, '5-7 HG');
-        }
-        if (result.filters.includes('excessive_weight')) {
-          modifiedResponse = modifiedResponse.replace(/\d+\.?\d*\s*(lbs?|pounds?)/gi, '2.5-5 lbs');
-        }
-      });
+    if (result.detected) {
+      // Duration replacements
+      if (result.filters && (result.filters.includes('excessive_duration') ||
+                              result.filters.includes('high_duration'))) {
+        modifiedResponse = modifiedResponse.replace(
+          /\d+\s*(hours?|minutes?|mins?)/gi,
+          safetyBuffer.duration[userLevel]
+        );
+      }
+
+      // Frequency replacements
+      if (result.filters && (result.filters.includes('excessive_frequency') ||
+                              result.filters.includes('high_frequency'))) {
+        modifiedResponse = modifiedResponse.replace(
+          /\d+\s*times?\s*(per|a|\/)\s*day/gi,
+          safetyBuffer.frequency[userLevel]
+        );
+        modifiedResponse = modifiedResponse.replace(
+          /(twice|three\s*times|four\s*times)\s*(daily|per\s*day)/gi,
+          safetyBuffer.frequency[userLevel]
+        );
+      }
+
+      // Pressure replacements
+      if (result.filters && result.filters.includes('excessive_pressure')) {
+        modifiedResponse = modifiedResponse.replace(
+          /\d+\.?\d*\s*(hg|mercury)/gi,
+          safetyBuffer.pressure[userLevel]
+        );
+      }
+
+      // Weight replacements
+      if (result.filters && result.filters.includes('excessive_weight')) {
+        modifiedResponse = modifiedResponse.replace(
+          /\d+\.?\d*\s*(lbs?|pounds?|kg|kilograms?)/gi,
+          safetyBuffer.weight[userLevel]
+        );
+      }
+
+      // Intensity replacements
+      if (result.filters && (result.filters.includes('extreme_intensity') ||
+                              result.filters.includes('high_intensity_for_beginner'))) {
+        const intensityTerms = ['maximum', 'extreme', 'intense', 'aggressive', 'forceful', 'strong', 'firm'];
+        intensityTerms.forEach(term => {
+          const regex = new RegExp(`\\b${term}\\b`, 'gi');
+          modifiedResponse = modifiedResponse.replace(regex, safetyBuffer.intensity[userLevel]);
+        });
+      }
     }
   });
 
@@ -605,6 +891,15 @@ For safe, evidence-based PE guidance, please ask about:
 }
 
 /**
+ * Add medical disclaimer for educational content
+ */
+function addMedicalDisclaimer(response) {
+  const medicalDisclaimer = `\n\n**Medical Disclaimer**: This information is for educational purposes only and should not be considered medical advice. It is not intended to diagnose, treat, cure, or prevent any medical condition. Always consult with a qualified healthcare professional before starting any new exercise program or if you have health concerns.`;
+
+  return response + medicalDisclaimer;
+}
+
+/**
  * Add safety disclaimers to response
  */
 function addSafetyDisclaimers(response, filterResults) {
@@ -639,32 +934,221 @@ function addSafetyDisclaimers(response, filterResults) {
 /**
  * Log filtered response to Firestore for audit
  */
+/**
+ * Log filtered responses for audit and monitoring
+ */
 async function logFilteredResponse(filterResults, userContext) {
   try {
     const db = admin.firestore();
+
+    // Enhanced metadata capture
     const logData = {
+      // Timestamp and identification
       timestamp: admin.firestore.FieldValue.serverTimestamp(),
+      logId: generateLogId(),
       userId: userContext.userId || 'anonymous',
-      userExperience: userContext.experienceLevel || 'unknown',
-      originalQuery: userContext.query || '',
-      originalResponse: filterResults.originalResponse.substring(0, 1000), // Limit size
-      filteredResponse: filterResults.filteredResponse.substring(0, 1000), // Limit size
-      filtersApplied: filterResults.filtersApplied,
-      filterReasons: filterResults.filterReasons,
-      riskScore: filterResults.riskScore,
-      blocked: filterResults.blocked,
-      metadata: {
-        sessionId: userContext.sessionId || null,
-        platform: userContext.platform || 'web'
+      conversationId: userContext.conversationId || null,
+
+      // User context
+      userContext: {
+        experienceLevel: userContext.userExperienceLevel || 'unknown',
+        sessionType: userContext.sessionType || 'general',
+        platform: userContext.platform || 'ios',
+        appVersion: userContext.appVersion || null
+      },
+
+      // Query information
+      query: {
+        original: userContext.query || '',
+        timestamp: new Date().toISOString(),
+        wordCount: userContext.query ? userContext.query.split(' ').length : 0
+      },
+
+      // Response data (truncated for storage)
+      responses: {
+        original: truncateText(filterResults.originalResponse, 1000),
+        filtered: truncateText(filterResults.filteredResponse, 1000),
+        wasModified: filterResults.originalResponse !== filterResults.filteredResponse
+      },
+
+      // Filter details
+      filteringDetails: {
+        filtersApplied: filterResults.filtersApplied || [],
+        filterReasons: filterResults.filterReasons || [],
+        riskScore: filterResults.riskScore || 0,
+        severity: calculateSeverityLevel(filterResults.riskScore),
+        blocked: filterResults.blocked || false,
+        requiresReview: filterResults.riskScore > 80
+      },
+
+      // Analytics metadata
+      analytics: {
+        processingTimeMs: Date.now() - (userContext.startTime || Date.now()),
+        filterCategories: categorizeFilters(filterResults.filtersApplied),
+        actionTaken: determineActionTaken(filterResults),
+        escalationRequired: filterResults.blocked || filterResults.riskScore > 90
+      },
+
+      // Monitoring flags
+      monitoring: {
+        requiresManualReview: shouldRequireManualReview(filterResults),
+        falsePositiveCandidate: checkFalsePositiveIndicators(filterResults),
+        severity: filterResults.blocked ? 'critical' :
+                  filterResults.riskScore > 70 ? 'high' :
+                  filterResults.riskScore > 50 ? 'medium' : 'low'
       }
     };
 
-    await db.collection('ai_coach_filter_logs').add(logData);
-    console.log('Filter log created successfully');
+    // Add to Firestore with automatic ID
+    const docRef = await db.collection('ai_coach_filter_logs').add(logData);
+
+    // Create index entry for quick lookups
+    if (filterResults.blocked || filterResults.riskScore > 80) {
+      await createHighRiskIndex(docRef.id, logData);
+    }
+
+    // Log summary for monitoring
+    console.log(`Filter log created: ${docRef.id}`, {
+      userId: logData.userId,
+      riskScore: logData.filteringDetails.riskScore,
+      blocked: logData.filteringDetails.blocked,
+      filtersApplied: logData.filteringDetails.filtersApplied.length
+    });
+
+    return docRef.id;
   } catch (error) {
     console.error('Error logging filtered response:', error);
     // Don't throw - logging failure shouldn't break the response flow
+    // But track the failure for monitoring
+    trackLoggingFailure(error, userContext);
   }
+}
+
+/**
+ * Helper function to generate unique log ID
+ */
+function generateLogId() {
+  const timestamp = Date.now().toString(36);
+  const random = Math.random().toString(36).substring(2, 9);
+  return `filter_${timestamp}_${random}`;
+}
+
+/**
+ * Safely truncate text while preserving structure
+ */
+function truncateText(text, maxLength) {
+  if (!text) return '';
+  if (text.length <= maxLength) return text;
+  return text.substring(0, maxLength - 3) + '...';
+}
+
+/**
+ * Calculate severity level based on risk score
+ */
+function calculateSeverityLevel(riskScore) {
+  if (riskScore >= 90) return 'critical';
+  if (riskScore >= 70) return 'high';
+  if (riskScore >= 50) return 'medium';
+  if (riskScore >= 30) return 'low';
+  return 'minimal';
+}
+
+/**
+ * Categorize filters for analytics
+ */
+function categorizeFilters(filters) {
+  const categories = {
+    medical: 0,
+    safety: 0,
+    parameters: 0,
+    legal: 0,
+    other: 0
+  };
+
+  filters.forEach(filter => {
+    if (filter.includes('medical') || filter.includes('claim')) categories.medical++;
+    else if (filter.includes('keyword') || filter.includes('danger')) categories.safety++;
+    else if (filter.includes('duration') || filter.includes('frequency')) categories.parameters++;
+    else if (filter.includes('legal') || filter.includes('FDA')) categories.legal++;
+    else categories.other++;
+  });
+
+  return categories;
+}
+
+/**
+ * Determine the action taken based on filter results
+ */
+function determineActionTaken(filterResults) {
+  if (filterResults.blocked) return 'blocked';
+  if (filterResults.filteredResponse !== filterResults.originalResponse) return 'modified';
+  if (filterResults.filtersApplied.includes('medical_disclaimer')) return 'disclaimer_added';
+  if (filterResults.filtersApplied.includes('safety_disclaimers')) return 'safety_notice_added';
+  return 'monitored_only';
+}
+
+/**
+ * Check if manual review is required
+ */
+function shouldRequireManualReview(filterResults) {
+  // Require review for blocked content
+  if (filterResults.blocked) return true;
+
+  // Require review for very high risk scores
+  if (filterResults.riskScore >= 85) return true;
+
+  // Require review if multiple critical filters triggered
+  const criticalFilterCount = filterResults.filtersApplied.filter(f =>
+    f.includes('critical') || f.includes('excessive') || f.includes('extreme')
+  ).length;
+
+  return criticalFilterCount >= 2;
+}
+
+/**
+ * Check for false positive indicators
+ */
+function checkFalsePositiveIndicators(filterResults) {
+  // Check if only minor filters triggered with low risk score
+  if (filterResults.riskScore < 30 && filterResults.filtersApplied.length <= 2) {
+    return true;
+  }
+
+  // Check if educational content was flagged
+  return filterResults.filtersApplied.includes('medical_disclaimer') &&
+         !filterResults.filtersApplied.includes('blocked');
+}
+
+/**
+ * Create high-risk index for monitoring dashboard
+ */
+async function createHighRiskIndex(logId, logData) {
+  try {
+    const db = admin.firestore();
+    await db.collection('ai_coach_high_risk_logs').doc(logId).set({
+      logId: logId,
+      timestamp: logData.timestamp,
+      userId: logData.userId,
+      riskScore: logData.filteringDetails.riskScore,
+      blocked: logData.filteringDetails.blocked,
+      requiresReview: logData.monitoring.requiresManualReview,
+      reviewStatus: 'pending'
+    });
+  } catch (error) {
+    console.error('Error creating high-risk index:', error);
+  }
+}
+
+/**
+ * Track logging failures for system monitoring
+ */
+function trackLoggingFailure(error, userContext) {
+  console.error('Logging failure tracked:', {
+    error: error.message,
+    userId: userContext.userId,
+    timestamp: new Date().toISOString()
+  });
+  // In production, this could send to an external monitoring service
 }
 
 module.exports = {
