@@ -14,7 +14,7 @@ public struct StoreKit2FeatureGate: ViewModifier {
     let feature: String
     let showPaywall: Bool
     
-    @EnvironmentObject private var entitlements: SimplifiedEntitlementManager
+    @EnvironmentObject private var entitlements: SimplifiedEntitlementManagerWithTrial
     @State private var showingPaywall = false
     
     public func body(content: Content) -> some View {
@@ -69,7 +69,7 @@ public struct StoreKit2ConditionalAccessView<Content: View, Locked: View>: View 
     let content: () -> Content
     let locked: () -> Locked
     
-    @EnvironmentObject private var entitlements: SimplifiedEntitlementManager
+    @EnvironmentObject private var entitlements: SimplifiedEntitlementManagerWithTrial
     
     public init(
         feature: String,
@@ -121,7 +121,7 @@ extension View {
 
 /// Simple badge to indicate premium features
 public struct StoreKit2PremiumBadge: View {
-    @EnvironmentObject private var entitlements: SimplifiedEntitlementManager
+    @EnvironmentObject private var entitlements: SimplifiedEntitlementManagerWithTrial
     
     public var body: some View {
         if !entitlements.hasPremium {

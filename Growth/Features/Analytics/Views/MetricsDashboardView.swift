@@ -16,7 +16,7 @@ import Foundation
 public struct MetricsDashboardView: View {
     
     @StateObject private var viewModel = MetricsDashboardViewModel()
-    @EnvironmentObject private var entitlementManager: SimplifiedEntitlementManager
+    @EnvironmentObject private var entitlementManager: SimplifiedEntitlementManagerWithTrial
     @State private var showingExportSheet = false
     @State private var selectedExportFormat: ExportFormat = .csv
     

@@ -14,7 +14,8 @@ struct CreateCustomRoutineView: View {
     @StateObject private var viewModel = CreateCustomRoutineViewModel()
     @ObservedObject private var themeManager = ThemeManager.shared
     @StateObject private var methodsViewModel = MethodSelectionViewModel()
-    
+    @EnvironmentObject private var entitlementManager: SimplifiedEntitlementManagerWithTrial
+
     @State private var routineName = ""
     @State private var routineDescription = ""
     @State private var selectedDifficulty = "Beginner"
@@ -30,6 +31,7 @@ struct CreateCustomRoutineView: View {
     @State private var customDurationText = ""
     @State private var useCustomDuration = false
     @State private var selectedSchedulingType: RoutineSchedulingType = .sequential
+    @State private var showingPremiumGate = false
     
     let difficulties = ["Beginner", "Intermediate", "Advanced"]
     let dayOptions = [7, 14, 21, 28]
@@ -84,7 +86,9 @@ struct CreateCustomRoutineView: View {
             // Load all available methods when the view appears
             methodsViewModel.loadMethods()
         }
-        .storeKit2FeatureGated("customRoutines")
+        .sheet(isPresented: $showingPremiumGate) {
+            CustomRoutinesPremiumGateView()
+        }
         .sheet(isPresented: $showingMethodSelection) {
             LegacyMethodSelectionView(selectedMethods: $selectedMethods)
         }
@@ -723,6 +727,12 @@ struct CreateCustomRoutineView: View {
     }
     
     private func saveRoutine() {
+        // Check premium status BEFORE saving
+        if !entitlementManager.hasPremium && !entitlementManager.hasLifetime {
+            showingPremiumGate = true
+            return
+        }
+
         // Debug: Print the schedule before saving
         Logger.debug("=== Saving Custom Routine ===")
         Logger.debug("Routine Name: \(routineName)")
@@ -737,7 +747,7 @@ struct CreateCustomRoutineView: View {
             }
         }
         Logger.debug("========================")
-        
+
         var customRoutine = Routine(
             id: "custom_\(UUID().uuidString)",
             name: routineName,

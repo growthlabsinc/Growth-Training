@@ -75,7 +75,7 @@ struct MainView: View {
     @EnvironmentObject var themeManager: ThemeManager
     
     // Subscription state management
-    @EnvironmentObject private var entitlementManager: SimplifiedEntitlementManager
+    @EnvironmentObject private var entitlementManager: SimplifiedEntitlementManagerWithTrial
     
     // Splash screen state - bypass if already authenticated
     @State private var showSplash: Bool
@@ -429,6 +429,10 @@ struct MainView: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: Notification.Name("switchToSubscriptionTab"))) { _ in
             // Show paywall as a sheet instead of switching tabs
+            showPaywall = true
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .shouldShowPaywall)) { _ in
+            // Show paywall when requested from trial limit alerts
             showPaywall = true
         }
         .onReceive(NotificationCenter.default.publisher(for: .triggerAppTour)) { _ in

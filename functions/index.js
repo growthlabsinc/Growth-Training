@@ -14,6 +14,18 @@ admin.initializeApp();
 let vertexAIProxy;
 let getFallbackResponse;
 
+// Trial Management Functions - load once and export all
+const trialManagement = require('./trialManagement');
+exports.recordTrialStart = trialManagement.recordTrialStart;
+exports.getTrialData = trialManagement.getTrialData;
+exports.checkDeviceTrial = trialManagement.checkDeviceTrial;
+exports.validateAndIncrementUsage = trialManagement.validateAndIncrementUsage;
+exports.getServerTime = trialManagement.getServerTime;
+exports.recordDailyReset = trialManagement.recordDailyReset;
+exports.updateUsageStats = trialManagement.updateUsageStats;
+exports.extendTrial = trialManagement.extendTrial;
+exports.getTrialAnalytics = trialManagement.getTrialAnalytics;
+
 // AI Coach function - requires authenticated users only
 exports.generateAIResponse = onCall(
   {
@@ -176,6 +188,10 @@ exports.registerPushToStartToken = liveActivityFunctions.registerPushToStartToke
 // New server-side timer management function
 const { manageLiveActivityUpdates } = require('./manageLiveActivityUpdates');
 exports.manageLiveActivityUpdates = manageLiveActivityUpdates;
+
+// Simplified Live Activity update function
+const updateLiveActivitySimplifiedModule = require('./updateLiveActivitySimplified');
+exports.updateLiveActivitySimplified = updateLiveActivitySimplifiedModule.updateLiveActivitySimplified;
 
 // APNs Diagnostic Function
 const { collectAPNsDiagnostics } = require('./collectAPNsDiagnostics');

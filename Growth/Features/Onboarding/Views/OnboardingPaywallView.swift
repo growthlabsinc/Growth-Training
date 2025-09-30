@@ -12,7 +12,7 @@ import Foundation
 struct OnboardingPaywallView: View {
     @EnvironmentObject var onboardingViewModel: OnboardingViewModel
     @EnvironmentObject private var purchaseManager: SimplifiedPurchaseManager
-    @EnvironmentObject private var entitlementManager: SimplifiedEntitlementManager
+    @EnvironmentObject private var entitlementManager: SimplifiedEntitlementManagerWithTrial
     @State private var selectedPlan: SubscriptionDuration = .yearly
     @State private var showPrivacyPolicy = false
     @State private var showTermsOfService = false

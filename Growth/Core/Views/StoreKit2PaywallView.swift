@@ -14,7 +14,7 @@ import StoreKit
 public struct StoreKit2PaywallView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var purchaseManager: SimplifiedPurchaseManager
-    @EnvironmentObject private var entitlements: SimplifiedEntitlementManager
+    @EnvironmentObject private var entitlements: SimplifiedEntitlementManagerWithTrial
     
     @State private var selectedPlan: SubscriptionDuration = .quarterly // Default to best value
     @State private var showingError = false

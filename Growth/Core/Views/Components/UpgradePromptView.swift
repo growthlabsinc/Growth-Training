@@ -16,7 +16,7 @@ public struct UpgradePromptView: View {
     let feature: String
     let context: PaywallContext
     
-    @EnvironmentObject private var entitlementManager: SimplifiedEntitlementManager
+    @EnvironmentObject private var entitlementManager: SimplifiedEntitlementManagerWithTrial
     @EnvironmentObject private var purchaseManager: SimplifiedPurchaseManager
     @Environment(\.presentationMode) var presentationMode
     

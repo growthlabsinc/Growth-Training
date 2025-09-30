@@ -19,7 +19,7 @@ public struct FeatureGateView<Content: View>: View {
     private let showUpgradePrompt: Bool
     private let fallbackView: AnyView?
     
-    @EnvironmentObject private var entitlementManager: SimplifiedEntitlementManager
+    @EnvironmentObject private var entitlementManager: SimplifiedEntitlementManagerWithTrial
     @State private var showingUpgradePrompt = false
     @State private var access: FeatureAccess = .denied(reason: .noSubscription)
     
@@ -192,7 +192,7 @@ public struct UsageLimitBanner: View {
     let feature: String
     let usage: FeatureUsage
     
-    @EnvironmentObject private var entitlementManager: SimplifiedEntitlementManager
+    @EnvironmentObject private var entitlementManager: SimplifiedEntitlementManagerWithTrial
     @State private var showingUpgradePrompt = false
     
     private var usageIndicator: some View {
