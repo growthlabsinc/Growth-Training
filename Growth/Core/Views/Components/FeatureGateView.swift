@@ -106,7 +106,12 @@ public struct FeatureGateView<Content: View>: View {
     }
     
     private func updateAccess() {
-        access = FeatureAccess.from(feature: feature, using: entitlementManager.asEntitlementProvider)
+        // Convert feature string to FeatureType if possible, otherwise default to denied
+        if let featureType = FeatureType(rawValue: feature) {
+            access = entitlementManager.checkFeatureAccess(for: featureType)
+        } else {
+            access = .denied(reason: .featureNotAvailable)
+        }
     }
 }
 
