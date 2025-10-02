@@ -1,4 +1,0 @@
-name: organizations/132353810560/policies/iam.allowedPolicyMemberDomains
-spec:
-  rules:
-    - allowAll: true

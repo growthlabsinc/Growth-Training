@@ -1,6 +1,0 @@
-name: organizations/132353810560/policies/iam.allowedPolicyMemberDomains
-spec:
-  rules:
-    - values:
-        allowedValues:
-          - C04biapux
