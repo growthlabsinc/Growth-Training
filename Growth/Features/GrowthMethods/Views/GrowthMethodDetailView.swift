@@ -109,7 +109,7 @@ struct GrowthMethodDetailView: View {
             // Method image or placeholder
             ZStack {
                 if method.id == "angio_pumping" || method.title.lowercased().contains("angio pumping") {
-                    Image("angio_pumping")
+                    Image("vascular_pumping")
                         .resizable()
                         .aspectRatio(contentMode: .fill)
                         .frame(maxWidth: .infinity, maxHeight: 280)

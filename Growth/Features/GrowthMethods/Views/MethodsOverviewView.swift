@@ -132,7 +132,7 @@ struct MethodOverviewCard: View {
                 // Image
                 if method.id == "angio_pumping" || method.title.lowercased().contains("angio pumping") {
                     // Show angio pumping specific image
-                    Image("angio_pumping")
+                    Image("vascular_pumping")
                         .resizable()
                         .scaledToFill()
                 } else if let urlString = method.visualPlaceholderUrl, let url = URL(string: urlString) {
