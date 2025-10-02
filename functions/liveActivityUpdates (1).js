@@ -9,7 +9,7 @@ const { logger } = require('firebase-functions');
 
 // Define the secrets - dual-key strategy for dev and prod
 const apnsAuthKeyDevSecret = defineSecret('APNS_AUTH_KEY_55LZB28UY2');  // Sandbox key
-const apnsAuthKeyProdSecret = defineSecret('APNS_AUTH_KEY_DQ46FN4PQU'); // Production key
+const apnsAuthKeyProdSecret = defineSecret('APNS_AUTH_KEY_753L48DY45'); // Production key
 const apnsKeyIdSecret = defineSecret('APNS_KEY_ID');
 const apnsTeamIdSecret = defineSecret('APNS_TEAM_ID');
 const apnsTopicSecret = defineSecret('APNS_TOPIC');
@@ -56,16 +56,16 @@ async function initialize() {
     
     // Load both dev and prod keys
     const devKey = process.env.APNS_AUTH_KEY_55LZB28UY2;
-    const prodKey = process.env.APNS_AUTH_KEY_DQ46FN4PQU;
+    const prodKey = process.env.APNS_AUTH_KEY_753L48DY45;
     
     // Use production key for TestFlight and App Store
-    // Production key DQ46FN4PQU works for both sandbox and production environments
+    // Production key 753L48DY45 works for both sandbox and production environments
     config.apnsKey = prodKey || devKey; // Use production key if available
-    config.apnsKeyId = prodKey ? 'DQ46FN4PQU' : '55LZB28UY2';
+    config.apnsKeyId = prodKey ? '753L48DY45' : '55LZB28UY2';
     
     // Set production credentials
     config.apnsKeyProd = prodKey;
-    config.apnsKeyIdProd = 'DQ46FN4PQU';
+    config.apnsKeyIdProd = '753L48DY45';
     
     // Keep dev key as fallback
     config.apnsKeyDev = devKey;
@@ -74,7 +74,7 @@ async function initialize() {
     logger.log('- Active Key ID:', config.apnsKeyId);
     logger.log('- Dev Key available:', !!devKey);
     logger.log('- Prod Key available:', !!prodKey);
-    logger.log('- Using:', prodKey ? 'Production Key (DQ46FN4PQU)' : 'Development Key (55LZB28UY2)');
+    logger.log('- Using:', prodKey ? 'Production Key (753L48DY45)' : 'Development Key (55LZB28UY2)');
     
     if (!config.apnsKey) {
       logger.error('❌ [Initialize] No APNS auth keys found in environment');

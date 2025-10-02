@@ -268,7 +268,7 @@ struct OnboardingPaywallView: View {
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 16)
-                .background(Color("GrowthGreen"))
+                .background(Color.buttonGradient)
                 .cornerRadius(12)
             }
             .disabled(purchaseManager.isLoading)
@@ -454,7 +454,7 @@ private struct PricingCard: View {
                                 .foregroundColor(.white)
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 2)
-                                .background(Color("GrowthGreen"))
+                                .background(Color.buttonGradient)
                                 .cornerRadius(4)
                         }
                         

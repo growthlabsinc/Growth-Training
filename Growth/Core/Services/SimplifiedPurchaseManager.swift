@@ -9,25 +9,39 @@
 import Foundation
 import StoreKit
 
+// Protocol for entitlement managers that can work with purchase manager
+@MainActor
+protocol PurchaseEntitlementManager: AnyObject {
+    var hasPremium: Bool { get set }
+    var hasLifetime: Bool { get set }
+    func updateFromPurchasedProducts(_ purchasedIDs: Set<String>)
+}
+
+// Make SimplifiedEntitlementManager conform
+extension SimplifiedEntitlementManager: PurchaseEntitlementManager {}
+
+// Make SimplifiedEntitlementManagerWithTrial conform
+extension SimplifiedEntitlementManagerWithTrial: PurchaseEntitlementManager {}
+
 @MainActor
 class SimplifiedPurchaseManager: NSObject, ObservableObject {
-    
+
     // MARK: - Product Configuration
     private let productIds = [
         "com.growthlabs.growthmethod.subscription.premium.weekly",
-        "com.growthlabs.growthmethod.subscription.premium.quarterly", 
+        "com.growthlabs.growthmethod.subscription.premium.quarterly",
         "com.growthlabs.growthmethod.subscription.premium.yearly"
     ]
-    
+
     // MARK: - Published State
     @Published private(set) var products: [Product] = []
     @Published private(set) var purchasedProductIDs = Set<String>()
     @Published var isLoading = false
-    
+
     // MARK: - Private State
     private var productsLoaded = false
     private var updates: Task<Void, Never>? = nil
-    private let entitlementManager: SimplifiedEntitlementManager
+    private let entitlementManager: PurchaseEntitlementManager
     
     // MARK: - Computed Properties
     var hasActiveSubscription: Bool {
@@ -39,14 +53,14 @@ class SimplifiedPurchaseManager: NSObject, ObservableObject {
     }
     
     // MARK: - Initialization
-    init(entitlementManager: SimplifiedEntitlementManager) {
+    init(entitlementManager: PurchaseEntitlementManager) {
         self.entitlementManager = entitlementManager
         super.init()
         self.updates = observeTransactionUpdates()
-        
+
         // Support promoted purchases from App Store
         SKPaymentQueue.default().add(self)
-        
+
         // Check for existing entitlements on startup
         Task {
             await updatePurchasedProducts()

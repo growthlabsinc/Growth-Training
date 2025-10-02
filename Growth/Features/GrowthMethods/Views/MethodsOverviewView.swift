@@ -28,7 +28,7 @@ struct MethodsOverviewView: View {
                             viewModel.loadMethods()
                         }
                         .padding()
-                        .background(Color("GrowthGreen"))
+                        .background(Color.buttonGradient)
                         .foregroundColor(.white)
                         .cornerRadius(10)
                     }

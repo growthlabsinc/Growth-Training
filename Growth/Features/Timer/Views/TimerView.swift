@@ -137,16 +137,29 @@ struct TimerViewContent: View {
     @ObservedObject var viewModel: TimerViewModel
     @ObservedObject var completionViewModel: SessionCompletionViewModel
     @EnvironmentObject var navigationContext: NavigationContext
+    @EnvironmentObject var entitlementManager: SimplifiedEntitlementManager
     var dismiss: DismissAction
-    
+
+    @State private var showingPremiumGate = false
+
     // Multi-method session properties
     let isMultiMethod: Bool
     let sessionViewModel: MultiMethodSessionViewModel?
     let onMethodComplete: (() -> Void)?
 
     var body: some View {
-        mainContent
-            .background(AppTheme.Colors.background)
+        // Check if user has access to advanced timer
+        let hasAccess = entitlementManager.hasPremium || entitlementManager.hasLifetime
+
+        Group {
+            if hasAccess {
+                mainContent
+            } else {
+                // Show premium gate for routine timer
+                advancedTimerLockedView
+            }
+        }
+        .background(AppTheme.Colors.background)
             .appleIntelligenceGlow(
                 isActive: viewModel.timerState == .running,
                 cornerRadius: 0,
@@ -501,8 +514,84 @@ struct TimerViewContent: View {
     /// Dynamic navigation title
     private var navigationTitle: String {
         viewModel.timerMode == .stopwatch 
-            ? "Timer" 
+            ? "Timer"
             : viewModel.timerService.activeTimerConfig?.intervals?.first?.name ?? "Exercise Timer"
+    }
+
+    // MARK: - Advanced Timer Locked View
+
+    private var advancedTimerLockedView: some View {
+        VStack(spacing: 32) {
+            Spacer()
+
+            // Lock Icon
+            ZStack {
+                Circle()
+                    .fill(
+                        LinearGradient(
+                            colors: [Color("GrowthGreen").opacity(0.2), Color("BrightTeal").opacity(0.2)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .frame(width: 120, height: 120)
+
+                Image(systemName: "lock.fill")
+                    .font(.system(size: 60))
+                    .foregroundColor(Color("GrowthGreen"))
+            }
+
+            // Title
+            VStack(spacing: 12) {
+                Text("Routine Timer")
+                    .font(.system(size: 32, weight: .bold, design: .rounded))
+                    .foregroundColor(.primary)
+
+                Text("Premium Feature")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundColor(Color("GrowthGreen"))
+            }
+
+            // Description
+            Text("Access the advanced routine timer with premium features including intervals, live activities, and progress tracking.")
+                .font(.body)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 32)
+
+            // Upgrade Button
+            Button {
+                showingPremiumGate = true
+            } label: {
+                HStack(spacing: 12) {
+                    Image(systemName: "star.fill")
+                    Text("Upgrade to Premium")
+                        .fontWeight(.semibold)
+                }
+                .font(.headline)
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 18)
+                .background(
+                    LinearGradient(
+                        gradient: Gradient(colors: [
+                            Color("GrowthGreen"),
+                            Color("BrightTeal")
+                        ]),
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                )
+                .cornerRadius(16)
+                .shadow(color: Color("GrowthGreen").opacity(0.4), radius: 12, y: 6)
+            }
+            .padding(.horizontal, 32)
+
+            Spacer()
+        }
+        .sheet(isPresented: $showingPremiumGate) {
+            StoreKit2PaywallView()
+        }
     }
 }
 

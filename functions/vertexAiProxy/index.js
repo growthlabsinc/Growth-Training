@@ -3,6 +3,8 @@ const { SecretManagerServiceClient } = require('@google-cloud/secret-manager');
 const { VertexAI } = require('@google-cloud/vertexai');
 const admin = require('firebase-admin');
 const { filterResponse } = require('./responseFilter');
+const { selectBestTemplate } = require('./templateSelector');
+const { processTemplate, enhanceTemplateWithDynamicContent } = require('./templateProcessor');
 
 // Initialize Firebase Admin if not already initialized
 if (!admin.apps.length) {
@@ -244,19 +246,66 @@ const generateAIResponse = async (data, context) => {
       apiKey = await getApiKeyFromSecretManager();
     }
     
+    // Build user context for template selection
+    const userContext = {
+      userId: data.userId || 'anonymous',
+      userName: data.userName,
+      userExperienceLevel: data.userExperienceLevel || 'beginner',
+      sessionType: data.sessionType,
+      conversationHistory: conversationHistory,
+      previousTemplateId: data.previousTemplateId,
+      primaryGoal: data.primaryGoal,
+      progressData: data.progressData,
+      riskLevel: data.riskLevel
+    };
+
+    // Check if a template should be used for this query
+    const templateSelection = selectBestTemplate(query, userContext);
+
+    if (templateSelection && templateSelection.confidence !== 'very_low') {
+      console.log(`📝 Template selected: ${templateSelection.templateId} (confidence: ${templateSelection.confidence})`);
+
+      // Process the template
+      const processedTemplate = processTemplate(
+        templateSelection.templateId,
+        data.templateVariables || {},
+        userContext
+      );
+
+      if (processedTemplate) {
+        // Enhance template with dynamic content
+        const enhanced = enhanceTemplateWithDynamicContent(processedTemplate, userContext);
+
+        // Apply response filtering for safety
+        const filteredResponse = await filterResponse(enhanced.text, userContext);
+
+        // Return the template-based response
+        return {
+          text: filteredResponse.text,
+          sources: null,
+          wasFiltered: filteredResponse.wasFiltered || false,
+          filterReasons: filteredResponse.filterReasons || [],
+          templateUsed: templateSelection.templateId,
+          templateConfidence: templateSelection.confidence
+        };
+      }
+    }
+
+    console.log('📚 No suitable template found, using AI generation');
+
     // Search knowledge base for relevant content
     const knowledgeSources = await searchKnowledgeBase(query);
-    
+
     console.log(`📚 Knowledge search returned ${knowledgeSources.length} sources`);
     if (knowledgeSources.length > 0) {
       console.log('Sources found:', knowledgeSources.map(s => s.title).join(', '));
     }
-    
+
     // Initialize Vertex AI
     const model = initializeVertexAI(apiKey);
-    
-    // Generate system prompt
-    const systemPrompt = generateSystemPrompt(knowledgeSources);
+
+    // Generate system prompt (with template context if relevant)
+    const systemPrompt = generateSystemPrompt(knowledgeSources, templateSelection);
     
     // Format conversation for Gemini (passing in the system prompt)
     const formattedConversation = formatConversation(conversationHistory, query, systemPrompt);
@@ -302,14 +351,7 @@ const generateAIResponse = async (data, context) => {
       aiText = 'Sorry, I encountered an issue processing your request.';
     }
     
-    // Apply response filtering for safety
-    const userContext = {
-      userId: data.userId || 'anonymous',
-      conversationId: data.conversationId,
-      sessionType: data.sessionType || 'general',
-      userExperienceLevel: data.userExperienceLevel || 'beginner'
-    };
-
+    // Apply response filtering for safety (reuse existing userContext)
     const filteredResponse = await filterResponse(aiText, userContext);
 
     // Return formatted response

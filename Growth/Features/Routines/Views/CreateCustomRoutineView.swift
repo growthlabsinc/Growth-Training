@@ -1610,7 +1610,7 @@ struct DurationPickerView: View {
                             .foregroundColor(.white)
                             .padding(.horizontal, 24)
                             .padding(.vertical, 12)
-                            .background(Color("GrowthGreen"))
+                            .background(Color.buttonGradient)
                             .cornerRadius(8)
                     }
                     .disabled(Int(customDuration) == nil || Int(customDuration) ?? 0 <= 0 || Int(customDuration) ?? 0 > 180)
@@ -1706,7 +1706,7 @@ struct CustomRoutineDurationPicker: View {
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
-                        .background(Color("GrowthGreen"))
+                        .background(Color.buttonGradient)
                         .cornerRadius(12)
                 }
                 .disabled(Int(customDays) == nil || Int(customDays) ?? 0 <= 0)

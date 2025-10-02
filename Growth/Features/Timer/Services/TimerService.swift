@@ -254,17 +254,94 @@ class TimerService: ObservableObject {
         Logger.debug("Current mode: \(currentTimerMode)", logger: AppLoggers.timer)
         Logger.debug("Elapsed time before: \(elapsedTime)", logger: AppLoggers.timer)
         Logger.debug("Remaining time before: \(remainingTime)", logger: AppLoggers.timer)
-        
+
         // Check if timer is actually running (not just state)
         if timerState == .running && timer != nil {
             Logger.warning("Timer already running, returning", logger: AppLoggers.timer)
-            return 
+            return
         }
-        
+
         // If state is running but no timer exists, reset state (recovery from inconsistent state)
         if timerState == .running && timer == nil {
             Logger.warning("Timer state was running but no timer exists - resetting state", logger: AppLoggers.timer)
             timerState = .stopped
+        }
+
+        // Trial enforcement - different logic for main timer vs quick timer
+        if timerState == .stopped {
+            let entitlements = SimplifiedEntitlementManagerWithTrial.shared
+
+            Logger.info("🔍 [TRIAL CHECK] Checking timer restrictions", logger: AppLoggers.timer)
+            Logger.debug("  - Is quick timer: \(isQuickPracticeTimer)", logger: AppLoggers.timer)
+            Logger.debug("  - Has premium: \(entitlements.hasAnyPremiumAccess)", logger: AppLoggers.timer)
+            Logger.debug("  - Trial status: \(entitlements.trialStatus)", logger: AppLoggers.timer)
+
+            // FIRST: Check if user has subscription - if yes, allow unlimited access
+            if entitlements.hasAnyPremiumAccess {
+                Logger.info("  ✅ User has premium subscription - allowing unlimited timer", logger: AppLoggers.timer)
+                // User has subscription, no restrictions apply
+            } else {
+                // SECOND: Check trial status only if no subscription
+                var shouldRestrict = false
+                switch entitlements.trialStatus {
+                case .active:
+                    // Trial is active - allow unlimited access
+                    Logger.info("  ✅ Trial active - allowing unlimited timer", logger: AppLoggers.timer)
+                    shouldRestrict = false
+                case .expired, .notEligible, .disabled, .error:
+                    // Trial is expired, disabled, or user not eligible - apply restrictions
+                    Logger.warning("  ⚠️ Trial expired/not eligible/disabled - will apply restrictions", logger: AppLoggers.timer)
+                    shouldRestrict = true
+                case .checking:
+                    // While checking, don't restrict (brief state)
+                    Logger.debug("  ℹ️ Trial status checking - not restricting", logger: AppLoggers.timer)
+                    shouldRestrict = false
+                }
+
+                if shouldRestrict {
+                    if !isQuickPracticeTimer {
+                        // Main timer (practice view) - completely block after trial expires
+                        Logger.error("  ❌ Trial expired - blocking main timer completely", logger: AppLoggers.timer)
+
+                        // Post notification for UI to show alert
+                        NotificationCenter.default.post(
+                            name: Notification.Name("showTrialLimitAlert"),
+                            object: nil,
+                            userInfo: ["message": "Your trial has expired. Upgrade to Premium to continue using the timer."]
+                        )
+
+                        // Stop the timer from starting
+                        return
+                    } else {
+                        // Quick timer - limit to 5 minutes after trial expires
+                        let limitMinutes = 5 // Fixed 5-minute limit for free tier
+                        let limitSeconds = Double(limitMinutes * 60)
+
+                        Logger.info("  - Quick timer limit: \(limitMinutes) minutes", logger: AppLoggers.timer)
+
+                        if currentTimerMode == .countdown {
+                            let duration = targetDuration
+                            Logger.debug("  - Requested duration: \(duration)s", logger: AppLoggers.timer)
+                            Logger.debug("  - Limit: \(limitSeconds)s", logger: AppLoggers.timer)
+
+                            if duration > limitSeconds {
+                                Logger.error("  ❌ Duration exceeds limit - blocking quick timer", logger: AppLoggers.timer)
+
+                                // Post notification for UI to show alert
+                                NotificationCenter.default.post(
+                                    name: Notification.Name("showTrialLimitAlert"),
+                                    object: nil,
+                                    userInfo: ["message": "Free sessions are limited to \(limitMinutes) minutes. Upgrade for unlimited sessions."]
+                                )
+
+                                // Stop the timer from starting
+                                return
+                            }
+                        }
+                        // For stopwatch mode, the limit will be enforced during tick()
+                    }
+                }
+            }
         }
         
         // Track the previous state before changing it
@@ -420,6 +497,18 @@ class TimerService: ObservableObject {
         switch currentTimerMode {
         case .stopwatch:
             // elapsedTime is the primary display
+
+            // Check trial limits for stopwatch mode every second
+            if isQuickPracticeTimer && Int(elapsedTime) % 1 == 0 {
+                Task { @MainActor in
+                    let shouldContinue = await self.enforceTrialDurationLimit()
+                    if !shouldContinue {
+                        // Timer was stopped due to trial limit
+                        return
+                    }
+                }
+            }
+
             // Story 7.3: Check for overexertion in stopwatch mode
             if let maxDuration = maxRecommendedDuration, elapsedTime > maxDuration, !isOverexertionWarningActive, !overexertionWarningAcknowledged {
                 isOverexertionWarningActive = true
@@ -1943,5 +2032,220 @@ extension TimerService {
         isOverexertionWarningActive = false
         overexertionWarningAcknowledged = false
         // maxRecommendedDuration is reset via configure(with:)
+    }
+}
+
+// MARK: - Trial System Integration
+extension TimerService {
+    /// Check if user can start a session based on trial limits
+    /// - Parameters:
+    ///   - duration: Optional duration in seconds for countdown timers
+    ///   - timerMode: The mode of the timer (stopwatch, countdown, interval)
+    /// - Returns: Tuple indicating if allowed and optional denial reason
+    @MainActor
+    func canStartSessionWithTrialLimits(
+        duration: TimeInterval? = nil,
+        timerMode: TimerMode
+    ) async -> (allowed: Bool, reason: String?) {
+        let entitlements = SimplifiedEntitlementManagerWithTrial.shared
+
+        // Log trial status for debugging
+        Logger.info("🔍 [TRIAL CHECK] canStartSessionWithTrialLimits called", logger: AppLoggers.timer)
+        Logger.debug("  - Timer mode: \(timerMode)", logger: AppLoggers.timer)
+        Logger.debug("  - Requested duration: \(duration ?? 0) seconds", logger: AppLoggers.timer)
+        Logger.debug("  - Has premium access: \(entitlements.hasAnyPremiumAccess)", logger: AppLoggers.timer)
+        Logger.debug("  - Trial status: \(entitlements.trialStatus)", logger: AppLoggers.timer)
+
+        // Premium users have no limits
+        if entitlements.hasAnyPremiumAccess {
+            Logger.info("  ✅ User has premium access - no limits", logger: AppLoggers.timer)
+            return (true, nil)
+        }
+
+        // Check trial status
+        switch entitlements.trialStatus {
+        case .active(let daysRemaining):
+            Logger.info("  📊 Trial status: ACTIVE with \(daysRemaining) days remaining", logger: AppLoggers.timer)
+            // During active trial - NO LIMITS, allow unlimited access for ALL timers
+            Logger.info("  ✅ Trial is active - allowing unlimited timer (no duration limits)", logger: AppLoggers.timer)
+            return (true, nil)
+
+        case .expired:
+            Logger.info("  📊 Trial status: EXPIRED - Free tier restrictions apply", logger: AppLoggers.timer)
+            // After trial - only quick timer under 5 minutes
+            let limitMinutes = 5 // Default limit
+            Logger.info("  🆓 Free tier limit: \(limitMinutes) minutes", logger: AppLoggers.timer)
+
+            if timerMode == .stopwatch {
+                Logger.debug("  ⏱️ Stopwatch mode - will enforce \(limitMinutes) minute limit", logger: AppLoggers.timer)
+                return (true, "Free sessions limited to \(limitMinutes) minutes")
+            } else if timerMode == .countdown {
+                if let requestedDuration = duration {
+                    let limitSeconds = Double(limitMinutes * 60)
+                    Logger.debug("  ⏱️ Countdown mode - requested: \(requestedDuration)s, limit: \(limitSeconds)s", logger: AppLoggers.timer)
+
+                    if requestedDuration > limitSeconds {
+                        Logger.warning("  ❌ Duration exceeds free tier limit", logger: AppLoggers.timer)
+                        return (false, "Free sessions are limited to \(limitMinutes) minutes. Upgrade to Premium for unlimited timer duration.")
+                    } else {
+                        Logger.info("  ✅ Duration within free tier limit", logger: AppLoggers.timer)
+                        return (true, nil)
+                    }
+                } else {
+                    Logger.warning("  ⚠️ No duration specified for countdown - allowing", logger: AppLoggers.timer)
+                    return (true, nil)
+                }
+            } else {
+                Logger.debug("  ⏱️ Other timer mode - allowing", logger: AppLoggers.timer)
+                return (true, nil)
+            }
+
+        case .checking, .disabled, .error, .notEligible:
+            // If trial is not active or available, apply free tier restrictions
+            Logger.info("  📊 Trial status: \(entitlements.trialStatus) - Applying free tier restrictions", logger: AppLoggers.timer)
+            let limitMinutes = 5 // Free tier limit
+            Logger.info("  🆓 Free tier limit: \(limitMinutes) minutes", logger: AppLoggers.timer)
+
+            if timerMode == .stopwatch {
+                Logger.debug("  ⏱️ Stopwatch mode - will enforce \(limitMinutes) minute limit", logger: AppLoggers.timer)
+                return (true, "Free sessions limited to \(limitMinutes) minutes")
+            } else if timerMode == .countdown {
+                if let requestedDuration = duration {
+                    let limitSeconds = Double(limitMinutes * 60)
+                    Logger.debug("  ⏱️ Countdown mode - requested: \(requestedDuration)s, limit: \(limitSeconds)s", logger: AppLoggers.timer)
+
+                    if requestedDuration > limitSeconds {
+                        Logger.warning("  ❌ Duration exceeds free tier limit", logger: AppLoggers.timer)
+                        return (false, "Free sessions are limited to \(limitMinutes) minutes. Upgrade to Premium for unlimited timer duration.")
+                    } else {
+                        Logger.info("  ✅ Duration within free tier limit", logger: AppLoggers.timer)
+                        return (true, nil)
+                    }
+                } else {
+                    Logger.warning("  ⚠️ No duration specified for countdown - allowing", logger: AppLoggers.timer)
+                    return (true, nil)
+                }
+            } else {
+                Logger.debug("  ⏱️ Other timer mode - allowing", logger: AppLoggers.timer)
+                return (true, nil)
+            }
+        }
+    }
+
+    /// Check if user can start a guided session based on daily limits
+    @MainActor
+    func canStartGuidedSessionWithTrialLimits() async -> (allowed: Bool, reason: String?) {
+        let entitlements = SimplifiedEntitlementManagerWithTrial.shared
+
+        // Premium users have no limits
+        if entitlements.hasAnyPremiumAccess {
+            return (true, nil)
+        }
+
+        // Check feature access for guided sessions
+        let access = entitlements.checkFeatureAccess(for: .customRoutines)
+
+        switch access {
+        case .granted:
+            return (true, nil)
+
+        case .limited(let usage):
+            if usage.currentUsage < usage.maxUsage {
+                // Still have sessions available
+                return (true, "\(usage.maxUsage - usage.currentUsage) guided session\(usage.maxUsage - usage.currentUsage == 1 ? "" : "s") remaining today")
+            } else {
+                // Daily limit reached
+                let formatter = DateFormatter()
+                formatter.timeStyle = .short
+                let resetString = formatter.string(from: usage.resetDate ?? Date())
+                return (false, "Daily guided session limit reached. Resets at \(resetString)")
+            }
+
+        case .denied(let reason):
+            return (false, reason.localizedDescription)
+        }
+    }
+
+    /// Enforce trial duration limits during active sessions
+    @MainActor
+    func enforceTrialDurationLimit() async -> Bool {
+        let entitlements = SimplifiedEntitlementManagerWithTrial.shared
+
+        // Premium users have no limits
+        if entitlements.hasAnyPremiumAccess {
+            return true // Continue session
+        }
+
+        // Check if trial is active - during trial, no limits are enforced
+        switch entitlements.trialStatus {
+        case .active(_):
+            Logger.debug("⏱️ [TRIAL ENFORCEMENT] Trial is active - no limits enforced", logger: AppLoggers.timer)
+            return true // Continue session without limits during trial
+        default:
+            break // Continue to check free tier limits
+        }
+
+        // Get current session duration
+        let currentDuration = elapsedTime
+
+        // Get limit - always 5 minutes for free tier
+        let limitMinutes = 5
+        let limitSeconds = Double(limitMinutes * 60)
+
+        // Log enforcement check every 30 seconds
+        if Int(currentDuration) % 30 == 0 {
+            Logger.debug("⏱️ [TRIAL ENFORCEMENT] Duration check:", logger: AppLoggers.timer)
+            Logger.debug("  - Current duration: \(currentDuration)s", logger: AppLoggers.timer)
+            Logger.debug("  - Limit: \(limitSeconds)s (\(limitMinutes) minutes)", logger: AppLoggers.timer)
+            Logger.debug("  - Trial status: \(entitlements.trialStatus)", logger: AppLoggers.timer)
+            Logger.debug("  - Has premium: \(entitlements.hasAnyPremiumAccess)", logger: AppLoggers.timer)
+        }
+
+        if currentDuration >= limitSeconds {
+            // Session limit reached - stop the timer
+            Logger.warning("🛑 [TRIAL ENFORCEMENT] Session limit reached!", logger: AppLoggers.timer)
+            Logger.info("  - Duration: \(currentDuration)s", logger: AppLoggers.timer)
+            Logger.info("  - Limit: \(limitSeconds)s", logger: AppLoggers.timer)
+            await stopTimerWithTrialLimit(reason: "Session limit reached (\(limitMinutes) minutes)")
+            return false // Session ended
+        }
+
+        // Calculate remaining time
+        let remaining = limitSeconds - currentDuration
+        if remaining <= 60 && remaining > 55 {
+            // Show warning when 1 minute remains
+            Logger.warning("⚠️ [TRIAL ENFORCEMENT] Warning: \(Int(remaining)) seconds remaining", logger: AppLoggers.timer)
+            await showTrialLimitWarning(remainingSeconds: Int(remaining))
+        }
+
+        return true // Continue session
+    }
+
+    /// Stop timer due to trial limit
+    @MainActor
+    private func stopTimerWithTrialLimit(reason: String) async {
+        Logger.warning("🛑 [TRIAL LIMIT] Stopping timer: \(reason)", logger: AppLoggers.timer)
+
+        // Stop the timer
+        stop()
+
+        // Post notification for UI to show alert
+        NotificationCenter.default.post(
+            name: Notification.Name("showTrialLimitAlert"),
+            object: nil,
+            userInfo: ["message": "Free session limit reached (5 minutes). Upgrade to Premium for unlimited sessions."]
+        )
+    }
+
+    /// Show warning about approaching trial limit
+    @MainActor
+    private func showTrialLimitWarning(remainingSeconds: Int) async {
+        Logger.info("⚠️ [TRIAL WARNING] Showing warning: \(remainingSeconds) seconds remaining", logger: AppLoggers.timer)
+
+        NotificationCenter.default.post(
+            name: Notification.Name("showTrialLimitWarning"),
+            object: nil,
+            userInfo: ["remainingSeconds": remainingSeconds]
+        )
     }
 }

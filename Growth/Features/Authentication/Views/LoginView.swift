@@ -209,7 +209,7 @@ struct LoginView: View {
                     }
                     .frame(height: 52)
                     .frame(maxWidth: .infinity)
-                    .background(Color("GrowthGreen"))
+                    .background(Color.buttonGradient)
                     .cornerRadius(8)
                 }
                 .padding(.horizontal, 16)

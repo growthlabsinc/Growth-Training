@@ -77,26 +77,38 @@ class QuickPracticeTimerService: ObservableObject {
     private func setupBindings(for service: TimerService) {
         // Set up subscriptions to mirror timer service state
         service.$elapsedTime
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] time in
-                self?.elapsedTime = time
+                Task { @MainActor in
+                    self?.elapsedTime = time
+                }
             }
             .store(in: &cancellables)
-        
+
         service.$remainingTime
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] time in
-                self?.remainingTime = time
+                Task { @MainActor in
+                    self?.remainingTime = time
+                }
             }
             .store(in: &cancellables)
-        
+
         service.$timerState
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] state in
-                self?.timerState = state
+                Task { @MainActor in
+                    self?.timerState = state
+                }
             }
             .store(in: &cancellables)
-        
+
         service.$overallProgress
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] progress in
-                self?.overallProgress = progress
+                Task { @MainActor in
+                    self?.overallProgress = progress
+                }
             }
             .store(in: &cancellables)
     }
@@ -113,16 +125,62 @@ class QuickPracticeTimerService: ObservableObject {
         print("  - Target duration after config: \(timerService.targetDurationValue)")
     }
     
-    func start() {
+    func startWithTrialCheck(completion: @escaping (Bool) -> Void) {
+        Task { @MainActor in
+            let result = await startAsync()
+            completion(result)
+        }
+    }
+
+    private func startAsync() async -> Bool {
         print("QuickPracticeTimerService: Starting timer")
         print("  - Current state: \(timerService.state)")
         print("  - Timer mode: \(timerService.timerMode)")
         print("  - Target duration: \(timerService.targetDurationValue)")
+
+        // Check trial limits before starting
+        let (allowed, reason) = await timerService.canStartSessionWithTrialLimits(
+            duration: timerService.timerMode == .countdown ? timerService.targetDurationValue : nil,
+            timerMode: timerService.timerMode
+        )
+
+        print("📊 [QuickTimer] Trial check result:")
+        print("  - Allowed: \(allowed)")
+        print("  - Reason: \(reason ?? "none")")
+
+        if !allowed {
+            // Show alert with reason
+            if let reason = reason {
+                NotificationCenter.default.post(
+                    name: Notification.Name("showTrialLimitAlert"),
+                    object: nil,
+                    userInfo: ["message": reason]
+                )
+            }
+            return false
+        }
+
+        // If allowed but has a warning message, show it
+        if let reason = reason {
+            NotificationCenter.default.post(
+                name: Notification.Name("showTrialLimitWarning"),
+                object: nil,
+                userInfo: ["message": reason]
+            )
+        }
+
         timerService.start()
-        
+
         // TimerService will notify TimerCoordinator with type "quick" since isQuickPractice=true
-        
+
         print("  - State after start: \(timerService.state)")
+        return true
+    }
+
+    // Legacy method for backward compatibility - bypasses trial checks
+    func start() {
+        print("⚠️ QuickPracticeTimerService: Using legacy start() without trial checks")
+        timerService.start()
     }
     
     func pause() {

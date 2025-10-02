@@ -1827,7 +1827,7 @@ struct CompactDurationPicker: View {
                     .foregroundColor(.white)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
-                    .background(Color("GrowthGreen"))
+                    .background(Color.buttonGradient)
                     .cornerRadius(6)
                     .disabled(Int(customDurationText) == nil || Int(customDurationText) ?? 0 <= 0)
                     

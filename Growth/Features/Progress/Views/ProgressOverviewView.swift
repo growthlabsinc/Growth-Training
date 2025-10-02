@@ -142,7 +142,7 @@ struct ProgressOverviewView: View {
                 .foregroundColor(.white)
                 .padding(.horizontal, AppTheme.Layout.spacingL)
                 .padding(.vertical, AppTheme.Layout.spacingS)
-                .background(Color("GrowthGreen"))
+                .background(Color.buttonGradient)
                 .cornerRadius(AppTheme.Layout.cornerRadiusM)
             }
             .padding(AppTheme.Layout.spacingL)

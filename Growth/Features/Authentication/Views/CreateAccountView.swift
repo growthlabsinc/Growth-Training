@@ -398,7 +398,7 @@ struct CreateAccountView: View {
                     .progressViewStyle(CircularProgressViewStyle(tint: .white))
                     .frame(maxWidth: .infinity)
                     .frame(height: 56)
-                    .background(Color("GrowthGreen"))
+                    .background(Color.buttonGradient)
                     .foregroundColor(.white)
                     .cornerRadius(8)
             } else {
@@ -407,7 +407,7 @@ struct CreateAccountView: View {
                     .fontWeight(.semibold)
                     .frame(maxWidth: .infinity)
                     .frame(height: 56)
-                    .background(Color("GrowthGreen"))
+                    .background(Color.buttonGradient)
                     .foregroundColor(.white)
                     .cornerRadius(8)
             }

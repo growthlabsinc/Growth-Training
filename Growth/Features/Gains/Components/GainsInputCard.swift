@@ -242,7 +242,7 @@ struct GainsInputCard: View {
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 12)
-                .background(Color("GrowthGreen"))
+                .background(Color.buttonGradient)
                 .cornerRadius(12)
             }
             .disabled(isSaving)

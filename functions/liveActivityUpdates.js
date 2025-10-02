@@ -101,7 +101,7 @@ async function generateAPNsToken() {
   await initialize();
   
   // Use production credentials only
-  const keyId = config.apnsKeyId || 'DQ46FN4PQU';
+  const keyId = config.apnsKeyId || '753L48DY45';
   const authKey = config.apnsKey;
   const teamId = config.apnsTeamId; // Team ID
   

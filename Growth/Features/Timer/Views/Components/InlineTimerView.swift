@@ -44,7 +44,7 @@ struct InlineTimerView: View {
                     .font(.system(size: 20))
                     .foregroundColor(.white)
                     .frame(width: 44, height: 44)
-                    .background(Color("GrowthGreen"))
+                    .background(Color.buttonGradient)
                     .clipShape(Circle())
             }
             
@@ -158,7 +158,7 @@ struct InlineTimerView: View {
                         .font(.system(size: 32))
                         .foregroundColor(.white)
                         .frame(width: 80, height: 80)
-                        .background(Color("GrowthGreen"))
+                        .background(Color.buttonGradient)
                         .clipShape(Circle())
                 }
                 

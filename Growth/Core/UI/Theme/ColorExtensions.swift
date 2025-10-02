@@ -99,36 +99,37 @@ extension Color {
     /// In dark mode: #263A36 (Dark mode card backgrounds)
     static let surfaceWhite = Color(AppColors.surfaceWhite)
     
-    // MARK: - Gradients (Story 14.1)
-    
-    /// Emerald → Teal gradient used for primary interactive elements
-    static let emeraldTealGradient: LinearGradient = {
-        let emerald = Color(AppColors.coreGreen)
-        let teal = Color("BrightTeal")  // Using asset catalog color
+    // MARK: - Gradients (Story 4.1 - Orange Gradient Update)
+
+    /// Orange gradient used for primary interactive elements
+    static let orangeGradient: LinearGradient = {
+        let lightOrange = Color(UIColor(hex: "FF8A3D"))  // Lighter orange
+        let darkOrange = Color(UIColor(hex: "F97316"))   // Energy Orange
         return LinearGradient(
-            gradient: Gradient(colors: [emerald, teal]),
+            gradient: Gradient(colors: [lightOrange, darkOrange]),
             startPoint: .topLeading,
             endPoint: .bottomTrailing
         )
     }()
-    
+
     /// Dynamic gradient that adapts to color scheme
-    /// Light mode: Emerald → Teal gradient
-    /// Dark mode: Lighter teal → Mint green gradient for better visibility
+    /// Light mode: Orange gradient (Light Orange → Energy Orange)
+    /// Dark mode: Orange gradient (Light Orange → Energy Orange) - same as light mode
     static func dynamicButtonGradient(for colorScheme: ColorScheme) -> LinearGradient {
-        if colorScheme == .dark {
-            // Dark mode: Use lighter, more vibrant colors for better contrast
-            let startColor = Color(UIColor(hex: "26A69A"))  // Lighter teal
-            let endColor = Color(UIColor(hex: "4CAF92"))    // Mint green
-            return LinearGradient(
-                gradient: Gradient(colors: [startColor, endColor]),
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        } else {
-            // Light mode: Original emerald to teal gradient
-            return emeraldTealGradient
-        }
+        // Both light and dark mode use the same orange gradient
+        let lightOrange = Color(UIColor(hex: "FF8A3D"))  // Lighter orange
+        let darkOrange = Color(UIColor(hex: "F97316"))   // Energy Orange
+        return LinearGradient(
+            gradient: Gradient(colors: [lightOrange, darkOrange]),
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+    }
+
+    /// Convenience property for gradient without needing colorScheme parameter
+    /// Automatically uses orangeGradient for consistency
+    static var buttonGradient: LinearGradient {
+        return orangeGradient
     }
     
     // MARK: - Convenience Initializers

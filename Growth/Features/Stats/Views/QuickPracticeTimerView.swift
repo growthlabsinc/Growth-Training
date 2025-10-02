@@ -32,9 +32,22 @@ struct QuickPracticeTimerView: View {
     
     /// Reference to the shared timer service to check if it's running
     @ObservedObject private var sharedTimerService = TimerService.shared
-    
-    /// Alert for timer conflict
-    @State private var showTimerConflictAlert = false
+
+    /// Alert management
+    @State private var activeAlert: ActiveAlert?
+    @State private var alertMessage = ""
+
+    enum ActiveAlert: Identifiable {
+        case timerConflict
+        case trialLimit
+
+        var id: String {
+            switch self {
+            case .timerConflict: return "timerConflict"
+            case .trialLimit: return "trialLimit"
+            }
+        }
+    }
     
     /// Quick practice timer tracker
     @StateObject private var quickPracticeTracker = QuickPracticeTimerTracker.shared
@@ -109,13 +122,48 @@ struct QuickPracticeTimerView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar(content: toolbarContent)
             .navigationBarBackButtonHidden(true)
-            .onChangeCompat(of: quickTimerService.state, perform: handleTimerStateChange)
-            .onReceive(quickTimerService.timerStatePublisher, perform: handleTimerStatePublisher)
+            .onChangeCompat(of: quickTimerService.timerService.state, perform: handleTimerStateChange)
+            // timerStatePublisher removed - using onChangeCompat instead
             .onAppear(perform: handleViewAppear)
             .onReceive(NotificationCenter.default.publisher(for: UIApplication.didEnterBackgroundNotification), perform: handleEnterBackground)
             .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification), perform: handleEnterForeground)
             .onDisappear(perform: handleViewDisappear)
-            .alert("Timer Already Running", isPresented: $showTimerConflictAlert, actions: timerConflictAlertActions, message: timerConflictAlertMessage)
+            .alert(item: $activeAlert) { alertType in
+                switch alertType {
+                case .timerConflict:
+                    return Alert(
+                        title: Text("Timer Already Running"),
+                        message: Text("A timer is already running. Please stop it before starting a Quick Practice session."),
+                        dismissButton: .default(Text("OK"))
+                    )
+                case .trialLimit:
+                    return Alert(
+                        title: Text("Premium Required"),
+                        message: Text(alertMessage),
+                        primaryButton: .default(Text("OK")),
+                        secondaryButton: .default(Text("Upgrade")) {
+                            NotificationCenter.default.post(
+                                name: .shouldShowPaywall,
+                                object: nil,
+                                userInfo: ["source": "quickTimerLimit"]
+                            )
+                            // Delay dismiss to avoid geometry warning
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                dismiss()
+                            }
+                        }
+                    )
+                }
+            }
+            .onReceive(NotificationCenter.default.publisher(for: Notification.Name("showTrialLimitAlert"))) { notification in
+                // Delay slightly to avoid conflict with other alerts
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    if let message = notification.userInfo?["message"] as? String {
+                        alertMessage = message
+                        activeAlert = .trialLimit
+                    }
+                }
+            }
             .onReceive(NotificationCenter.default.publisher(for: .timerPauseRequested), perform: handleTimerPauseRequest)
             .onReceive(NotificationCenter.default.publisher(for: .timerStopRequested), perform: handleTimerStopRequest)
             .onChangeCompat(of: completionViewModel.showCompletionPrompt, perform: handleCompletionPrompt)
@@ -126,7 +174,7 @@ struct QuickPracticeTimerView: View {
     private var contentWithGlow: some View {
         ZStack {
             mainContent
-            
+
             // Apply edge glow as an overlay on the entire ZStack
             if isTimerRunning {
                 ScreenEdgeGlowEffect(isActive: true, intensity: 0.8)
@@ -203,7 +251,7 @@ struct QuickPracticeTimerView: View {
     
     private func handleEnterBackground(_ notification: Notification) {
         // Save timer state when entering background
-        if quickTimerService.state == TimerState.running {
+        if quickTimerService.timerService.state == TimerState.running {
             BackgroundTimerTracker.shared.saveTimerState(
                 from: quickTimerService.timerService,
                 methodName: selectedMethod?.title ?? "Quick Practice",
@@ -218,7 +266,7 @@ struct QuickPracticeTimerView: View {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             if BackgroundTimerTracker.shared.hasActiveBackgroundTimer() && !hasRestoredFromBackground {
                 // Double-check the timer hasn't been stopped
-                if quickTimerService.state != TimerState.stopped {
+                if quickTimerService.timerService.state != TimerState.stopped {
                     Logger.debug("QuickPracticeTimerView: App returning from background, restoring timer")
                     handleOnAppear()
                 }
@@ -228,7 +276,7 @@ struct QuickPracticeTimerView: View {
     
     private func handleViewDisappear() {
         // Save timer state for background tracking if running
-        if quickTimerService.state == TimerState.running {
+        if quickTimerService.timerService.state == TimerState.running {
             BackgroundTimerTracker.shared.saveTimerState(
                 from: quickTimerService.timerService,
                 methodName: selectedMethod?.title ?? "Quick Practice",
@@ -238,9 +286,9 @@ struct QuickPracticeTimerView: View {
         } else {
             // Ensure glow state is cleared if timer is not running
             isTimerRunning = false
-            
+
             // If timer is stopped, ensure it's properly unregistered from TimerCoordinator
-            if quickTimerService.state == TimerState.stopped {
+            if quickTimerService.timerService.state == TimerState.stopped {
                 // Force clear from TimerCoordinator if somehow still registered
                 if TimerCoordinator.shared.activeTimer == "quick" {
                     TimerCoordinator.shared.timerStopped(type: "quick")
@@ -253,16 +301,16 @@ struct QuickPracticeTimerView: View {
     private func handleTimerPauseRequest(_ notification: Notification) {
         // Only handle if this timer is actually running or paused
         guard quickTimerService.state != .stopped else { return }
-        
+
         // Check if this notification is meant for the quick timer
         if let timerType = notification.userInfo?[Notification.Name.TimerUserInfoKey.timerType] as? String,
            timerType != Notification.Name.TimerType.quick.rawValue {
             // This notification is for a different timer, ignore it
             return
         }
-        
+
         // Handle pause/resume for quick practice timer
-        if quickTimerService.state == TimerState.running {
+        if quickTimerService.timerService.state == TimerState.running {
             quickTimerService.pause()
         } else if quickTimerService.state == TimerState.paused {
             quickTimerService.resume()
@@ -272,29 +320,29 @@ struct QuickPracticeTimerView: View {
     private func handleTimerStopRequest(_ notification: Notification) {
         // Only handle if this timer is actually running or paused
         guard quickTimerService.state != .stopped else { return }
-        
+
         // Check if this notification is meant for the quick timer
         if let timerType = notification.userInfo?[Notification.Name.TimerUserInfoKey.timerType] as? String,
            timerType != Notification.Name.TimerType.quick.rawValue {
             // This notification is for a different timer, ignore it
             return
         }
-        
+
         // Capture elapsed time before any state changes
         let elapsedTimeAtStop = quickTimerService.elapsedTime
         let startTime = quickTimerService.timerService.startTime ?? Date().addingTimeInterval(-elapsedTimeAtStop)
-        
+
         // Stop the timer (this will also dismiss the Live Activity)
         quickTimerService.stop()
-        
+
         // Update glow state
         withAnimation(.easeInOut(duration: 0.3)) {
             isTimerRunning = false
         }
-        
+
         // Clear background timer state since we're completing
         BackgroundTimerTracker.shared.clearSavedState()
-        
+
         // Complete session with captured elapsed time
         if selectedMethod != nil {
             completionViewModel.completeSession(
@@ -380,7 +428,7 @@ struct QuickPracticeTimerView: View {
             
             // Time selector button
             Button {
-                if quickTimerService.state == TimerState.stopped {
+                if quickTimerService.timerService.state == TimerState.stopped {
                     showDurationPicker = true
                 }
             } label: {
@@ -389,7 +437,7 @@ struct QuickPracticeTimerView: View {
                         .font(AppTheme.Typography.captionFont())
                     Text("\(selectedDuration) min session")
                         .font(AppTheme.Typography.captionFont())
-                    if quickTimerService.state == TimerState.stopped {
+                    if quickTimerService.timerService.state == TimerState.stopped {
                         Image(systemName: "chevron.down")
                             .font(AppTheme.Typography.captionFont())
                     }
@@ -406,17 +454,17 @@ struct QuickPracticeTimerView: View {
             
             // Status text
             Text(sharedTimerService.state != TimerState.stopped ? "Main timer is active" :
-                 quickTimerService.state == TimerState.stopped ? "Ready to start" : 
+                 quickTimerService.state == TimerState.stopped ? "Ready to start" :
                  quickTimerService.state == TimerState.paused ? "Paused" : "Practice in progress")
                 .font(AppTheme.Typography.headlineFont())
                 .foregroundColor(sharedTimerService.state != TimerState.stopped ? .red :
-                              quickTimerService.state == TimerState.running ? Color("GrowthGreen") : 
+                              quickTimerService.state == TimerState.running ? Color("GrowthGreen") :
                               quickTimerService.state == TimerState.paused ? .orange : .secondary)
                 .onReceive(quickTimerService.$remainingTime) { remaining in
                     // Check if timer completed (for countdown mode)
-                    if quickTimerService.timerMode == .countdown && 
-                       quickTimerService.state == TimerState.running && 
-                       remaining <= 0 && 
+                    if quickTimerService.timerMode == .countdown &&
+                       quickTimerService.state == TimerState.running &&
+                       remaining <= 0 &&
                        quickTimerService.elapsedTime > 0 {
                         // Timer completed
                         DispatchQueue.main.async {
@@ -453,32 +501,40 @@ struct QuickPracticeTimerView: View {
             
             // Play/Pause button
             Button {
-                if quickTimerService.state == TimerState.stopped {
+                if quickTimerService.timerService.state == TimerState.stopped {
                     // Check if shared timer is running
                     if sharedTimerService.state != TimerState.stopped {
                         // Show alert that another timer is running
-                        showTimerConflictAlert = true
+                        activeAlert = .timerConflict
                         return
                     }
-                    
+
                     if let method = selectedMethod {
                         configureTimer(for: method)
-                        quickTimerService.start()
-                        
-                        // Update glow state immediately
-                        withAnimation(.easeInOut(duration: 0.3)) {
-                            isTimerRunning = true
+
+                        // Start timer with trial check
+                        quickTimerService.startWithTrialCheck { started in
+                            if started {
+                                // Update glow state immediately
+                                withAnimation(.easeInOut(duration: 0.3)) {
+                                    isTimerRunning = true
+                                }
+
+                                // Start session tracking
+                                completionViewModel.startSession(
+                                    type: .quickPractice,
+                                    methodId: method.id,
+                                    methodName: method.title
+                                )
+
+                                // Clear any background timer state since we're starting fresh
+                                BackgroundTimerTracker.shared.clearSavedState()
+                            } else {
+                                // Trial check failed, but don't show alert here
+                                // The notification handler will show it
+                                print("📊 [QuickTimer] Start blocked by trial limits")
+                            }
                         }
-                        
-                        // Start session tracking
-                        completionViewModel.startSession(
-                            type: SessionType.quickPractice,
-                            methodId: method.id,
-                            methodName: method.title
-                        )
-                        
-                        // Clear any background timer state since we're starting fresh
-                        BackgroundTimerTracker.shared.clearSavedState()
                     }
                 } else if quickTimerService.state == TimerState.running {
                     quickTimerService.pause()
@@ -512,21 +568,21 @@ struct QuickPracticeTimerView: View {
             // Stop button
             Button {
                 // Stop the timer and complete session
-                if quickTimerService.state != TimerState.stopped {
+                if quickTimerService.timerService.state != TimerState.stopped {
                     // Capture elapsed time before any state changes
                     let elapsedTimeAtStop = quickTimerService.elapsedTime
-                    
+
                     // Pause first to preserve elapsed time
                     quickTimerService.pause()
-                    
+
                     // Update glow state
                     withAnimation(.easeInOut(duration: 0.3)) {
                         isTimerRunning = false
                     }
-                    
+
                     // Clear background timer state since we're completing
                     BackgroundTimerTracker.shared.clearSavedState()
-                    
+
                     // Complete the session with captured elapsed time
                     if selectedMethod != nil {
                         completionViewModel.completeSession(
@@ -579,7 +635,7 @@ struct QuickPracticeTimerView: View {
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(Color("GrowthGreen"))
+                        .background(Color.buttonGradient)
                         .cornerRadius(10)
                 }
                 .padding()
@@ -911,7 +967,7 @@ struct QuickPracticeTimerView: View {
         if sharedTimerService.state != TimerState.stopped {
             // Logger.debug("QuickPracticeTimerView: Main timer is running, not starting quick practice timer")
             // Show alert and dismiss
-            showTimerConflictAlert = true
+            activeAlert = .timerConflict
             // Don't restore or start quick practice timer if main timer is active
             return
         }
@@ -942,19 +998,19 @@ struct QuickPracticeTimerView: View {
                 
                 // Start session tracking immediately for restored timer
                 completionViewModel.startSession(
-                    type: SessionType.quickPractice,
+                    type: .quickPractice,
                     methodId: backgroundState.methodId,
                     methodName: backgroundState.methodName
                 )
             }
-            
+
             // Restore timer state from background using TimerService's method
             Logger.debug("QuickPracticeTimerView: Restoring timer from background")
             quickTimerService.restoreFromBackground(isQuickPractice: true)
-            
+
             // Check if timer completed in background (for countdown mode)
-            if quickTimerService.timerMode == .countdown && 
-               quickTimerService.remainingTime <= 0 && 
+            if quickTimerService.timerMode == .countdown &&
+               quickTimerService.remainingTime <= 0 &&
                quickTimerService.elapsedTime > 0 {
                 Logger.info("QuickPracticeTimerView: Timer completed in background")
                 // Timer completed in background - trigger completion
@@ -966,7 +1022,7 @@ struct QuickPracticeTimerView: View {
             } else {
                 // Update glow state based on restored timer state
                 DispatchQueue.main.async {
-                    self.isTimerRunning = (self.quickTimerService.state == TimerState.running)
+                    self.isTimerRunning = (self.quickTimerService.timerService.state == TimerState.running)
                     Logger.debug("QuickPracticeTimerView: Timer restored, state: \(self.quickTimerService.state), isRunning: \(self.isTimerRunning)")
                 }
             }
@@ -974,19 +1030,19 @@ struct QuickPracticeTimerView: View {
             // No saved quick practice state - ensure timer is stopped
             // Reset the restoration flag since there's no active background timer
             hasRestoredFromBackground = false
-            
+
             // This is important - we don't sync with any other timer state
-            if quickTimerService.state != TimerState.stopped {
+            if quickTimerService.timerService.state != TimerState.stopped {
                 Logger.debug("QuickPracticeTimerView: Clearing unexpected timer state")
                 quickTimerService.stop()
             }
-            
+
             // Initialize glow state to off
             isTimerRunning = false
-            
+
             // Fresh start - initialize session tracking for when timer starts
             completionViewModel.startSession(
-                type: SessionType.quickPractice,
+                type: .quickPractice,
                 methodId: selectedMethod?.id,
                 methodName: selectedMethod?.title
             )
@@ -1101,25 +1157,25 @@ struct QuickPracticeTimerView: View {
     private func timerCompleted() {
         // Ensure we only handle completion once
         guard quickTimerService.state != .stopped else { return }
-        
+
         // Capture elapsed time before any state changes
         let elapsedTimeAtCompletion = quickTimerService.elapsedTime
-        
+
         // Pause the timer to preserve elapsed time for the completion sheet
-        if quickTimerService.state == TimerState.running {
+        if quickTimerService.timerService.state == TimerState.running {
             quickTimerService.pause()
         }
-        
+
         // Update glow state
         withAnimation(.easeInOut(duration: 0.3)) {
             isTimerRunning = false
         }
-        
+
         // Play completion sound/haptic
         UINotificationFeedbackGenerator().notificationOccurred(.success)
-        
+
         // Don't clear background timer tracking - preserve state for persistence
-        
+
         // Complete session and show intelligent prompt with captured elapsed time
         completionViewModel.completeSession(
             methodId: selectedMethod?.id,

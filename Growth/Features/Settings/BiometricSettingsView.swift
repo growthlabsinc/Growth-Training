@@ -367,7 +367,7 @@ struct SaveCredentialsView: View {
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 16)
-                            .background(Color("GrowthGreen"))
+                            .background(Color.buttonGradient)
                             .cornerRadius(10)
                     }
                     .disabled(email.isEmpty || password.isEmpty)

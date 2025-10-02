@@ -38,7 +38,7 @@ struct AchievementsView: View {
                 .foregroundColor(.white)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
-                .background(Color("GrowthGreen"))
+                .background(Color.buttonGradient)
                 .cornerRadius(16)
             
             Spacer()

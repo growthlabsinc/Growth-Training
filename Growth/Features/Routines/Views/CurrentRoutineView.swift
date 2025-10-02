@@ -140,7 +140,7 @@ struct CurrentRoutineView: View {
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 16)
-                .background(Color("GrowthGreen"))
+                .background(Color.buttonGradient)
                 .cornerRadius(12)
             }
             .padding(.horizontal)
@@ -366,7 +366,7 @@ struct CurrentRoutineView: View {
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 16)
-                .background(Color("GrowthGreen"))
+                .background(Color.buttonGradient)
                 .cornerRadius(12)
             }
             

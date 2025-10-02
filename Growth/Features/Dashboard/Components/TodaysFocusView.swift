@@ -13,6 +13,8 @@ struct TodaysFocusView: View {
     let onQuickPractice: () -> Void
     let onLogRestDay: () -> Void
     var onSelectRoutine: (() -> Void)? = nil
+
+    @Environment(\.colorScheme) var colorScheme
     
     
     var body: some View {
@@ -127,8 +129,8 @@ struct TodaysFocusView: View {
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 12)
                 .background(
-                    LinearGradient(
-                        colors: isToday ? [Color("GrowthGreen"), Color("BrightTeal")] : [Color("NeutralGray"), Color("NeutralGray")],
+                    isToday ? Color.buttonGradient : LinearGradient(
+                        colors: [Color("NeutralGray"), Color("NeutralGray")],
                         startPoint: .leading,
                         endPoint: .trailing
                     )
@@ -175,7 +177,7 @@ struct TodaysFocusView: View {
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
-                        .background(Color("GrowthGreen"))
+                        .background(Color.dynamicButtonGradient(for: colorScheme))
                         .cornerRadius(12)
                     }
                 }
@@ -192,9 +194,13 @@ struct TodaysFocusView: View {
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)
                     .background(
-                        viewModel.todayFocusState == .noRoutine 
-                        ? Color("GrowthGreen").opacity(0.1) 
-                        : Color("GrowthGreen")
+                        Group {
+                            if viewModel.todayFocusState == .noRoutine {
+                                Color("GrowthGreen").opacity(0.1)
+                            } else {
+                                Color.dynamicButtonGradient(for: colorScheme)
+                            }
+                        }
                     )
                     .cornerRadius(12)
                     .overlay(
@@ -222,12 +228,8 @@ struct TodaysFocusView: View {
                         .frame(height: 140)
                         .clipped()
                 } else {
-                    LinearGradient(
-                        colors: [Color("PaleGreen"), Color("MintGreen")],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                    .frame(height: 140)
+                    Color.buttonGradient
+                        .frame(height: 140)
                 }
                 
                 // Content overlay
@@ -261,8 +263,8 @@ struct TodaysFocusView: View {
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 12)
                 .background(
-                    LinearGradient(
-                        colors: isToday ? [Color("PaleGreen"), Color("MintGreen")] : [Color("NeutralGray"), Color("NeutralGray")],
+                    isToday ? Color.buttonGradient : LinearGradient(
+                        colors: [Color("NeutralGray"), Color("NeutralGray")],
                         startPoint: .leading,
                         endPoint: .trailing
                     )
@@ -366,14 +368,8 @@ struct TodaysFocusView: View {
     }
     
     private var backgroundGradientColors: [Color] {
-        switch viewModel.todayFocusState {
-        case .routineDay(_):
-            return [Color("GrowthGreen"), Color("BrightTeal")]
-        case .restDay(_):
-            return [Color("PaleGreen"), Color("MintGreen")]
-        default:
-            return [Color("GrowthGreen"), Color("BrightTeal")]
-        }
+        // Use orange gradient for all states
+        return [Color(UIColor(hex: "FF8A3D")), Color(UIColor(hex: "F97316"))]
     }
     
     private var focusIconName: String {

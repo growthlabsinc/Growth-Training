@@ -475,7 +475,7 @@ struct GrowthMethodDetailView: View {
             .font(AppTheme.Typography.gravitySemibold(14))
             .padding(.horizontal, 32)
             .padding(.vertical, 12)
-            .background(Color("GrowthGreen"))
+            .background(Color.buttonGradient)
             .foregroundColor(.white)
             .cornerRadius(10)
         }

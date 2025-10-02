@@ -72,7 +72,7 @@ struct RoutineGoalSelectionView: View {
                                                     .foregroundColor(.white)
                                                     .padding(.horizontal, 8)
                                                     .padding(.vertical, 4)
-                                                    .background(Color("GrowthGreen"))
+                                                    .background(Color.buttonGradient)
                                                     .cornerRadius(4)
                                             }
                                             

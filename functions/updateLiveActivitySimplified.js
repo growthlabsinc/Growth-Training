@@ -12,7 +12,7 @@ const apnsTeamIdSecret = defineSecret('APNS_TEAM_ID');
 // APNs configuration - production only
 const APNS_HOST = 'api.push.apple.com'; // Production server only
 const TEAM_ID = process.env.APNS_TEAM_ID?.trim() || '62T6J77P6R';
-const KEY_ID = 'DQ46FN4PQU'; // Production key only
+const KEY_ID = '753L48DY45'; // Production key only
 
 /**
  * Simplified Live Activity update function

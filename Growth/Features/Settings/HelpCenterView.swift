@@ -178,7 +178,7 @@ struct HelpCenterView: View {
                             .foregroundColor(.white)
                             .padding(.horizontal, 24)
                             .padding(.vertical, 12)
-                            .background(Color("GrowthGreen"))
+                            .background(Color.buttonGradient)
                             .cornerRadius(25)
                     }
                 }

@@ -13,6 +13,9 @@ extension Notification.Name {
     
     // MARK: - App Tour
     static let triggerAppTour = Notification.Name("triggerAppTour")
+
+    // MARK: - Paywall
+    static let shouldShowPaywall = Notification.Name("shouldShowPaywall")
     
     // MARK: - Timer Live Activity
     static let timerPauseRequested = Notification.Name("timerPauseRequested")

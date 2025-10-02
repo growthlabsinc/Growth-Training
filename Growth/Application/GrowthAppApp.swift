@@ -29,8 +29,8 @@ struct GrowthTrainingApp: App {
     // Add BiometricService
     @StateObject private var biometricService = BiometricAuthService.shared
     
-    // Simplified StoreKit 2 managers following demo pattern
-    @StateObject private var entitlementManager = SimplifiedEntitlementManager()
+    // Simplified StoreKit 2 managers with trial support
+    @StateObject private var entitlementManager = SimplifiedEntitlementManagerWithTrial.shared
     @StateObject private var purchaseManager: SimplifiedPurchaseManager
     
     // Track if app is locked
@@ -38,19 +38,18 @@ struct GrowthTrainingApp: App {
 
     // Set up UITabBar appearance for selected/unselected item colors
     init() {
-        // Initialize StoreKit managers
-        let entitlementManager = SimplifiedEntitlementManager()
-        let purchaseManager = SimplifiedPurchaseManager(entitlementManager: entitlementManager)
-        
-        self._entitlementManager = StateObject(wrappedValue: entitlementManager)
-        self._purchaseManager = StateObject(wrappedValue: purchaseManager)
-        
-        // Disable verbose Firebase logging
-        configureFirebaseLogging()
-        
-        // Configure Firebase early to prevent timing warnings
+        // Configure Firebase FIRST before any Firebase services are used
+        // Use static function instead of instance method
+        GrowthTrainingApp.configureFirebaseLoggingStatic()
         let environment = EnvironmentDetector.detectEnvironment()
         _ = FirebaseClient.shared.configure(for: environment)
+
+        // Now initialize StoreKit managers with trial support (after Firebase is configured)
+        let entitlementManager = SimplifiedEntitlementManagerWithTrial.shared
+        let purchaseManager = SimplifiedPurchaseManager(entitlementManager: entitlementManager)
+
+        self._entitlementManager = StateObject(wrappedValue: entitlementManager)
+        self._purchaseManager = StateObject(wrappedValue: purchaseManager)
         
         setupTabBarAppearance()
         
@@ -58,9 +57,13 @@ struct GrowthTrainingApp: App {
     }
     
     private func configureFirebaseLogging() {
+        GrowthTrainingApp.configureFirebaseLoggingStatic()
+    }
+
+    private static func configureFirebaseLoggingStatic() {
         // Disable verbose Firebase logging in console
         FirebaseConfiguration.shared.setLoggerLevel(.error)
-        
+
         // Also set UserDefaults flags for Firebase components
         UserDefaults.standard.set(false, forKey: "firebase_crashlytics_collection_enabled")
         UserDefaults.standard.set(false, forKey: "firebase_analytics_collection_deactivated")

@@ -14,7 +14,7 @@ import Combine
 /// Settings view for the app
 struct SettingsView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
-    @EnvironmentObject private var entitlements: SimplifiedEntitlementManager
+    @EnvironmentObject private var entitlements: SimplifiedEntitlementManagerWithTrial
     @EnvironmentObject private var purchaseManager: SimplifiedPurchaseManager
     @State private var showingPaywall = false
     @State private var showLogoutAlert = false
@@ -411,19 +411,27 @@ struct SettingsView: View {
                 } label: {
                     settingRow(title: "Mock Data Manager", icon: "hammer.fill", color: .orange)
                 }
-                
+
                 NavigationLink {
                     SubscriptionDebugView()
+                        .environmentObject(entitlements)
+                        .environmentObject(purchaseManager)
                 } label: {
                     settingRow(title: "Subscription Debug", icon: "wrench.fill", color: .orange)
                 }
-                
+
+                NavigationLink {
+                    TrialDebugView()
+                } label: {
+                    settingRow(title: "Trial Debug", icon: "clock.badge.checkmark", color: .blue)
+                }
+
                 Button(action: {
                     showResetSessionsAlert = true
                 }) {
                     settingRow(title: "Reset Today's Sessions", icon: "arrow.clockwise.circle", color: .red)
                 }
-                
+
                 // StoreKit Debug - Available in debug builds
                 NavigationLink {
                     StoreKitDebugView()
