@@ -42,7 +42,7 @@ enum ExperienceLevel: String, CaseIterable {
     
     var description: String {
         switch self {
-        case .beginner: return "New to vascular training"
+        case .beginner: return "New to growth training"
         case .intermediate: return "Some experience with these methods"
         case .advanced: return "Experienced practitioner"
         }

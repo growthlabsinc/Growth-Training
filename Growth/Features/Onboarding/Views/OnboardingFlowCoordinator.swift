@@ -149,7 +149,7 @@ struct WelcomeView: View {
                         .opacity(showingContent ? 1.0 : 0.0)
                     
                     // Headline
-                    Text("A Structured Path to Vascular Health")
+                    Text("Achieve Your Health Goals with Science-Based Training")
                         .font(AppTheme.Typography.title1Font())
                         .foregroundColor(AppTheme.Colors.text)
                         .multilineTextAlignment(.center)
@@ -158,9 +158,9 @@ struct WelcomeView: View {
                     
                     // Benefits
                     VStack(alignment: .leading, spacing: AppTheme.Layout.spacingM) {
-                        OnboardingBenefitRow(icon: "chart.line.uptrend.xyaxis", text: "Guided, Science-Based Methods")
-                        OnboardingBenefitRow(icon: "lock.shield", text: "Private and Secure Tracking")
-                        OnboardingBenefitRow(icon: "person.2", text: "Supportive Community Insights")
+                        OnboardingBenefitRow(icon: "chart.line.uptrend.xyaxis", text: "Evidence-Based Training Protocols")
+                        OnboardingBenefitRow(icon: "lock.shield", text: "Private and Secure Progress Tracking")
+                        OnboardingBenefitRow(icon: "person.2", text: "Expert Guidance and Support")
                     }
                     .padding(.horizontal, AppTheme.Layout.spacingXL)
                     .opacity(showingContent ? 1.0 : 0.0)
