@@ -368,7 +368,7 @@ struct TodaysFocusView: View {
     }
     
     private var backgroundGradientColors: [Color] {
-        // Use orange gradient for all states
+        // Use orange gradient for all states (Growth Orange → Energy Orange)
         return [Color(UIColor(hex: "FF8A3D")), Color(UIColor(hex: "F97316"))]
     }
     

@@ -42,7 +42,7 @@ struct AnimatedPrimaryButton: View {
                     RoundedRectangle(cornerRadius: GrowthUITheme.ComponentSize.primaryButtonCornerRadius)
                         .fill(Color.dynamicButtonGradient(for: colorScheme))
                         .shadow(
-                            color: Color(UIColor(hex: "F97316")).opacity(0.3),  // Orange shadow for both modes
+                            color: Color(UIColor(hex: "F97316")).opacity(0.3),  // Energy Orange shadow for both modes
                             radius: isPressed ? 2 : AppTheme.Layout.shadowRadius,
                             x: 0,
                             y: isPressed ? 1 : 2
@@ -116,7 +116,7 @@ struct AnimatedPrimaryButtonWithIcon: View {
                 RoundedRectangle(cornerRadius: GrowthUITheme.ComponentSize.primaryButtonCornerRadius)
                     .fill(Color.dynamicButtonGradient(for: colorScheme))
                     .shadow(
-                        color: Color(UIColor(hex: "F97316")).opacity(0.3),  // Orange shadow for both modes
+                        color: Color("BrightTeal").opacity(0.3),  // Teal shadow for both modes
                         radius: isPressed ? 2 : AppTheme.Layout.shadowRadius,
                         x: 0,
                         y: isPressed ? 1 : 2

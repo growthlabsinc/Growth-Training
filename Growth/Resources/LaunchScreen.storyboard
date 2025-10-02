@@ -26,7 +26,7 @@
                             </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
-                        <color key="backgroundColor" red="0.102" green="0.188" blue="0.212" alpha="1.0" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" name="BackgroundColor"/>
                         <constraints>
                             <constraint firstItem="ghj-Kl-mNO" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="FgV-0p-JKm"/>
                             <constraint firstItem="ghj-Kl-mNO" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="L4F-6u-0rc"/>
@@ -40,5 +40,8 @@
     </scenes>
     <resources>
         <image name="LaunchLogo" width="152" height="152"/>
+        <namedColor name="BackgroundColor">
+            <color red="0.973" green="0.980" blue="0.988" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
     </resources>
 </document>

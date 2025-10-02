@@ -19,19 +19,19 @@ enum AppColors {
     }
     
     // MARK: - Secondary Colors
-    
-    /// Growth Orange - #F97316 (Secondary brand color for buttons, accents, and highlights)
+
+    /// Growth Orange - #FF8A3D (Secondary brand color for buttons, accents, and highlights)
     /// Used for interactive elements like buttons, links, and selection states
-    static let mintGreen = UIColor(hex: "F97316")
-    
-    /// Pale Green - #E6F4F0 (Subtle backgrounds, selected states)
-    /// In dark mode: #F1F8B1 (lighter shade for better visibility)
+    static let mintGreen = UIColor(hex: "FF8A3D")
+
+    /// Pale Orange - #FFE5D9 (Subtle backgrounds, selected states)
+    /// In dark mode: #FFC29F (lighter shade for better visibility)
     static let paleGreen = UIColor { traitCollection in
-        traitCollection.userInterfaceStyle == .dark ? UIColor(hex: "F1F8B1") : UIColor(hex: "E6F4F0")
+        traitCollection.userInterfaceStyle == .dark ? UIColor(hex: "FFC29F") : UIColor(hex: "FFE5D9")
     }
-    
+
     // MARK: - Accent Colors
-    
+
     /// Energy Orange - #F97316 (Important actions, focus points, and progress indicators)
     static let brightTeal = UIColor(hex: "F97316")
     
@@ -39,9 +39,9 @@ enum AppColors {
     static let vitalYellow = UIColor(hex: "FFD54F")
     
     // MARK: - Functional Colors
-    
-    /// Success Orange - #F97316 (Completion states and positive feedback)
-    static let successGreen = UIColor(hex: "F97316")
+
+    /// Success Orange - #FF8A3D (Completion states and positive feedback)
+    static let successGreen = UIColor(hex: "FF8A3D")
     
     /// Warning Amber - #F97316 (Caution states and intermediary alerts - Energy Orange)
     static let warningAmber = UIColor(hex: "F97316")

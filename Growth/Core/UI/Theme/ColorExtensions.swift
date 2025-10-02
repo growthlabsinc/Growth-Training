@@ -99,35 +99,35 @@ extension Color {
     /// In dark mode: #263A36 (Dark mode card backgrounds)
     static let surfaceWhite = Color(AppColors.surfaceWhite)
     
-    // MARK: - Gradients (Story 4.1 - Orange Gradient Update)
+    // MARK: - Gradients (Story 4.2 - Orange Gradient System)
 
     /// Orange gradient used for primary interactive elements
     static let orangeGradient: LinearGradient = {
-        let lightOrange = Color(UIColor(hex: "FF8A3D"))  // Lighter orange
-        let darkOrange = Color(UIColor(hex: "F97316"))   // Energy Orange
+        let growthOrange = Color(UIColor(hex: "FF8A3D"))  // Growth Orange (lighter)
+        let energyOrange = Color(UIColor(hex: "F97316"))   // Energy Orange (darker)
         return LinearGradient(
-            gradient: Gradient(colors: [lightOrange, darkOrange]),
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
+            gradient: Gradient(colors: [growthOrange, energyOrange]),
+            startPoint: .leading,
+            endPoint: .trailing
         )
     }()
 
     /// Dynamic gradient that adapts to color scheme
-    /// Light mode: Orange gradient (Light Orange → Energy Orange)
-    /// Dark mode: Orange gradient (Light Orange → Energy Orange) - same as light mode
+    /// Light mode: Orange gradient (Growth Orange → Energy Orange)
+    /// Dark mode: Orange gradient (Growth Orange → Energy Orange) - same as light mode
     static func dynamicButtonGradient(for colorScheme: ColorScheme) -> LinearGradient {
         // Both light and dark mode use the same orange gradient
-        let lightOrange = Color(UIColor(hex: "FF8A3D"))  // Lighter orange
-        let darkOrange = Color(UIColor(hex: "F97316"))   // Energy Orange
+        let growthOrange = Color(UIColor(hex: "FF8A3D"))  // Growth Orange (lighter)
+        let energyOrange = Color(UIColor(hex: "F97316"))   // Energy Orange (darker)
         return LinearGradient(
-            gradient: Gradient(colors: [lightOrange, darkOrange]),
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
+            gradient: Gradient(colors: [growthOrange, energyOrange]),
+            startPoint: .leading,
+            endPoint: .trailing
         )
     }
 
     /// Convenience property for gradient without needing colorScheme parameter
-    /// Automatically uses orangeGradient for consistency
+    /// Automatically uses orange gradient for consistency
     static var buttonGradient: LinearGradient {
         return orangeGradient
     }

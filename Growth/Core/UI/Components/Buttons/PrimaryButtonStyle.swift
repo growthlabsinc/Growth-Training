@@ -34,7 +34,7 @@ struct PrimaryButtonStyle: ButtonStyle {
             )
             .cornerRadius(AppTheme.Layout.cornerRadiusM)
             .shadow(
-                color: Color(UIColor(hex: "F97316")).opacity(0.3),  // Orange shadow for both modes
+                color: Color(UIColor(hex: "F97316")).opacity(0.3),  // Energy Orange shadow for both modes
                 radius: AppTheme.Layout.shadowRadius,
                 x: 0,
                 y: 2
