@@ -1,0 +1,57 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "62T6J77P6R.com.growthlabs.growthmethod",
+        "paths": [
+          "/app/*",
+          "/method/*",
+          "/routine/*",
+          "/session/*",
+          "/share/*",
+          "/practice/*",
+          "/timer/*",
+          "/user/*",
+          "/invite/*"
+        ]
+      },
+      {
+        "appID": "62T6J77P6R.com.growthlabs.growthmethod.dev",
+        "paths": [
+          "/app/*",
+          "/method/*",
+          "/routine/*",
+          "/session/*",
+          "/share/*",
+          "/practice/*",
+          "/timer/*",
+          "/user/*",
+          "/invite/*"
+        ]
+      },
+      {
+        "appID": "62T6J77P6R.com.growthlabs.growthmethod.staging",
+        "paths": [
+          "/app/*",
+          "/method/*",
+          "/routine/*",
+          "/session/*",
+          "/share/*",
+          "/practice/*",
+          "/timer/*",
+          "/user/*",
+          "/invite/*"
+        ]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": [
+      "62T6J77P6R.com.growthlabs.growthmethod"
+    ]
+  },
+  "appclips": {
+    "apps": []
+  }
+}

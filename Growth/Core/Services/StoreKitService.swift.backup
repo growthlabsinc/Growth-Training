@@ -1,0 +1,346 @@
+/**
+ * StoreKitService.swift
+ * Growth App StoreKit 2 Integration Service
+ *
+ * Main service for StoreKit 2 product loading, purchase management,
+ * and transaction monitoring for subscription functionality.
+ */
+
+import Foundation
+import StoreKit
+import Combine
+
+/// Main StoreKit 2 integration service
+@available(iOS 15.0, *)
+@MainActor
+class StoreKitService: ObservableObject {
+    
+    // MARK: - Published Properties
+    
+    /// Available subscription products from App Store
+    @Published var availableProducts: [Product] = []
+    
+    /// Current loading state
+    @Published var isLoadingProducts: Bool = false
+    
+    /// Error state for product loading
+    @Published var productLoadError: Error?
+    
+    // MARK: - Private Properties
+    
+    private var cancellables = Set<AnyCancellable>()
+    private var transactionListener: Task<Void, Error>?
+    
+    // MARK: - Singleton
+    
+    static let shared = StoreKitService()
+    
+    private init() {
+        // Start listening for transaction updates
+        startTransactionListener()
+        
+        // Initialize environment detection
+        Task {
+            await StoreKitEnvironmentHandler.shared.detectEnvironment()
+        }
+    }
+    
+    deinit {
+        transactionListener?.cancel()
+    }
+    
+    // MARK: - Product Loading
+    
+    /// Update products (used by AppReviewSubscriptionHandler)
+    func updateProducts(_ products: [Product]) async {
+        await MainActor.run {
+            self.availableProducts = products
+            self.isLoadingProducts = false
+            Logger.info("StoreKitService: Updated with \(products.count) products")
+        }
+    }
+    
+    /// Load subscription products from App Store Connect
+    func loadProducts() async {
+        await MainActor.run {
+            isLoadingProducts = true
+            productLoadError = nil
+        }
+        
+        // Ensure environment is detected before loading products
+        let isDetected = StoreKitEnvironmentHandler.shared.isEnvironmentDetected
+        if !isDetected {
+            await StoreKitEnvironmentHandler.shared.detectEnvironment()
+        }
+        
+        let environment = StoreKitEnvironmentHandler.shared.currentEnvironment
+        let bundleID = Bundle.main.bundleIdentifier ?? "unknown"
+        
+        Logger.info("=== StoreKitService Product Loading Debug ===")
+        Logger.info("StoreKitService: Environment: \(environment.displayName)")
+        Logger.info("StoreKitService: Bundle ID: \(bundleID)")
+        Logger.info("StoreKitService: Product IDs requested:")
+        for productId in SubscriptionProductIDs.allProductIDs {
+            Logger.info("  - \(productId)")
+        }
+        
+        // Check receipt URL for additional context
+        if let receiptURL = Bundle.main.appStoreReceiptURL {
+            Logger.info("StoreKitService: Receipt URL: \(receiptURL.path)")
+            let receiptExists = FileManager.default.fileExists(atPath: receiptURL.path)
+            Logger.info("StoreKitService: Receipt exists: \(receiptExists)")
+        }
+        
+        // Ensure we're not using local StoreKit config in production
+        #if !DEBUG
+        if environment == .xcode {
+            Logger.error("StoreKitService: WARNING - Xcode environment detected in Release build. This should not happen in TestFlight/Production!")
+        }
+        Logger.info("StoreKitService: Release build - fetching products from App Store Connect")
+        #else
+        Logger.info("StoreKitService: Debug build - may use local StoreKit configuration if enabled")
+        #endif
+        
+        // Add retry mechanism for product loading with environment-specific handling
+        var products: [Product] = []
+        var retryCount = 0
+        let maxRetries = environment == .sandbox || environment == .unknown ? 5 : 3 // More retries for TestFlight
+        
+        while retryCount < maxRetries {
+            do {
+                Logger.info("StoreKitService: Product load attempt \(retryCount + 1)/\(maxRetries)")
+                
+                // Clear any cached state before retry
+                if retryCount > 0 {
+                    // Wait a bit to let App Store Connect settle
+                    let waitTime = UInt64(pow(2.0, Double(retryCount - 1)) * 1_000_000_000)
+                    Logger.info("StoreKitService: Waiting \(Double(waitTime) / 1_000_000_000) seconds before retry")
+                    try? await Task.sleep(nanoseconds: waitTime)
+                }
+                
+                products = try await Product.products(for: SubscriptionProductIDs.allProductIDs)
+                
+                if !products.isEmpty {
+                    Logger.info("StoreKitService: Successfully loaded \(products.count) products on attempt \(retryCount + 1)")
+                    break // Success, exit retry loop
+                }
+                
+                Logger.warning("StoreKitService: No products returned on attempt \(retryCount + 1)/\(maxRetries)")
+                
+                // Check if we have entitlements but no products (TestFlight issue)
+                if retryCount == 0 {
+                    let hasSubscription = await hasActiveSubscription()
+                    if hasSubscription {
+                        Logger.warning("StoreKitService: User has active subscription but products not loading - likely TestFlight issue")
+                    }
+                }
+                
+            } catch {
+                Logger.error("StoreKitService: Product load attempt \(retryCount + 1) failed: \(error)")
+                if let nsError = error as NSError? {
+                    Logger.error("StoreKitService: Error domain: \(nsError.domain), code: \(nsError.code)")
+                }
+            }
+            
+            retryCount += 1
+        }
+        
+        // Use a local copy for the closure to avoid concurrency issues
+        let finalProducts = products
+        await MainActor.run {
+            self.availableProducts = finalProducts
+            self.isLoadingProducts = false
+            Logger.info("StoreKitService: Successfully loaded \(finalProducts.count) products")
+            
+            // Debug: Log each loaded product
+            for product in finalProducts {
+                Logger.info("StoreKitService: Loaded product - ID: \(product.id), Name: \(product.displayName), Price: \(product.displayPrice)")
+            }
+            
+            // Debug: Log which expected products are missing
+            let loadedProductIDs = Set(finalProducts.map { $0.id })
+            let missingProductIDs = SubscriptionProductIDs.allProductIDs.subtracting(loadedProductIDs)
+            if !missingProductIDs.isEmpty {
+                Logger.error("StoreKitService: Missing products from App Store Connect: \(missingProductIDs)")
+            }
+        }
+        
+        if products.isEmpty {
+            Logger.error("StoreKitService: Failed to load products after retries")
+            Logger.error("StoreKitService: Environment: \(StoreKitEnvironmentHandler.shared.currentEnvironment.displayName)")
+            
+            // If in production/app review, try refreshing environment and retry once
+            if StoreKitEnvironmentHandler.shared.currentEnvironment == .production {
+                Logger.info("StoreKitService: Attempting environment refresh and retry...")
+                await StoreKitEnvironmentHandler.shared.refreshEnvironment()
+                
+                // One more attempt after environment refresh
+                do {
+                    let retryProducts = try await Product.products(for: SubscriptionProductIDs.allProductIDs)
+                    if !retryProducts.isEmpty {
+                        await MainActor.run {
+                            self.availableProducts = retryProducts
+                            self.isLoadingProducts = false
+                            self.productLoadError = nil
+                            Logger.info("StoreKitService: Retry successful, loaded \(retryProducts.count) products")
+                        }
+                        return
+                    }
+                } catch {
+                    Logger.error("StoreKitService: Retry also failed: \(error)")
+                }
+            }
+        }
+    }
+    
+    /// Get a specific product by ID
+    func product(for productID: String) -> Product? {
+        return availableProducts.first { $0.id == productID }
+    }
+    
+    /// Get products for a specific subscription tier
+    func products(for tier: SubscriptionTier) -> [Product] {
+        return availableProducts.filter { product in
+            SubscriptionProductIDs.tier(for: product.id) == tier
+        }
+    }
+    
+    /// Get products for a specific duration
+    func products(for duration: SubscriptionDuration) -> [Product] {
+        return availableProducts.filter { product in
+            SubscriptionProductIDs.duration(for: product.id) == duration
+        }
+    }
+    
+    /// Check if products are available for purchase
+    var hasAvailableProducts: Bool {
+        return !availableProducts.isEmpty
+    }
+    
+    // MARK: - Transaction Monitoring
+    
+    /// Start listening for transaction updates
+    private func startTransactionListener() {
+        transactionListener = Task(priority: .background) { [weak self] in
+            guard let self = self else { return }
+            
+            // Listen for transaction updates from outside the app
+            for await result in Transaction.updates {
+                do {
+                    let transaction = try self.checkVerified(result)
+                    await self.handleTransactionUpdate(transaction)
+                } catch {
+                    Logger.info("StoreKitService: Transaction verification failed: \(error)")
+                }
+            }
+        }
+    }
+    
+    /// Handle transaction updates
+    private func handleTransactionUpdate(_ transaction: Transaction) async {
+        Logger.info("StoreKitService: Transaction updated - \(transaction.productID), state: \(transaction.revocationDate == nil ? "active" : "revoked")")
+        
+        // Update subscription status
+        // TODO: Implement subscription status update when service is available
+        
+        // Finish the transaction
+        await transaction.finish()
+    }
+    
+    // MARK: - Current Entitlements
+    
+    /// Get current subscription entitlements
+    func getCurrentEntitlements() async -> [Transaction] {
+        var entitlements: [Transaction] = []
+        
+        for await result in Transaction.currentEntitlements {
+            do {
+                let transaction = try checkVerified(result)
+                entitlements.append(transaction)
+            } catch {
+                Logger.info("StoreKitService: Failed to verify entitlement: \(error)")
+            }
+        }
+        
+        return entitlements
+    }
+    
+    /// Get the highest tier active subscription
+    func getActiveSubscriptionTier() async -> SubscriptionTier {
+        let entitlements = await getCurrentEntitlements()
+        
+        // Find the highest tier among active subscriptions
+        var highestTier: SubscriptionTier = .none
+        
+        for transaction in entitlements {
+            let tier = SubscriptionProductIDs.tier(for: transaction.productID)
+            if tier.hierarchyLevel > highestTier.hierarchyLevel {
+                highestTier = tier
+            }
+        }
+        
+        return highestTier
+    }
+    
+    /// Check if user has active subscription
+    func hasActiveSubscription() async -> Bool {
+        let entitlements = await getCurrentEntitlements()
+        return !entitlements.isEmpty
+    }
+    
+    /// Get active subscription details
+    func getActiveSubscriptionDetails() async -> (tier: SubscriptionTier, productId: String, expirationDate: Date?)? {
+        let entitlements = await getCurrentEntitlements()
+        
+        guard let latestTransaction = entitlements.first else {
+            return nil
+        }
+        
+        let tier = SubscriptionProductIDs.tier(for: latestTransaction.productID)
+        return (tier: tier, productId: latestTransaction.productID, expirationDate: latestTransaction.expirationDate)
+    }
+    
+    // MARK: - Restore Purchases
+    
+    /// Restore previous purchases
+    func restorePurchases() async throws {
+        try await AppStore.sync()
+        
+        // Refresh subscription status after sync
+        // TODO: Implement subscription status refresh when service is available
+    }
+    
+    // MARK: - Helper Methods
+    
+    /// Verify transaction authenticity
+    private func checkVerified<T>(_ result: VerificationResult<T>) throws -> T {
+        switch result {
+        case .unverified:
+            throw StoreKitError.failedVerification
+        case .verified(let safe):
+            return safe
+        }
+    }
+}
+
+// MARK: - StoreKit Errors
+
+enum StoreKitError: LocalizedError {
+    case failedVerification
+    case productNotFound
+    case purchaseFailed
+    case restoreFailed
+    
+    var errorDescription: String? {
+        switch self {
+        case .failedVerification:
+            return "Failed to verify transaction"
+        case .productNotFound:
+            return "Product not found"
+        case .purchaseFailed:
+            return "Purchase failed"
+        case .restoreFailed:
+            return "Failed to restore purchases"
+        }
+    }
+}

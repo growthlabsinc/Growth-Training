@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>aps-environment</key>
+	<string>production</string>
+	<key>com.apple.developer.applesignin</key>
+	<array>
+		<string>Default</string>
+	</array>
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>applinks:growth-app.com</string>
+		<string>webcredentials:growth-app.com</string>
+		<string>webcredentials:www.growth-app.com</string>
+	</array>
+	<key>com.apple.developer.background-tasks.continued-processing.gpu</key>
+	<true/>
+	<key>com.apple.developer.devicecheck.appattest-environment</key>
+	<string>production</string>
+	<key>com.apple.security.application-groups</key>
+	<array>
+		<string>group.com.growthlabs.growthmethod</string>
+	</array>
+</dict>
+</plist>

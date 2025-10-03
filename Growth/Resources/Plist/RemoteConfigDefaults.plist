@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>app_version</key>
+	<string>1.0.0</string>
+	<key>app_name</key>
+	<string>Growth</string>
+	<key>firebase_connection_timeout</key>
+	<integer>15</integer>
+	<key>firebase_connection_retry_count</key>
+	<integer>3</integer>
+	<key>enable_analytics</key>
+	<true/>
+	<key>enable_in_app_messaging</key>
+	<true/>
+	<key>enable_crashlytics</key>
+	<true/>
+</dict>
+</plist> 

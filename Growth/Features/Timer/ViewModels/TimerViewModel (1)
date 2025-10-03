@@ -1,0 +1,440 @@
+//
+//  TimerViewModel.swift
+//  Growth
+//
+//  Created by Assistant on current date.
+//
+
+import Foundation
+import Combine
+import SwiftUI
+
+@MainActor
+class TimerViewModel: ObservableObject {
+    @Published var timerState: TimerState = .stopped
+    @Published var elapsedTime: TimeInterval = 0
+    @Published var remainingTime: TimeInterval = 0
+    @Published var isOverexerted = false
+    @Published var showOverexertionWarning = false
+    @Published var currentMethod: GrowthMethod?
+    @Published var sessionDuration: TimeInterval = 0
+    @Published var displayTime: String = "00:00"
+    @Published var showLogSessionView = false
+    @Published var showPreSessionMoodSheet = false
+    @Published var isOverexertionWarningActive = false
+    @Published var showCompletionActions = false
+    @Published var moodBefore: Mood?
+    @Published var isSoundEnabled = true
+    @Published var currentIntervalName = ""
+    @Published var intervalProgress: Double = 0
+    @Published var overallProgress: Double = 0
+    @Published var wasStoppedFromLiveActivity = false
+    
+    // Store captured values when stopped from Live Activity
+    private var _lastCapturedElapsedTime: TimeInterval = 0
+    private var _lastCapturedStartTime: Date = Date()
+    
+    // Expose captured values for the view
+    var lastCapturedElapsedTime: TimeInterval {
+        return _lastCapturedElapsedTime
+    }
+    
+    var lastCapturedStartTime: Date {
+        return _lastCapturedStartTime
+    }
+    
+    // Expose timerService for direct access where needed
+    let timerService: TimerService
+    private var cancellables = Set<AnyCancellable>()
+    
+    // Use TimerState from TimerService
+    
+    init(timerService: TimerService) {
+        self.timerService = timerService
+        setupBindings()
+    }
+    
+    convenience init() {
+        self.init(timerService: TimerService.shared)
+    }
+    
+    private func setupBindings() {
+        // Bind to timer service state
+        timerService.$timerState
+            .sink { [weak self] state in
+                self?.timerState = state
+                self?.updateTimerState(isRunning: state == .running)
+            }
+            .store(in: &cancellables)
+        
+        // Listen for app becoming active to sync state
+        NotificationCenter.default
+            .publisher(for: UIApplication.didBecomeActiveNotification)
+            .sink { [weak self] _ in
+                // Check Live Activity state when app becomes active
+                self?.timerService.checkStateOnAppBecomeActive()
+            }
+            .store(in: &cancellables)
+        
+        // Listen for timer stopped from Live Activity
+        NotificationCenter.default
+            .publisher(for: Notification.Name("timerStoppedFromLiveActivity"))
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                
+                // Capture elapsed time and method before timer gets reset
+                let capturedElapsedTime = self.elapsedTime
+                let capturedMethod = self.currentMethod
+                let capturedStartTime = self.timerService.startTime ?? Date().addingTimeInterval(-capturedElapsedTime)
+                
+                // Timer is already being stopped by TimerService, just handle the completion flow
+                if capturedMethod != nil && capturedElapsedTime > 0 {
+                    // Set the flag which will be observed by the view
+                    self.wasStoppedFromLiveActivity = true
+                    // Store the captured values for the completion flow
+                    self._lastCapturedElapsedTime = capturedElapsedTime
+                    self._lastCapturedStartTime = capturedStartTime
+                }
+            }
+            .store(in: &cancellables)
+        
+        // Listen for timer completion (automatic completion, not manual stop)
+        NotificationCenter.default
+            .publisher(for: Notification.Name("timerCompletedAutomatically"))
+            .sink { [weak self] notification in
+                guard let self = self else { return }
+                
+                // Extract completion data from notification
+                if let userInfo = notification.userInfo,
+                   let elapsedTime = userInfo["elapsedTime"] as? TimeInterval,
+                   let startTime = userInfo["startTime"] as? Date,
+                   elapsedTime > 0 {
+                    
+                    Logger.info("Timer completed automatically with elapsed time: \(elapsedTime)s", logger: AppLoggers.timer)
+                    
+                    // Store the captured values for the completion flow
+                    self._lastCapturedElapsedTime = elapsedTime
+                    self._lastCapturedStartTime = startTime
+                    
+                    // Trigger completion flow similar to Live Activity stop
+                    if self.currentMethod != nil {
+                        // Set the flag which will trigger the completion sheet via onChange
+                        self.wasStoppedFromLiveActivity = true
+                    }
+                }
+            }
+            .store(in: &cancellables)
+        
+        timerService.$elapsedTime
+            .sink { [weak self] elapsed in
+                // Don't update elapsed time to 0 if we're showing completion actions
+                if !(elapsed == 0 && self?.showCompletionActions == true) {
+                    self?.elapsedTime = elapsed
+                }
+                self?.updateDisplayTime()
+                self?.checkOverexertion()
+            }
+            .store(in: &cancellables)
+        
+        timerService.$remainingTime
+            .sink { [weak self] remaining in
+                self?.remainingTime = remaining
+            }
+            .store(in: &cancellables)
+        
+        // Bind properties that exist in TimerService
+        timerService.$isOverexertionWarningActive
+            .assign(to: &$isOverexertionWarningActive)
+        
+        timerService.$overallProgress
+            .assign(to: &$overallProgress)
+        
+        // Bind interval name with nil coalescing
+        timerService.$currentIntervalName
+            .map { $0 ?? "" }
+            .assign(to: &$currentIntervalName)
+        
+        // Map interval progress
+        timerService.$currentIntervalProgress
+            .assign(to: &$intervalProgress)
+        
+        // Sound is controlled by playSoundFeedback in TimerService
+        timerService.$playSoundFeedback
+            .assign(to: &$isSoundEnabled)
+        
+        // Listen for stop requests from Live Activity
+        NotificationCenter.default
+            .publisher(for: .timerStopRequested)
+            .sink { [weak self] notification in
+                print("🔔 TimerViewModel: Received timerStopRequested notification")
+                // Check if this is for the main timer
+                if let userInfo = notification.userInfo,
+                   let timerType = userInfo[Notification.Name.TimerUserInfoKey.timerType] as? String,
+                   timerType == Notification.Name.TimerType.main.rawValue {
+                    print("✅ TimerViewModel: Calling stopTimer() from Live Activity")
+                    self?.stopTimer(fromLiveActivity: true)
+                } else {
+                    print("❌ TimerViewModel: Not for main timer")
+                }
+            }
+            .store(in: &cancellables)
+        
+        // Listen for pause requests from Live Activity
+        NotificationCenter.default
+            .publisher(for: .timerPauseRequested)
+            .sink { [weak self] notification in
+                // Check if this is for the main timer
+                if let userInfo = notification.userInfo,
+                   let timerType = userInfo[Notification.Name.TimerUserInfoKey.timerType] as? String,
+                   timerType == Notification.Name.TimerType.main.rawValue {
+                    if self?.timerState == .running {
+                        self?.pauseTimer()
+                    }
+                }
+            }
+            .store(in: &cancellables)
+        
+        // Listen for resume requests from Live Activity
+        NotificationCenter.default
+            .publisher(for: .timerResumeRequested)
+            .sink { [weak self] notification in
+                // Check if this is for the main timer
+                if let userInfo = notification.userInfo,
+                   let timerType = userInfo[Notification.Name.TimerUserInfoKey.timerType] as? String,
+                   timerType == Notification.Name.TimerType.main.rawValue {
+                    if self?.timerState == .paused {
+                        self?.resumeTimer()
+                    }
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func updateTimerState(isRunning: Bool) {
+        if !isRunning && elapsedTime > 0 && timerState == .running {
+            // Timer just completed
+            showCompletionActions = true
+            
+            // Call completion callback immediately - the receiving code will handle delays if needed
+            onTimerComplete?()
+        }
+    }
+    
+    private func updateRemainingTime() {
+        if sessionDuration > 0 {
+            remainingTime = max(0, sessionDuration - elapsedTime)
+        }
+    }
+    
+    private func checkOverexertion() {
+        // Check if user has exceeded recommended duration
+        if let method = currentMethod,
+           let maxDuration = method.timerConfig?.maxRecommendedDurationSeconds,
+           elapsedTime > TimeInterval(maxDuration) {
+            isOverexerted = true
+            if !showOverexertionWarning && timerState == .running {
+                showOverexertionWarning = true
+                // Pause the timer when showing warning
+                pauseTimer()
+            }
+        }
+    }
+    
+    // MARK: - Timer Controls
+    
+    func startTimer(method: GrowthMethod? = nil, duration: TimeInterval? = nil) {
+        currentMethod = method
+        
+        // Show pre-session mood check if we have a method
+        if method != nil && timerState == .stopped {
+            showPreSessionMoodSheet = true
+        }
+        
+        if let duration = duration {
+            let config = TimerConfiguration(
+                recommendedDurationSeconds: Int(duration),
+                isCountdown: true,
+                hasIntervals: false,
+                intervals: nil,
+                maxRecommendedDurationSeconds: nil
+            )
+            timerService.configure(with: config)
+            timerService.currentMethodId = method?.id
+            timerService.currentMethodName = method?.title ?? "Timer"
+            timerService.start()
+        } else {
+            let config = TimerConfiguration(
+                recommendedDurationSeconds: nil,
+                isCountdown: false,
+                hasIntervals: false,
+                intervals: nil,
+                maxRecommendedDurationSeconds: nil
+            )
+            timerService.configure(with: config)
+            timerService.currentMethodId = method?.id
+            timerService.currentMethodName = method?.title ?? "Timer"
+            timerService.start()
+        }
+        
+        timerState = .running
+    }
+    
+    func pauseTimer() {
+        timerService.pause()
+        timerState = .paused
+    }
+    
+    func resumeTimer() {
+        timerService.start()
+        timerState = .running
+    }
+    
+    func stopTimer(fromLiveActivity: Bool = false) {
+        // Capture elapsed time and method before stopping
+        let capturedElapsedTime = elapsedTime
+        let capturedMethod = currentMethod
+        let capturedStartTime = timerService.startTime ?? Date().addingTimeInterval(-capturedElapsedTime)
+        
+        timerService.stop()
+        timerState = .stopped
+        
+        // Only reset elapsed time if we're not showing completion actions
+        if !showCompletionActions {
+            elapsedTime = 0
+        }
+        
+        remainingTime = 0
+        isOverexerted = false
+        
+        // Show completion actions or log session view based on whether we have a method
+        if capturedMethod != nil && capturedElapsedTime > 0 {
+            // If stopped from Live Activity, trigger the completion flow immediately
+            if fromLiveActivity {
+                // Set the flag which will be observed by the view
+                wasStoppedFromLiveActivity = true
+                // Store the captured values for the completion flow
+                self._lastCapturedElapsedTime = capturedElapsedTime
+                self._lastCapturedStartTime = capturedStartTime
+            } else {
+                // Normal stop - show legacy log session view
+                showLogSessionView = true
+            }
+        }
+    }
+    
+    func toggleTimer() {
+        switch timerState {
+        case .stopped:
+            startTimer(method: currentMethod)
+        case .running:
+            pauseTimer()
+        case .paused:
+            resumeTimer()
+        case .completed:
+            stopTimer()
+        }
+    }
+    
+    // MARK: - Overexertion Handling
+    
+    func acknowledgeOverexertion() {
+        showOverexertionWarning = false
+    }
+    
+    func continueAfterWarning() {
+        showOverexertionWarning = false
+        resumeTimer()
+    }
+    
+    func stopAfterWarning() {
+        showOverexertionWarning = false
+        stopTimer()
+    }
+    
+    // MARK: - Helper Methods
+    
+    private func updateDisplayTime() {
+        let time = sessionDuration > 0 ? remainingTime : elapsedTime
+        let minutes = Int(time) / 60
+        let seconds = Int(time) % 60
+        displayTime = String(format: "%02d:%02d", minutes, seconds)
+    }
+    
+    func startPauseResumeTimer() {
+        switch timerState {
+        case .stopped:
+            startTimer(method: currentMethod, duration: sessionDuration > 0 ? sessionDuration : nil)
+        case .running:
+            pauseTimer()
+        case .paused:
+            resumeTimer()
+        case .completed:
+            // Reset and start new session
+            stopTimer()
+            startTimer(method: currentMethod, duration: sessionDuration > 0 ? sessionDuration : nil)
+        }
+    }
+    
+    // MARK: - Additional Methods for TimerView Compatibility
+    
+    func getCurrentMethod() -> GrowthMethod? {
+        return currentMethod
+    }
+    
+    func getSessionDurationInMinutes() -> Int {
+        return Int(elapsedTime / 60)
+    }
+    
+    func setPreSessionMood(_ mood: Mood?) {
+        moodBefore = mood
+        // Store mood locally - TimerService doesn't have this property
+    }
+    
+    // Computed properties to expose TimerService state
+    var timerMode: TimerMode {
+        return timerService.currentTimerMode
+    }
+    
+    var state: TimerState {
+        return timerService.timerState
+    }
+    
+    // Callbacks for multi-method sessions
+    var onTimeUpdate: ((TimeInterval) -> Void)?
+    var onTimerComplete: (() -> Void)?
+    
+    // Initialize with growth method
+    convenience init(growthMethod: GrowthMethod?) {
+        self.init()
+        if let method = growthMethod {
+            self.currentMethod = method
+            self.sessionDuration = TimeInterval(method.timerConfig?.recommendedDurationSeconds ?? 0)
+        }
+    }
+    
+    // Debug methods
+    func performLiveActivityDebugCheck() {
+        timerService.performLiveActivityDebugCheck()
+    }
+    
+    func testManualPushUpdate() {
+        // Debug method for testing push updates to Live Activity
+        timerService.testManualPushUpdate()
+    }
+    
+    func simulateCrash() {
+        // Debug method - not implemented in TimerService
+        fatalError("Simulated crash for testing")
+    }
+    
+    // MARK: - Completion Handling
+    
+    func resetAfterCompletion() {
+        // Reset timer state after completion actions have been handled
+        elapsedTime = 0
+        showCompletionActions = false
+        showLogSessionView = false
+        currentMethod = nil
+        moodBefore = nil
+    }
+}

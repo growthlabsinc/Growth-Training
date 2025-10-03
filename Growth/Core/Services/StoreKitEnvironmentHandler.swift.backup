@@ -1,0 +1,252 @@
+/**
+ * StoreKitEnvironmentHandler.swift
+ * Growth App StoreKit Environment Detection and Management
+ *
+ * Handles detection and proper routing for sandbox vs production environments,
+ * especially critical during App Review when sandbox accounts are used on production builds.
+ */
+
+import Foundation
+import StoreKit
+
+/// Service for detecting and handling StoreKit environment (sandbox vs production)
+@available(iOS 15.0, *)
+@MainActor
+public final class StoreKitEnvironmentHandler {
+    
+    // MARK: - Singleton
+    
+    public static let shared = StoreKitEnvironmentHandler()
+    
+    // MARK: - Properties
+    
+    /// Current detected environment
+    @Published public private(set) var currentEnvironment: Environment = .unknown
+    
+    /// Whether we've detected the environment
+    @Published public private(set) var isEnvironmentDetected = false
+    
+    // MARK: - Environment Types
+    
+    public enum Environment: String {
+        case production = "production"
+        case sandbox = "sandbox"
+        case xcode = "xcode" // Xcode StoreKit testing
+        case unknown = "unknown"
+        
+        var displayName: String {
+            switch self {
+            case .production: return "Production"
+            case .sandbox: return "Sandbox"
+            case .xcode: return "Xcode Testing"
+            case .unknown: return "Unknown"
+            }
+        }
+    }
+    
+    // MARK: - Initialization
+    
+    private init() {
+        Task {
+            await detectEnvironment()
+        }
+    }
+    
+    // MARK: - Public Methods
+    
+    /// Detect the current StoreKit environment
+    public func detectEnvironment() async {
+        // First check if we're in Xcode StoreKit testing
+        if isXcodeStoreKitTesting() {
+            currentEnvironment = .xcode
+            isEnvironmentDetected = true
+            Logger.info("StoreKitEnvironment: Detected Xcode StoreKit testing environment")
+            return
+        }
+        
+        // Check for sandbox receipt
+        if await isSandboxEnvironment() {
+            currentEnvironment = .sandbox
+            isEnvironmentDetected = true
+            Logger.info("StoreKitEnvironment: Detected Sandbox environment")
+        } else {
+            currentEnvironment = .production
+            isEnvironmentDetected = true
+            Logger.info("StoreKitEnvironment: Detected Production environment")
+        }
+    }
+    
+    /// Force refresh environment detection
+    public func refreshEnvironment() async {
+        isEnvironmentDetected = false
+        await detectEnvironment()
+    }
+    
+    /// Get the appropriate validation URL based on environment
+    public func getValidationURL() -> URL {
+        switch currentEnvironment {
+        case .sandbox, .xcode:
+            return URL(string: "https://sandbox.itunes.apple.com/verifyReceipt")!
+        case .production, .unknown:
+            // Always try production first, per Apple's recommendation
+            return URL(string: "https://buy.itunes.apple.com/verifyReceipt")!
+        }
+    }
+    
+    /// Check if we should use sandbox validation
+    public var shouldUseSandbox: Bool {
+        return currentEnvironment == .sandbox || currentEnvironment == .xcode
+    }
+    
+    // MARK: - Private Methods
+    
+    /// Check if running in Xcode StoreKit testing
+    private func isXcodeStoreKitTesting() -> Bool {
+        // Check for StoreKit configuration file
+        if ProcessInfo.processInfo.environment["STOREKIT_CONFIGURATION"] != nil {
+            return true
+        }
+        
+        // Check for Xcode testing environment
+        if ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil {
+            return true
+        }
+        
+        // Check if running in simulator (often indicates testing)
+        #if targetEnvironment(simulator)
+        return true
+        #endif
+        
+        return false
+    }
+    
+    /// Check if we're in sandbox environment
+    private func isSandboxEnvironment() async -> Bool {
+        // Method 1: Check receipt URL (most reliable)
+        if let receiptURL = Bundle.main.appStoreReceiptURL {
+            let receiptPath = receiptURL.path
+            // Sandbox receipts contain "sandboxReceipt"
+            if receiptPath.contains("sandboxReceipt") {
+                return true
+            }
+        }
+        
+        // Method 2: Check for sandbox user via StoreKit 2
+        // In StoreKit 2, we can check the storefront
+        if #available(iOS 15.4, *) {
+            // Get current entitlements
+            var hasAnyTransaction = false
+            for await result in Transaction.currentEntitlements {
+                hasAnyTransaction = true
+                if case .verified(let transaction) = result {
+                    // Check if transaction has sandbox identifier
+                    // Sandbox transactions have different characteristics
+                    let environment = transaction.environment
+                    if environment == .sandbox {
+                        return true
+                    }
+                }
+            }
+            
+            // If no transactions but we're in debug/testflight, likely sandbox
+            if !hasAnyTransaction {
+                return isDebugOrTestFlight()
+            }
+        }
+        
+        // Method 3: Check build configuration
+        return isDebugOrTestFlight()
+    }
+    
+    /// Check if running in debug or TestFlight build
+    private func isDebugOrTestFlight() -> Bool {
+        // Check for debug build
+        #if DEBUG
+        return true
+        #else
+        // Check for TestFlight
+        if let receiptURL = Bundle.main.appStoreReceiptURL,
+           receiptURL.lastPathComponent == "sandboxReceipt" {
+            return true
+        }
+        
+        // Check for TestFlight via receipt
+        if isTestFlight() {
+            return true
+        }
+        
+        return false
+        #endif
+    }
+    
+    /// Detect if app is running in TestFlight
+    private func isTestFlight() -> Bool {
+        guard let receiptURL = Bundle.main.appStoreReceiptURL else {
+            return false
+        }
+        
+        // TestFlight apps have sandbox receipts
+        if receiptURL.path.contains("sandboxReceipt") {
+            return true
+        }
+        
+        // Additional check: TestFlight builds have a specific receipt field
+        do {
+            let receiptData = try Data(contentsOf: receiptURL)
+            // In a real implementation, parse the receipt properly
+            // For now, check if it exists and is non-empty
+            return receiptData.count > 0 && receiptURL.lastPathComponent == "sandboxReceipt"
+        } catch {
+            return false
+        }
+    }
+}
+
+// MARK: - StoreKit 2 Environment Extension
+
+@available(iOS 15.4, *)
+extension Transaction {
+    /// Environment type for the transaction
+    var environment: StoreKitEnvironmentHandler.Environment {
+        // In StoreKit 2, we can determine environment from transaction properties
+        // This is a simplified check - in production, use proper receipt validation
+        
+        // Check if this is a sandbox transaction
+        // Sandbox transactions typically have different characteristics
+        if self.deviceVerificationNonce.uuidString.contains("sandbox") {
+            return .sandbox
+        }
+        
+        // Check product ID patterns (sandbox often has test prefixes)
+        if self.productID.contains("test") || self.productID.contains("sandbox") {
+            return .sandbox
+        }
+        
+        // Default to production
+        return .production
+    }
+}
+
+// MARK: - Logger Extension
+
+extension StoreKitEnvironmentHandler {
+    struct Logger {
+        static func info(_ message: String) {
+            #if DEBUG
+            print("[StoreKit Environment] ℹ️ \(message)")
+            #endif
+        }
+        
+        static func warning(_ message: String) {
+            #if DEBUG
+            print("[StoreKit Environment] ⚠️ \(message)")
+            #endif
+        }
+        
+        static func error(_ message: String) {
+            #if DEBUG
+            print("[StoreKit Environment] ❌ \(message)")
+            #endif
+        }
+    }
+}

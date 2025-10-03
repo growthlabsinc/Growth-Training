@@ -1,0 +1,70 @@
+//
+//  LiveActivityPushUpdate.swift
+//  Growth
+//
+//  Created by Assistant on current date.
+//
+
+import Foundation
+
+/// Model for Live Activity push notification updates
+struct LiveActivityPushUpdate: Codable {
+    let activityId: String
+    let contentState: TimerActivityContentState
+    let timestamp: Date
+    let updateType: UpdateType
+    
+    enum UpdateType: String, Codable {
+        case periodic = "periodic"          // Regular time updates
+        case stateChange = "stateChange"    // Pause/resume/stop
+        case intervalChange = "intervalChange" // Interval timer transitions
+        case completion = "completion"      // Timer completed
+    }
+    
+    /// Create update for current timer state
+    static func createUpdate(
+        activityId: String,
+        startTime: Date,
+        targetDuration: TimeInterval?,
+        methodName: String,
+        sessionType: String,
+        isPaused: Bool,
+        pausedAt: Date?,
+        updateType: UpdateType = .periodic
+    ) -> LiveActivityPushUpdate {
+        let contentState = TimerActivityContentState(
+            startedAt: startTime,
+            pausedAt: pausedAt,
+            methodName: methodName,
+            sessionType: sessionType,
+            targetDuration: targetDuration
+        )
+        
+        return LiveActivityPushUpdate(
+            activityId: activityId,
+            contentState: contentState,
+            timestamp: Date(),
+            updateType: updateType
+        )
+    }
+}
+
+/// Simple content state matching our simplified TimerActivityAttributes.ContentState
+struct TimerActivityContentState: Codable {
+    let startedAt: Date
+    let pausedAt: Date?
+    let methodName: String
+    let sessionType: String
+    let targetDuration: TimeInterval?
+    
+    /// Convert to standard ContentState for Live Activity
+    var toContentState: TimerActivityAttributes.ContentState {
+        return TimerActivityAttributes.ContentState(
+            startedAt: startedAt,
+            pausedAt: pausedAt,
+            methodName: methodName,
+            sessionType: sessionType,
+            targetDuration: targetDuration
+        )
+    }
+}
