@@ -1,0 +1,173 @@
+{
+  "appPolicies" : {
+    "eula" : "",
+    "policies" : [
+      {
+        "locale" : "en_US",
+        "policyText" : "",
+        "policyURL" : ""
+      }
+    ]
+  },
+  "identifier" : "41B48539",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+
+  ],
+  "settings" : {
+    "_applicationInternalID" : "6748406423",
+    "_developerTeamID" : "62T6J77P6R",
+    "_failTransactionsEnabled" : false,
+    "_lastSynchronizedDate" : 776310653.24239194,
+    "_locale" : "en_US",
+    "_storefront" : "USA",
+    "_storeKitErrors" : [
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Load Products"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Purchase"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Verification"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "App Store Sync"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Subscription Status"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "App Transaction"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Manage Subscriptions Sheet"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Refund Request Sheet"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Offer Code Redeem Sheet"
+      }
+    ]
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "21735365",
+      "localizations" : [
+
+      ],
+      "name" : "Growth: Method Pro",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "29.99",
+          "familyShareable" : false,
+          "groupNumber" : 2,
+          "internalID" : "6749723320",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "3 month subscription for Growth Method Pro",
+              "displayName" : "Growth: Method Pro 3 Months",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.growthlabs.growthmethod.subscription.premium.quarterly",
+          "recurringSubscriptionPeriod" : "P3M",
+          "referenceName" : "Growth Pro 3-Months",
+          "subscriptionGroupID" : "21735365",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "4.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "6749721341",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Weekly subscription for premium Growth Method",
+              "displayName" : "Growth Method Pro Weekly",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.growthlabs.growthmethod.subscription.premium.weekly",
+          "recurringSubscriptionPeriod" : "P1W",
+          "referenceName" : "Growth Pro Weekly",
+          "subscriptionGroupID" : "21735365",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "49.99",
+          "familyShareable" : false,
+          "groupNumber" : 2,
+          "internalID" : "6749723395",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Yearly subscription for premium Growth Method",
+              "displayName" : "Growth: Method Pro Yearly ",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.growthlabs.growthmethod.subscription.premium.yearly",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Growth Pro Yearly",
+          "subscriptionGroupID" : "21735365",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 4,
+    "minor" : 0
+  }
+}

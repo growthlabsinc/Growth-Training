@@ -23,9 +23,9 @@ public enum SessionType: String, Codable {
     var displayName: String {
         switch self {
         case .single:
-            return "Single Method"
+            return "Single Protocol"
         case .multiMethod:
-            return "Multi-Method Session"
+            return "Multi-Protocol Session"
         case .quickPractice:
             return "Quick Practice"
         case .freestyle:

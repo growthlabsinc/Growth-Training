@@ -23,7 +23,7 @@ struct SessionCompletionPromptView: View {
         case .single, .quickPractice, .freestyle:
             return "Log Progress"
         case .multiMethod:
-            return sessionProgress.completedMethods == sessionProgress.totalMethods ? "Log All Methods" : "Log Completed Methods"
+            return sessionProgress.completedMethods == sessionProgress.totalMethods ? "Log All Protocols" : "Log Completed Protocols"
         case .restDay:
             return "Done"
         case .countdown, .interval:
