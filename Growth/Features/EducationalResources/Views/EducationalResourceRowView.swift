@@ -91,11 +91,11 @@ struct EducationalResourceRowView_Previews: PreviewProvider {
         EducationalResourceRowView(
             resource: EducationalResource(
                 id: "1",
-                title: "Understanding Vascular Health: The Basics",
+                title: "Understanding Training Fundamentals: The Basics",
                 contentText: "This is a long text for the article...",
                 category: .basics,
                 visualPlaceholderUrl: nil,
-                localImageName: "vascular_basics"
+                localImageName: "training_basics"
             )
         )
         .padding()
