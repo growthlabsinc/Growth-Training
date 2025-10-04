@@ -8,7 +8,7 @@ struct AboutView: View {
                 AppLogo(size: 100)
                     .padding(.top, 40)
                 
-                Text("Growth: Method")
+                Text("Growth: Training")
                     .font(.system(size: 28, weight: .bold))
                 
                 Text("Version 1.0.4")
@@ -18,12 +18,12 @@ struct AboutView: View {
                 VStack(alignment: .leading, spacing: 15) {
                     aboutSection(
                         title: "About",
-                        content: "Growth: Method is a personal development app designed to help you track your progress, learn new methods, and achieve your goals through structured timer-based training."
+                        content: "Growth: Training is a comprehensive training app designed to help you achieve your personal development goals through scientifically-backed protocols and structured routines."
                     )
                     
                     aboutSection(
                         title: "Our Mission",
-                        content: "To provide a simple yet powerful tool that empowers users to grow personally and professionally through structured methods and consistent tracking."
+                        content: "To provide a simple yet powerful tool that empowers users to grow personally and professionally through structured protocols and consistent tracking."
                     )
                     
                     aboutSection(
