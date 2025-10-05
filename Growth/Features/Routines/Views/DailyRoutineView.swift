@@ -933,7 +933,7 @@ struct DailyRoutineView: View {
     }
     
     @ViewBuilder
-    private func methodCard(method: GrowthMethod, index: Int) -> some View {
+    private func methodCard(method: TrainingProtocol, index: Int) -> some View {
         let methodId = method.id ?? ""
         let isCurrentMethod = index == sessionViewModel.currentMethodIndex
         let isCompleted = sessionViewModel.methodCompletionStatus[methodId]?.completed ?? false
@@ -963,7 +963,7 @@ struct DailyRoutineView: View {
                         .font(AppTheme.Typography.gravitySemibold(15))
                         .foregroundColor(isCompleted ? Color("GrowthGreen") : (isCurrentMethod ? Color("GrowthGreen").opacity(0.8) : Color("TextColor")))
                         .strikethrough(isCompleted, color: Color("GrowthGreen").opacity(0.5))
-                    Text(method.methodDescription)
+                    Text(method.protocolDescription)
                         .font(AppTheme.Typography.gravityBook(13))
                         .foregroundColor(isCompleted ? Color("TextSecondaryColor").opacity(0.7) : .secondary)
                 }
@@ -1009,7 +1009,7 @@ struct DailyRoutineView: View {
     }
     
     @ViewBuilder
-    private func methodSteps(for method: GrowthMethod) -> some View {
+    private func methodSteps(for method: TrainingProtocol) -> some View {
         let methodId = method.id ?? ""
         let steps = method.instructionsText.components(separatedBy: "\n").filter { !$0.isEmpty }
         
@@ -1161,7 +1161,7 @@ struct DailyRoutineView: View {
     
     // MARK: - Timer Configuration
     
-    private func configureTimerForMethod(_ method: GrowthMethod) {
+    private func configureTimerForMethod(_ method: TrainingProtocol) {
         // Set method ID and name for tracking
         timerService.currentMethodId = method.id
         timerService.currentMethodName = method.title
@@ -1238,7 +1238,7 @@ struct DailyRoutineView: View {
         }
     }
     
-    private func updateSessionTracking(for method: GrowthMethod) {
+    private func updateSessionTracking(for method: TrainingProtocol) {
         // Session tracking is handled by sessionViewModel
         // completionViewModel is only for the final completion prompt
         
@@ -1493,7 +1493,7 @@ private struct CompletionSheetModifier: ViewModifier {
     @ObservedObject var sessionViewModel: MultiMethodSessionViewModel
     let timerService: TimerService
     let dismiss: DismissAction
-    let configureTimerForMethod: (GrowthMethod) -> Void
+    let configureTimerForMethod: (TrainingProtocol) -> Void
     @Binding var hasHandledTimerCompletion: Bool
     @Binding var isShowingCompletionPrompt: Bool
     
@@ -1729,7 +1729,7 @@ private struct LifecycleModifier: ViewModifier {
     @Binding var previousMethodIndex: Int
     @Binding var previousMethodId: String?
     @Binding var previousLoadingState: Bool
-    let configureTimerForMethod: (GrowthMethod) -> Void
+    let configureTimerForMethod: (TrainingProtocol) -> Void
     let handleTimerCompletion: () -> Void
     
     @EnvironmentObject var navigationContext: NavigationContext
@@ -1851,7 +1851,7 @@ private struct LifecycleModifier: ViewModifier {
         
         if timerService.timerState == TimerState.running {
             let methodName = sessionViewModel.currentMethod?.title ?? "Practice Session"
-            timerService.saveStateForBackground(methodName: methodName)
+            timerService.saveStateForBackground(protocolName: methodName)
         } else if sessionViewModel.isSessionComplete && timerService.timerState == TimerState.paused {
             // If session is complete and timer is just paused, stop it to end Live Activity
             timerService.stop()
