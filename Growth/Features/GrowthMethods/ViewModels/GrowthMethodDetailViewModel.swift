@@ -11,7 +11,7 @@ import Combine
 /// View model for Growth Method detail view
 class GrowthMethodDetailViewModel: ObservableObject {
     /// The growth method to display
-    @Published var method: GrowthMethod?
+    @Published var method: TrainingProtocol?
     
     /// Loading state
     @Published var isLoading: Bool = false
@@ -26,7 +26,7 @@ class GrowthMethodDetailViewModel: ObservableObject {
     @Published var progressionEvents: [ProgressionEvent] = []
     
     /// Reference to the Growth Method service
-    private let methodService = GrowthMethodService.shared
+    private let methodService = TrainingProtocolService.shared
     
     /// Store for cancellables
     private var cancellables = Set<AnyCancellable>()
@@ -45,7 +45,7 @@ class GrowthMethodDetailViewModel: ObservableObject {
     
     /// Initialize with a pre-loaded method
     /// - Parameter method: The method to display
-    init(method: GrowthMethod) {
+    init(method: TrainingProtocol) {
         self.method = method
         self.methodId = method.id
         self.evaluateReadiness()
@@ -61,7 +61,7 @@ class GrowthMethodDetailViewModel: ObservableObject {
         isLoading = true
         errorMessage = nil
         
-        methodService.fetchMethod(withId: id, forceRefresh: forceRefresh) { [weak self] (result: Result<GrowthMethod, Error>) in
+        methodService.fetchMethod(withId: id, forceRefresh: forceRefresh) { [weak self] (result: Result<TrainingProtocol, Error>) in
             guard let self = self else { return }
             
             DispatchQueue.main.async {
