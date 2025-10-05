@@ -3,7 +3,7 @@ import Combine
 
 class SessionDetailViewModel: ObservableObject {
     @Published var sessionLog: SessionLog
-    @Published var growthMethod: GrowthMethod?
+    @Published var growthProtocol: TrainingProtocol?
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
     @Published var showDeleteConfirmation: Bool = false
@@ -12,17 +12,17 @@ class SessionDetailViewModel: ObservableObject {
     private var firestoreService = FirestoreService.shared
     private var cancellables = Set<AnyCancellable>()
 
-    init(sessionLog: SessionLog, growthMethod: GrowthMethod?) {
+    init(sessionLog: SessionLog, growthProtocol: TrainingProtocol?) {
         self.sessionLog = sessionLog
-        self.growthMethod = growthMethod
-        
-        // If growthMethod is not provided, or to ensure it's up-to-date, fetch it.
+        self.growthProtocol = growthProtocol
+
+        // If growthProtocol is not provided, or to ensure it's up-to-date, fetch it.
         // For now, we assume it's correctly passed. If fetching is needed:
-        // self.fetchGrowthMethodDetails(methodId: sessionLog.methodId)
+        // self.fetchGrowthProtocolDetails(protocolId: sessionLog.methodId)
     }
 
-    // Placeholder for fetching method details if not passed or needs refresh
-    // func fetchGrowthMethodDetails(methodId: String) { ... }
+    // Placeholder for fetching protocol details if not passed or needs refresh
+    // func fetchGrowthProtocolDetails(protocolId: String) { ... }
 
     func deleteSession() {
         isLoading = true

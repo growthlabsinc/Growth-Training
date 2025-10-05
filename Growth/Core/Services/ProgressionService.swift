@@ -35,10 +35,10 @@ final class ProgressionService {
     // MARK: - Public API
     /// Evaluate readiness for the supplied method and user.
     /// - Parameters:
-    ///   - method: The current GrowthMethod being practised.
+    ///   - method: The current TrainingProtocol being practised.
     ///   - completion: Callback providing an optional `ProgressionSnapshot`.
     ///                 If criteria is nil for the method, the callback returns nil.
-    func evaluateReadiness(for method: GrowthMethod,
+    func evaluateReadiness(for method: TrainingProtocol,
                            completion: @escaping (ProgressionSnapshot?) -> Void) {
         guard let userId = Auth.auth().currentUser?.uid else {
             completion(nil)
@@ -134,7 +134,7 @@ final class ProgressionService {
     /// Attempt to progress the given user to the next stage for the supplied method.
     /// This will only succeed if the current readiness status is `.ready` or `.exceeded`.
     /// On success, records a ProgressionEvent and invokes completion(true).
-    func progressUser(for method: GrowthMethod, latestSnapshot: ProgressionSnapshot?, completion: @escaping (Bool, Error?) -> Void) {
+    func progressUser(for method: TrainingProtocol, latestSnapshot: ProgressionSnapshot?, completion: @escaping (Bool, Error?) -> Void) {
         guard let userId = Auth.auth().currentUser?.uid else {
             completion(false, NSError(domain: "ProgressionService", code: 401, userInfo: [NSLocalizedDescriptionKey: "User not logged in"]))
             return
@@ -163,7 +163,7 @@ final class ProgressionService {
 
     // MARK: - History Retrieval
     /// Retrieve progression history events for the specified method for the current user.
-    func fetchHistory(for method: GrowthMethod, completion: @escaping ([ProgressionEvent]) -> Void) {
+    func fetchHistory(for method: TrainingProtocol, completion: @escaping ([ProgressionEvent]) -> Void) {
         guard let userId = Auth.auth().currentUser?.uid else {
             completion([])
             return

@@ -25,7 +25,7 @@ class SessionCompletionService: ObservableObject {
         let completionViewModel: SessionCompletionViewModel
         let sessionViewModel: MultiMethodSessionViewModel?
         let timerService: TimerService
-        let configureTimerForMethod: ((GrowthMethod) -> Void)?
+        let configureTimerForMethod: ((TrainingProtocol) -> Void)?
         let hasHandledTimerCompletion: Binding<Bool>?
         let isShowingCompletionPrompt: Binding<Bool>?
     }
@@ -36,7 +36,7 @@ class SessionCompletionService: ObservableObject {
         completionViewModel: SessionCompletionViewModel,
         sessionViewModel: MultiMethodSessionViewModel? = nil,
         timerService: TimerService,
-        configureTimerForMethod: ((GrowthMethod) -> Void)? = nil,
+        configureTimerForMethod: ((TrainingProtocol) -> Void)? = nil,
         hasHandledTimerCompletion: Binding<Bool>? = nil,
         isShowingCompletionPrompt: Binding<Bool>? = nil
     ) {

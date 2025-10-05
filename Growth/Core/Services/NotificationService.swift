@@ -207,9 +207,9 @@ class NotificationService: NSObject, ObservableObject {
     
     /// Show a session completion notification immediately
     /// - Parameters:
-    ///   - methodName: Name of the method/session completed
+    ///   - protocolName: Name of the protocol/session completed
     ///   - duration: Duration of the session in seconds
-    func showSessionCompletionNotification(methodName: String, duration: TimeInterval) {
+    func showSessionCompletionNotification(protocolName: String, duration: TimeInterval) {
         let content = UNMutableNotificationContent()
         content.title = "Session Completed! 🎉"
         
@@ -218,7 +218,7 @@ class NotificationService: NSObject, ObservableObject {
         let seconds = Int(duration) % 60
         let durationText = minutes > 0 ? "\(minutes) min \(seconds) sec" : "\(seconds) seconds"
         
-        content.body = "Great job completing your \(methodName) session! Duration: \(durationText)"
+        content.body = "Great job completing your \(protocolName) session! Duration: \(durationText)"
         content.sound = .default
         content.categoryIdentifier = "SESSION_COMPLETION"
         

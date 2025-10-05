@@ -658,7 +658,7 @@ class TimerService: ObservableObject {
                 let methodName = currentMethodName ?? "Training"
                 let duration = elapsedTime
                 NotificationService.shared.showSessionCompletionNotification(
-                    methodName: methodName,
+                    protocolName: methodName,
                     duration: duration
                 )
                 
@@ -686,7 +686,7 @@ class TimerService: ObservableObject {
             let methodName = currentMethodName ?? "Training"
             let duration = elapsedTime
             NotificationService.shared.showSessionCompletionNotification(
-                methodName: methodName,
+                protocolName: methodName,
                 duration: duration
             )
             
@@ -763,9 +763,9 @@ class TimerService: ObservableObject {
     // MARK: - Background Timer Tracking
     
     /// Save state when view disappears with active timer
-    func saveStateForBackground(methodName: String? = nil, isQuickPractice: Bool = false) {
+    func saveStateForBackground(protocolName: String? = nil, isQuickPractice: Bool = false) {
         if #available(iOS 16.1, *) {
-            BackgroundTimerTracker.shared.saveTimerState(from: self, methodName: methodName ?? currentMethodName ?? "Practice Session", isQuickPractice: isQuickPractice)
+            BackgroundTimerTracker.shared.saveTimerState(from: self, protocolName: methodName ?? currentMethodName ?? "Practice Session", isQuickPractice: isQuickPractice)
         }
     }
     
@@ -1173,7 +1173,7 @@ class TimerService: ObservableObject {
         // This should be done BEFORE the regular state save to capture the running state
         if timerState == .running {
             let methodName = currentMethodName ?? "Practice Session"
-            BackgroundTimerTracker.shared.saveTimerState(from: self, methodName: methodName, isQuickPractice: isQuickPracticeTimer)
+            BackgroundTimerTracker.shared.saveTimerState(from: self, protocolName: methodName, isQuickPractice: isQuickPracticeTimer)
         }
         
         // Then save the regular state (which may pause the timer)
@@ -1324,7 +1324,7 @@ class TimerService: ObservableObject {
                         endTime: Date().addingTimeInterval(self.remainingTime),
                         elapsedTime: self.elapsedTime,
                         isPaused: true,
-                        methodName: self.currentMethodName ?? "Timer",
+                        protocolName: self.currentMethodName ?? "Timer",
                         sessionType: self.currentTimerMode.rawValue,
                         activityId: activityId
                     )
@@ -1353,7 +1353,7 @@ class TimerService: ObservableObject {
                         endTime: Date().addingTimeInterval(self.remainingTime),
                         elapsedTime: self.elapsedTime,
                         isPaused: false,
-                        methodName: self.currentMethodName ?? "Timer",
+                        protocolName: self.currentMethodName ?? "Timer",
                         sessionType: self.currentTimerMode.rawValue,
                         activityId: activityId
                     )
@@ -1893,7 +1893,7 @@ class TimerService: ObservableObject {
     // MARK: - Live Activity Support
     
     /// Start a timer remotely via push notification
-    func startRemoteTimer(methodId: String, methodName: String, duration: TimeInterval, sessionType: TimerMode) {
+    func startRemoteTimer(methodId: String, protocolName: String, duration: TimeInterval, sessionType: TimerMode) {
         guard timerState == .stopped else {
             return
         }
@@ -1950,7 +1950,7 @@ class TimerService: ObservableObject {
         // Use simplified Live Activity manager
         LiveActivityManager.shared.startTimerActivity(
             methodId: currentMethodId ?? "",
-            methodName: methodName,
+            protocolName: methodName,
             startTime: startTime,
             endTime: endTime,
             duration: targetDuration,

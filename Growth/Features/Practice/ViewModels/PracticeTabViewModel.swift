@@ -33,7 +33,7 @@ class PracticeTabViewModel: ObservableObject {
     // Track methods completed in current session (persists until routine changes)
     private var currentSessionCompletedMethods: Int = 0
     
-    // Track method completion status for current session
+    // Track protocol completion status for current session
     private var completedMethodIds: Set<String> = []
     
     // Cache today's session logs to avoid multiple fetches
@@ -71,7 +71,7 @@ class PracticeTabViewModel: ObservableObject {
         }
     }
     
-    func selectMethod(_ method: TrainingProtocol) {
+    func selectProtocol(_ method: TrainingProtocol) {
         selectedMethod = method
         showMethodSelection = false
         
@@ -153,7 +153,7 @@ class PracticeTabViewModel: ObservableObject {
     }
     
     private func setupNotificationObservers() {
-        // Listen for method completion notifications
+        // Listen for protocol completion notifications
         NotificationCenter.default.publisher(for: .methodCompleted)
             .sink { [weak self] notification in
                 if let methodId = notification.userInfo?["methodId"] as? String {
@@ -231,12 +231,12 @@ class PracticeTabViewModel: ObservableObject {
     }
     
     private func startQuickSession() {
-        // Show method selection for quick practice
+        // Show protocol selection for quick practice
         showMethodSelection = true
     }
     
     private func startFreestyleSession() {
-        // Show method selection for freestyle practice
+        // Show protocol selection for freestyle practice
         showMethodSelection = true
     }
     
@@ -253,7 +253,7 @@ class PracticeTabViewModel: ObservableObject {
             if todaySchedule.isRestDay {
                 return "Rest day - take time to recover"
             } else if let methodCount = todaySchedule.methodIds?.count {
-                return "\(methodCount) method\(methodCount == 1 ? "" : "s") planned"
+                return "\(methodCount) protocol\(methodCount == 1 ? "" : "s") planned"
             }
         }
         return "Follow your structured routine"
@@ -329,14 +329,14 @@ class PracticeTabViewModel: ObservableObject {
             return completedMethodIds.count 
         }
         
-        // If the current day is completed, return the total method count for today
+        // If the current day is completed, return the total protocol count for today
         if progress.completedDays.contains(progress.currentDayNumber),
            let daySchedule = currentDaySchedule,
            let methodIds = daySchedule.methodIds {
             return methodIds.count
         }
         
-        // If the routine is fully completed, return the total method count
+        // If the routine is fully completed, return the total protocol count
         if progress.isCompleted, let daySchedule = currentDaySchedule,
            let methodIds = daySchedule.methodIds {
             return methodIds.count
@@ -346,7 +346,7 @@ class PracticeTabViewModel: ObservableObject {
         return completedMethodIds.count
     }
     
-    /// Called when a method is completed (from notification)
+    /// Called when a protocol is completed (from notification)
     func onMethodCompleted() {
         currentSessionCompletedMethods += 1
         // Update the stored count
@@ -355,7 +355,7 @@ class PracticeTabViewModel: ObservableObject {
         objectWillChange.send()
     }
     
-    /// Handle method completion with method ID
+    /// Handle protocol completion with protocol ID
     private func handleMethodCompleted(methodId: String) {
         // Add to completed set to prevent duplicates
         completedMethodIds.insert(methodId)
@@ -425,13 +425,13 @@ class PracticeTabViewModel: ObservableObject {
     
     /// Update completed sessions count from fetched logs
     private func updateCompletedSessionsFromLogs() {
-        // Count unique method IDs from today's session logs
+        // Count unique protocol IDs from today's session logs
         let uniqueMethodIds = Set(todaySessionLogs.compactMap { $0.methodId })
         
         Logger.debug("PracticeTabViewModel: Today's session logs count: \(todaySessionLogs.count)")
-        Logger.debug("PracticeTabViewModel: Unique method IDs from logs: \(uniqueMethodIds)")
+        Logger.debug("PracticeTabViewModel: Unique protocol IDs from logs: \(uniqueMethodIds)")
         
-        // Update completed method IDs
+        // Update completed protocol IDs
         completedMethodIds = uniqueMethodIds
         
         // Update the count

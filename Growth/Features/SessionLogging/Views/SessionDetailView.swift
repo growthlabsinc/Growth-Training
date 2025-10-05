@@ -6,8 +6,8 @@ struct SessionDetailView: View {
     @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject var authViewModel: AuthViewModel
 
-    init(sessionLog: SessionLog, growthMethod: TrainingProtocol?) {
-        _viewModel = StateObject(wrappedValue: SessionDetailViewModel(sessionLog: sessionLog, growthMethod: growthMethod))
+    init(sessionLog: SessionLog, growthProtocol: TrainingProtocol?) {
+        _viewModel = StateObject(wrappedValue: SessionDetailViewModel(sessionLog: sessionLog, growthProtocol: growthProtocol))
     }
 
     var body: some View {
@@ -17,7 +17,7 @@ struct SessionDetailView: View {
                     Text("Protocol:")
                         .font(AppTheme.Typography.bodyFont())
                     Spacer()
-                    Text(viewModel.growthMethod?.title ?? "Unknown Protocol")
+                    Text(viewModel.growthProtocol?.title ?? "Unknown Protocol")
                         .font(AppTheme.Typography.bodyFont())
                         .foregroundColor(AppTheme.Colors.textSecondary)
                 }
@@ -44,7 +44,7 @@ struct SessionDetailView: View {
             }
         }
         .listStyle(InsetGroupedListStyle())
-        .navigationTitle(viewModel.growthMethod?.title ?? "Session Details")
+        .navigationTitle(viewModel.growthProtocol?.title ?? "Session Details")
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 HStack {
@@ -72,7 +72,7 @@ struct SessionDetailView: View {
         .sheet(isPresented: $viewModel.showEditSheet) {
             LogSessionView(
                 sessionLogToEdit: viewModel.sessionLog,
-                method: viewModel.growthMethod ?? TrainingProtocol(id: "unknown", stage: 0, title: "Unknown Protocol", protocolDescription: "", instructionsText: "")
+                method: viewModel.growthProtocol ?? TrainingProtocol(id: "unknown", stage: 0, title: "Unknown Protocol", protocolDescription: "", instructionsText: "")
             )
             .environmentObject(authViewModel)
         }
@@ -177,7 +177,7 @@ struct SessionDetailView_Previews: PreviewProvider {
         )
 
         NavigationView {
-            SessionDetailView(sessionLog: mockLog, growthMethod: mockMethod)
+            SessionDetailView(sessionLog: mockLog, growthProtocol: mockMethod)
         }
         .environmentObject(AuthViewModel()) // If your SessionDetailViewModel or subviews need it
     }

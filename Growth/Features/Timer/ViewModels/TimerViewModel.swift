@@ -16,7 +16,7 @@ class TimerViewModel: ObservableObject {
     @Published var remainingTime: TimeInterval = 0
     @Published var isOverexerted = false
     @Published var showOverexertionWarning = false
-    @Published var currentMethod: GrowthMethod?
+    @Published var currentMethod: TrainingProtocol?
     @Published var sessionDuration: TimeInterval = 0
     @Published var displayTime: String = "00:00"
     @Published var showLogSessionView = false
@@ -96,7 +96,7 @@ class TimerViewModel: ObservableObject {
                     
                     Logger.info("TimerViewModel: Processing stop from Live Activity - elapsed: \(elapsedTime)s", logger: AppLoggers.timer)
                     
-                    // Only process if we have a current method and valid elapsed time
+                    // Only process if we have a current protocol and valid elapsed time
                     if self.currentMethod != nil && elapsedTime > 0 {
                         // Store the captured values for the completion flow
                         self._lastCapturedElapsedTime = elapsedTime
@@ -106,7 +106,7 @@ class TimerViewModel: ObservableObject {
                         self.wasStoppedFromLiveActivity = true
                         Logger.info("TimerViewModel: Set wasStoppedFromLiveActivity = true", logger: AppLoggers.timer)
                     } else {
-                        Logger.warning("TimerViewModel: No current method or invalid elapsed time, not triggering completion", logger: AppLoggers.timer)
+                        Logger.warning("TimerViewModel: No current protocol or invalid elapsed time, not triggering completion", logger: AppLoggers.timer)
                     }
                 } else {
                     Logger.warning("TimerViewModel: Missing userInfo in timerStoppedFromLiveActivity notification", logger: AppLoggers.timer)
@@ -258,19 +258,19 @@ class TimerViewModel: ObservableObject {
     
     // MARK: - Timer Controls
     
-    func startTimer(method: GrowthMethod? = nil, duration: TimeInterval? = nil) {
-        currentMethod = method
-        
-        // Check if we have pending completion data now that we have a method
-        if method != nil {
+    func startTimer(trainingProtocol: TrainingProtocol? = nil, duration: TimeInterval? = nil) {
+        currentMethod = trainingProtocol
+
+        // Check if we have pending completion data now that we have a protocol
+        if trainingProtocol != nil {
             checkForPendingTimerCompletion()
         }
-        
-        // Show pre-session mood check if we have a method
-        if method != nil && timerState == .stopped {
+
+        // Show pre-session mood check if we have a protocol
+        if trainingProtocol != nil && timerState == .stopped {
             showPreSessionMoodSheet = true
         }
-        
+
         if let duration = duration {
             let config = TimerConfiguration(
                 recommendedDurationSeconds: Int(duration),
@@ -280,8 +280,8 @@ class TimerViewModel: ObservableObject {
                 maxRecommendedDurationSeconds: nil
             )
             timerService.configure(with: config)
-            timerService.currentMethodId = method?.id
-            timerService.currentMethodName = method?.title ?? "Timer"
+            timerService.currentMethodId = trainingProtocol?.id
+            timerService.currentMethodName = trainingProtocol?.title ?? "Timer"
             timerService.start()
         } else {
             let config = TimerConfiguration(
@@ -292,8 +292,8 @@ class TimerViewModel: ObservableObject {
                 maxRecommendedDurationSeconds: nil
             )
             timerService.configure(with: config)
-            timerService.currentMethodId = method?.id
-            timerService.currentMethodName = method?.title ?? "Timer"
+            timerService.currentMethodId = trainingProtocol?.id
+            timerService.currentMethodName = trainingProtocol?.title ?? "Timer"
             timerService.start()
         }
         
@@ -346,7 +346,7 @@ class TimerViewModel: ObservableObject {
     func toggleTimer() {
         switch timerState {
         case .stopped:
-            startTimer(method: currentMethod)
+            startTimer(trainingProtocol: currentMethod)
         case .running:
             pauseTimer()
         case .paused:
@@ -384,7 +384,7 @@ class TimerViewModel: ObservableObject {
     func startPauseResumeTimer() {
         switch timerState {
         case .stopped:
-            startTimer(method: currentMethod, duration: sessionDuration > 0 ? sessionDuration : nil)
+            startTimer(trainingProtocol: currentMethod, duration: sessionDuration > 0 ? sessionDuration : nil)
         case .running:
             pauseTimer()
         case .paused:
@@ -392,13 +392,13 @@ class TimerViewModel: ObservableObject {
         case .completed:
             // Reset and start new session
             stopTimer()
-            startTimer(method: currentMethod, duration: sessionDuration > 0 ? sessionDuration : nil)
+            startTimer(trainingProtocol: currentMethod, duration: sessionDuration > 0 ? sessionDuration : nil)
         }
     }
     
     // MARK: - Additional Methods for TimerView Compatibility
     
-    func getCurrentMethod() -> GrowthMethod? {
+    func getCurrentMethod() -> TrainingProtocol? {
         return currentMethod
     }
     
@@ -420,16 +420,16 @@ class TimerViewModel: ObservableObject {
         return timerService.timerState
     }
     
-    // Callbacks for multi-method sessions
+    // Callbacks for multi-protocol sessions
     var onTimeUpdate: ((TimeInterval) -> Void)?
     var onTimerComplete: (() -> Void)?
     
-    // Initialize with growth method
-    convenience init(growthMethod: GrowthMethod?) {
+    // Initialize with growth protocol
+    convenience init(growthProtocol: TrainingProtocol?) {
         self.init()
-        if let method = growthMethod {
-            self.currentMethod = method
-            self.sessionDuration = TimeInterval(method.timerConfig?.recommendedDurationSeconds ?? 0)
+        if let trainingProtocol = growthProtocol {
+            self.currentMethod = trainingProtocol
+            self.sessionDuration = TimeInterval(trainingProtocol.timerConfig?.recommendedDurationSeconds ?? 0)
         }
     }
     

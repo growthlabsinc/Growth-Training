@@ -75,8 +75,8 @@ struct SessionHistoryView: View {
                 } else {
                     List {
                         ForEach(viewModel.sessionLogs) { log in
-                            NavigationLink(destination: SessionDetailView(sessionLog: log, growthMethod: log.methodId.flatMap { viewModel.growthMethods[$0] })) { 
-                                SessionLogRow(log: log, methodName: viewModel.getMethodName(methodId: log.methodId))
+                            NavigationLink(destination: SessionDetailView(sessionLog: log, growthProtocol: log.methodId.flatMap { viewModel.growthProtocols[$0] })) { 
+                                SessionLogRow(log: log, methodName: viewModel.getProtocolName(methodId: log.methodId))
                             }
                         }
                     }

@@ -59,7 +59,7 @@ class NextSessionViewModel: ObservableObject {
                 return
             }
 
-            // Fetch the GrowthMethod details to populate suggestion.
+            // Fetch the TrainingProtocol details to populate suggestion.
             self.firestoreService.getGrowthMethod(methodId: methodId) { method, error in
                 Task { @MainActor in
                     self.isLoading = false

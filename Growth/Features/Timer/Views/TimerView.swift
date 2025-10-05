@@ -25,13 +25,13 @@ struct TimerView: View {
     let sessionViewModel: MultiMethodSessionViewModel?
     let onMethodComplete: (() -> Void)?
 
-    // Initialize with an optional GrowthMethod
+    // Initialize with an optional TrainingProtocol
     // If method is nil, viewModel initializes with default (stopwatch)
-    init(growthMethod: GrowthMethod? = nil, 
+    init(growthMethod: TrainingProtocol? = nil, 
          isMultiMethod: Bool = false,
          sessionViewModel: MultiMethodSessionViewModel? = nil,
          onMethodComplete: (() -> Void)? = nil) {
-        let vm = TimerViewModel(growthMethod: growthMethod)
+        let vm = TimerViewModel(growthProtocol: growthMethod)
         
         // Configure callbacks for multi-method sessions
         if isMultiMethod, let sessionVM = sessionViewModel {
@@ -404,7 +404,7 @@ struct TimerViewContent: View {
         // If timer is running and view disappears (not due to completion), save state for background tracking
         if viewModel.timerState == .running && !viewModel.showCompletionActions {
             let methodName = viewModel.getCurrentMethod()?.title ?? "Practice Session"
-            viewModel.timerService.saveStateForBackground(methodName: methodName)
+            viewModel.timerService.saveStateForBackground(protocolName: methodName)
         }
     }
     
@@ -597,7 +597,7 @@ struct TimerViewContent: View {
 
 #if DEBUG
 struct TimerView_Previews: PreviewProvider {
-    static let sampleMethodWithIntervals: GrowthMethod = {
+    static let sampleMethodWithIntervals: TrainingProtocol = {
         let interval1 = MethodInterval(name: "Warm-up", durationSeconds: 60)
         let interval2 = MethodInterval(name: "Work Phase 1", durationSeconds: 120)
         let interval3 = MethodInterval(name: "Rest", durationSeconds: 30)
@@ -610,25 +610,25 @@ struct TimerView_Previews: PreviewProvider {
             intervals: [interval1, interval2, interval3, interval4, interval5],
             maxRecommendedDurationSeconds: 600
         )
-        return GrowthMethod(
+        return TrainingProtocol(
             id: "previewMethod1",
             stage: 1, title: "Interval Training Preview",
-            methodDescription: "A sample method with intervals.",
+            protocolDescription: "A sample method with intervals.",
             instructionsText: "Follow the on-screen prompts for each interval.",
             timerConfig: timerConfig
         )
     }()
     
-    static let sampleMethodCountdown: GrowthMethod = {
+    static let sampleMethodCountdown: TrainingProtocol = {
         let timerConfig = TimerConfiguration(
             recommendedDurationSeconds: 180, // 3 minutes
             isCountdown: true,
             hasIntervals: false
         )
-        return GrowthMethod(
+        return TrainingProtocol(
             id: "previewMethod2",
             stage: 1, title: "Countdown Preview",
-            methodDescription: "A sample method for countdown.",
+            protocolDescription: "A sample method for countdown.",
             instructionsText: "Complete the exercise for 3 minutes.",
             timerConfig: timerConfig
         )

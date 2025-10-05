@@ -6,7 +6,7 @@ class SessionHistoryViewModel: ObservableObject {
     @Published var sessionLogs: [SessionLog] = []
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
-    @Published var growthMethods: [String: Growth.GrowthMethod] = [:] // To store fetched method details
+    @Published var growthProtocols: [String: Growth.TrainingProtocol] = [:] // To store fetched protocol details
 
     private var firestoreService = FirestoreService.shared
     private var cancellables = Set<AnyCancellable>()
@@ -31,22 +31,22 @@ class SessionHistoryViewModel: ObservableObject {
             .store(in: &cancellables)
     }
 
-    // Fetches all growth methods and stores them for quick lookup
-    func fetchAllGrowthMethods() {
-        firestoreService.getAllGrowthMethods { [weak self] (methods, error) in
+    // Fetches all growth protocols and stores them for quick lookup
+    func fetchAllGrowthProtocols() {
+        firestoreService.getAllGrowthMethods { [weak self] (protocols, error) in
             if let error = error {
-                self?.errorMessage = "Error fetching growth methods: \(error.localizedDescription)"
+                self?.errorMessage = "Error fetching growth protocols: \(error.localizedDescription)"
                 // Potentially handle this error more gracefully, maybe retry or use cached data
                 return
             }
-            var methodsDict: [String: Growth.GrowthMethod] = [:]
-            for method in methods {
-                if let id = method.id {
-                    methodsDict[id] = method
+            var protocolsDict: [String: Growth.TrainingProtocol] = [:]
+            for trainingProtocol in protocols {
+                if let id = trainingProtocol.id {
+                    protocolsDict[id] = trainingProtocol
                 }
             }
-            self?.growthMethods = methodsDict
-            // After fetching methods, fetch session logs as they might depend on method names
+            self?.growthProtocols = protocolsDict
+            // After fetching protocols, fetch session logs as they might depend on protocol names
             self?.fetchSessionLogs()
         }
     }
@@ -78,30 +78,30 @@ class SessionHistoryViewModel: ObservableObject {
 
     // Call this method when the view appears or needs to refresh data
     func loadData() {
-        // Ensure growth methods are loaded first, then session logs
-        if growthMethods.isEmpty {
-            fetchAllGrowthMethods()
+        // Ensure growth protocols are loaded first, then session logs
+        if growthProtocols.isEmpty {
+            fetchAllGrowthProtocols()
         } else {
-            fetchSessionLogs() // If methods are already loaded, just fetch logs
+            fetchSessionLogs() // If protocols are already loaded, just fetch logs
         }
     }
     
-    func getMethodName(methodId: String?) -> String {
-        guard let id = methodId else { return "Unknown Method" }
-        
-        // First check if we have it in our fetched methods
-        if let methodTitle = growthMethods[id]?.title {
-            return methodTitle
+    func getProtocolName(protocolId: String?) -> String {
+        guard let id = protocolId else { return "Unknown Protocol" }
+
+        // First check if we have it in our fetched protocols
+        if let protocolTitle = growthProtocols[id]?.title {
+            return protocolTitle
         }
-        
-        // Fallback to common method ID mappings
+
+        // Fallback to common protocol ID mappings
         switch id {
         case "angio_pumping": return "Angio Pumping"
         case "s2s_stretch": return "S2S Stretch"
         case "s2s_advanced": return "S2S Advanced"
         case "bfr_cyclic_bending": return "BFR Cyclic Bending"
         case "bfr_glans_pulsing": return "BFR Glans Pulsing"
-        default: return "Method"
+        default: return "Protocol"
         }
     }
     

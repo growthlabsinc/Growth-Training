@@ -79,7 +79,7 @@ class SessionCompletionViewModel: ObservableObject {
         methodId: String? = nil,
         methodName: String? = nil,
         totalMethods: Int? = nil,
-        methods: [GrowthMethod]? = nil
+        methods: [TrainingProtocol]? = nil
     ) {
         // Store session metadata for later use
         // This method is called when a session starts to prepare for completion
@@ -171,7 +171,7 @@ class SessionCompletionViewModel: ObservableObject {
         guard Auth.auth().currentUser?.uid != nil else { return }
         
         // First fetch the growth method
-        GrowthMethodService.shared.fetchMethod(withId: methodId) { [weak self] result in
+        TrainingProtocolService.shared.fetchMethod(withId: methodId) { [weak self] result in
             switch result {
             case .success(let method):
                 // Get current progression snapshot

@@ -10,17 +10,17 @@ struct LogSessionView: View {
     
     // Initializer for logging a new session for a specific method
     init(method: TrainingProtocol) {
-        _viewModel = StateObject(wrappedValue: LogSessionViewModel(methodToLog: method))
+        _viewModel = StateObject(wrappedValue: LogSessionViewModel(protocolToLog: method))
     }
     
     // Initializer for logging from timer with duration and optional pre-session mood
     init(method: TrainingProtocol, duration: Int, preMoodBefore: Mood? = nil) {
-        _viewModel = StateObject(wrappedValue: LogSessionViewModel(methodToLog: method, durationMinutes: duration, preMoodBefore: preMoodBefore))
+        _viewModel = StateObject(wrappedValue: LogSessionViewModel(protocolToLog: method, durationMinutes: duration, preMoodBefore: preMoodBefore))
     }
 
     // Initializer for editing an existing session log
     init(sessionLogToEdit: SessionLog, method: TrainingProtocol) {
-        _viewModel = StateObject(wrappedValue: LogSessionViewModel(sessionLogToEdit: sessionLogToEdit, growthMethod: method))
+        _viewModel = StateObject(wrappedValue: LogSessionViewModel(sessionLogToEdit: sessionLogToEdit, growthProtocol: method))
     }
     
     // Initializer for logging a new session from scratch
@@ -166,7 +166,7 @@ struct LogSessionView: View {
                 Divider()
                 
                 // Method Selection
-                if viewModel.isLoadingMethods {
+                if viewModel.isLoadingProtocols {
                     HStack {
                         Label("Protocol", systemImage: "figure.mind.and.body")
                             .font(AppTheme.Typography.bodyFont())
@@ -180,7 +180,7 @@ struct LogSessionView: View {
                             .font(AppTheme.Typography.bodyFont())
                             .foregroundColor(.secondary)
                         Spacer()
-                        Text(viewModel.getMethodTitle(methodId: viewModel.selectedMethodId))
+                        Text(viewModel.getProtocolTitle(protocolId: viewModel.selectedProtocolId))
                             .font(AppTheme.Typography.bodyFont())
                             .foregroundColor(.primary)
                     }
@@ -191,18 +191,18 @@ struct LogSessionView: View {
                             .foregroundColor(.secondary)
                         
                         Menu {
-                            ForEach(viewModel.methods) { method in
+                            ForEach(viewModel.protocols) { method in
                                 Button {
-                                    viewModel.selectedMethodId = method.id
+                                    viewModel.selectedProtocolId = method.id
                                 } label: {
                                     Text(method.title)
                                 }
                             }
                         } label: {
                             HStack {
-                                Text(viewModel.selectedMethodId != nil ? viewModel.getMethodTitle(methodId: viewModel.selectedMethodId) : "Select a protocol")
+                                Text(viewModel.selectedProtocolId != nil ? viewModel.getProtocolTitle(protocolId: viewModel.selectedProtocolId) : "Select a protocol")
                                     .font(AppTheme.Typography.bodyFont())
-                                    .foregroundColor(viewModel.selectedMethodId != nil ? .primary : .secondary)
+                                    .foregroundColor(viewModel.selectedProtocolId != nil ? .primary : .secondary)
                                 Spacer()
                                 Image(systemName: "chevron.down")
                                     .font(AppTheme.Typography.captionFont())
@@ -498,39 +498,31 @@ struct LogSessionView: View {
 
 #if DEBUG
 struct LogSessionView_Previews: PreviewProvider {
-    static var previews: some View {
-        Group {
-            // Preview for logging a new session from scratch
-            LogSessionView()
-                .previewDisplayName("New Log - Scratch")
+    static let mockProtocol = TrainingProtocol(
+        id: "gm1",
+        stage: 1,
+        title: "Breathing Exercise",
+        protocolDescription: "Desc",
+        instructionsText: "Instr"
+    )
 
-            // Preview for editing an existing session
-            let mockMethod = TrainingProtocol(
-                id: "gm1",
-                stage: 1,
-                title: "Breathing Exercise",
-                protocolDescription: "Desc",
-                instructionsText: "Instr"
-            )
-            let mockLog = SessionLog(
-                id: "sl1",
-                userId: "user123",
-                duration: 20,
-                startTime: Date().addingTimeInterval(-1200),
-                endTime: Date(),
-                userNotes: "Felt quite good after this session.",
-                methodId: mockMethod.id ?? "gm1_fallback",
-                sessionIndex: nil,
-                moodBefore: .neutral,
-                moodAfter: .positive
-            )
-            LogSessionView(sessionLogToEdit: mockLog, method: mockMethod)
-                .previewDisplayName("Edit Log")
-                
-            // Preview for logging from timer with duration
-            LogSessionView(method: mockMethod, duration: 15)
-                .previewDisplayName("Timer Log - Pre-filled Duration")
-        }
+    static let mockLog = SessionLog(
+        id: "sl1",
+        userId: "user123",
+        duration: 20,
+        startTime: Date().addingTimeInterval(-1200),
+        endTime: Date(),
+        userNotes: "Felt quite good after this session.",
+        methodId: mockProtocol.id ?? "gm1_fallback",
+        sessionIndex: nil,
+        moodBefore: .neutral,
+        moodAfter: .positive
+    )
+
+    static var previews: some View {
+        // Preview for logging a new session from scratch
+        LogSessionView()
+            .previewDisplayName("New Log - Scratch")
     }
 }
 #endif 
