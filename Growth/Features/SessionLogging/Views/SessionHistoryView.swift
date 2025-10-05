@@ -10,106 +10,145 @@ struct SessionHistoryView: View {
 
     var body: some View {
         NavigationView {
-            VStack(spacing: 0) {
-                #if DEBUG
-                // Show banner when mock data is active
-                if hasMockData {
-                    HStack {
-                        Image(systemName: "exclamationmark.triangle.fill")
-                            .foregroundColor(.orange)
-                        Text("Mock data is active")
-                            .font(.caption)
-                            .fontWeight(.medium)
-                        Spacer()
-                        NavigationLink("Manage", destination: DebugMockDataView())
-                            .font(.caption)
-                            .foregroundColor(.blue)
-                    }
-                    .padding(.horizontal)
-                    .padding(.vertical, 8)
-                    .background(Color.orange.opacity(0.1))
-                }
-                #endif
-                
-                if viewModel.isLoading {
-                    SwiftUI.ProgressView("Loading History...")
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else if let errorMessage = viewModel.errorMessage {
-                    VStack {
-                        Text("Error")
-                            .font(AppTheme.Typography.title3Font())
-                            .foregroundColor(AppTheme.Colors.errorColor)
-                        Text(errorMessage)
-                            .font(AppTheme.Typography.bodyFont())
-                            .foregroundColor(AppTheme.Colors.errorColor)
-                            .multilineTextAlignment(.center)
-                            .padding()
-                        Button("Retry") {
+            mainContent
+                .navigationTitle("Session History")
+                .toolbar {
+                     ToolbarItem(placement: .navigationBarTrailing) {
+                        Button {
                             viewModel.loadData()
-                        }
-                        .padding()
-                        .background(AppTheme.Colors.primary)
-                        .foregroundColor(AppTheme.Colors.textOnPrimary)
-                        .cornerRadius(8)
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else if viewModel.sessionLogs.isEmpty {
-                    VStack {
-                        Image(systemName: "list.bullet.clipboard")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 80, height: 80)
-                            .foregroundColor(AppTheme.Colors.textSecondary)
-                            .padding(.bottom)
-                        Text("No Sessions Logged Yet")
-                            .font(AppTheme.Typography.title2Font())
-                            .foregroundColor(AppTheme.Colors.text)
-                        Text("Start a new session from the Methods tab to see your progress here.")
-                            .font(AppTheme.Typography.bodyFont())
-                            .foregroundColor(AppTheme.Colors.textSecondary)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal)
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-
-                } else {
-                    List {
-                        ForEach(viewModel.sessionLogs) { log in
-                            NavigationLink(destination: SessionDetailView(sessionLog: log, growthProtocol: log.methodId.flatMap { viewModel.growthProtocols[$0] })) { 
-                                SessionLogRow(log: log, methodName: viewModel.getProtocolName(methodId: log.methodId))
-                            }
+                        } label: {
+                            Image(systemName: "arrow.clockwise")
                         }
                     }
-                    .listStyle(PlainListStyle())
                 }
-            }
-            .navigationTitle("Session History")
-            .toolbar {
-                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        viewModel.loadData()
-                    } label: {
-                        Image(systemName: "arrow.clockwise")
-                    }
+                .onAppear {
+                    viewModel.loadData()
+                    #if DEBUG
+                    checkForMockData()
+                    #endif
                 }
-            }
-            .onAppear {
-                viewModel.loadData()
+                .onReceive(NotificationCenter.default.publisher(for: .sessionLogDeleted)) { _ in
+                    viewModel.loadData() // Refresh data when a log is deleted
+                }
                 #if DEBUG
-                checkForMockData()
+                .onReceive(NotificationCenter.default.publisher(for: Notification.Name("MockDataGenerated"))) { _ in
+                    checkForMockData()
+                    viewModel.loadData() // Refresh to show new mock data
+                }
                 #endif
-            }
-            .onReceive(NotificationCenter.default.publisher(for: .sessionLogDeleted)) { _ in
-                viewModel.loadData() // Refresh data when a log is deleted
-            }
-            #if DEBUG
-            .onReceive(NotificationCenter.default.publisher(for: Notification.Name("MockDataGenerated"))) { _ in
-                checkForMockData()
-                viewModel.loadData() // Refresh to show new mock data
-            }
-            #endif
         }
         .accentColor(AppTheme.Colors.primary)
+    }
+
+    @ViewBuilder
+    private var mainContent: some View {
+        VStack(spacing: 0) {
+            #if DEBUG
+            // Show banner when mock data is active
+            if hasMockData {
+                mockDataBanner
+            }
+            #endif
+
+            contentView
+        }
+    }
+
+    #if DEBUG
+    private var mockDataBanner: some View {
+        HStack {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .foregroundColor(.orange)
+            Text("Mock data is active")
+                .font(.caption)
+                .fontWeight(.medium)
+            Spacer()
+            NavigationLink("Manage", destination: DebugMockDataView())
+                .font(.caption)
+                .foregroundColor(.blue)
+        }
+        .padding(.horizontal)
+        .padding(.vertical, 8)
+        .background(Color.orange.opacity(0.1))
+    }
+    #endif
+
+    @ViewBuilder
+    private var contentView: some View {
+        if viewModel.isLoading {
+            loadingView
+        } else if let errorMessage = viewModel.errorMessage {
+            errorView(message: errorMessage)
+        } else if viewModel.sessionLogs.isEmpty {
+            emptyStateView
+        } else {
+            sessionListView
+        }
+    }
+
+    private var loadingView: some View {
+        SwiftUI.ProgressView("Loading History...")
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private func errorView(message: String) -> some View {
+        VStack {
+            Text("Error")
+                .font(AppTheme.Typography.title3Font())
+                .foregroundColor(AppTheme.Colors.errorColor)
+            Text(message)
+                .font(AppTheme.Typography.bodyFont())
+                .foregroundColor(AppTheme.Colors.errorColor)
+                .multilineTextAlignment(.center)
+                .padding()
+            Button("Retry") {
+                viewModel.loadData()
+            }
+            .padding()
+            .background(AppTheme.Colors.primary)
+            .foregroundColor(AppTheme.Colors.textOnPrimary)
+            .cornerRadius(8)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private var emptyStateView: some View {
+        VStack {
+            Image(systemName: "list.bullet.clipboard")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 80, height: 80)
+                .foregroundColor(AppTheme.Colors.textSecondary)
+                .padding(.bottom)
+            Text("No Sessions Logged Yet")
+                .font(AppTheme.Typography.title2Font())
+                .foregroundColor(AppTheme.Colors.text)
+            Text("Start a new session from the Methods tab to see your progress here.")
+                .font(AppTheme.Typography.bodyFont())
+                .foregroundColor(AppTheme.Colors.textSecondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private var sessionListView: some View {
+        List {
+            ForEach(viewModel.sessionLogs) { log in
+                NavigationLink(
+                    destination: SessionDetailView(
+                        sessionLog: log,
+                        growthProtocol: log.methodId.flatMap { viewModel.growthProtocols[$0] }
+                    )
+                ) {
+                    SessionLogRow(
+                        log: log,
+                        methodName: viewModel.getProtocolName(protocolId: log.methodId)
+                    )
+                }
+            }
+        }
+        .listStyle(PlainListStyle())
     }
     
     #if DEBUG
