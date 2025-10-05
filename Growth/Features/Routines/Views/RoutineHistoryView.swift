@@ -116,7 +116,7 @@ struct RoutineHistoryView: View {
                 ForEach(filteredSessions) { session in
                     SessionHistoryCard(
                         session: session,
-                        methodName: sessionHistoryVM.getProtocolName(methodId: session.methodId),
+                        methodName: sessionHistoryVM.getProtocolName(protocolId: session.methodId),
                         action: {
                             showingSessionDetail = session
                         }
