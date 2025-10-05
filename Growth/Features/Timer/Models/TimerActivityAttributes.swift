@@ -16,7 +16,7 @@ public struct TimerActivityAttributes: ActivityAttributes {
         // Core timer state - based on expo-live-activity-timer pattern
         public var startedAt: Date
         public var pausedAt: Date?
-        public var methodName: String
+        public var protocolName: String
         public var duration: TimeInterval // Total duration for countdown
         public var sessionType: SessionType
         public var totalPausedDuration: TimeInterval = 0 // Cumulative pause time across all pause/resume cycles
@@ -118,12 +118,12 @@ public struct TimerActivityAttributes: ActivityAttributes {
         
         // Use the main app's SessionType enum for consistency
         
-        public init(startedAt: Date, pausedAt: Date? = nil, duration: TimeInterval, 
-                    methodName: String, sessionType: SessionType, totalPausedDuration: TimeInterval = 0) {
+        public init(startedAt: Date, pausedAt: Date? = nil, duration: TimeInterval,
+                    protocolName: String, sessionType: SessionType, totalPausedDuration: TimeInterval = 0) {
             self.startedAt = startedAt
             self.pausedAt = pausedAt
             self.duration = duration
-            self.methodName = methodName
+            self.protocolName = protocolName
             self.sessionType = sessionType
             self.totalPausedDuration = totalPausedDuration
         }

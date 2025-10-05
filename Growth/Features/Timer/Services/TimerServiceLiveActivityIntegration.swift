@@ -31,7 +31,7 @@ extension TimerService {
         // Use the LiveActivityManager
         LiveActivityManager.shared.startActivity(
             methodId: currentMethodId ?? "",
-            methodName: methodName,
+            protocolName: methodName,
             duration: targetDuration,
             sessionType: sessionType
         )

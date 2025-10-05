@@ -47,10 +47,10 @@ class LiveActivityManager: ObservableObject {
     }
     
     /// Start a new Live Activity - must be called from foreground
-    func startActivity(methodId: String, methodName: String, duration: TimeInterval = 1800, sessionType: SessionType = .countdown) {
+    func startActivity(methodId: String, protocolName: String, duration: TimeInterval = 1800, sessionType: SessionType = .countdown) {
         Logger.info("🚀 LiveActivityManager.startActivity called:", logger: AppLoggers.liveActivity)
         Logger.debug("methodId: \(methodId)", logger: AppLoggers.liveActivity)
-        Logger.debug("methodName: \(methodName)", logger: AppLoggers.liveActivity)
+        Logger.debug("protocolName: \(protocolName)", logger: AppLoggers.liveActivity)
         Logger.debug("duration: \(duration)", logger: AppLoggers.liveActivity)
         Logger.debug("sessionType: \(sessionType)", logger: AppLoggers.liveActivity)
         Logger.debug("Thread: \(Thread.current)", logger: AppLoggers.liveActivity)
@@ -106,7 +106,7 @@ class LiveActivityManager: ObservableObject {
                     startedAt: startTime,
                     pausedAt: nil,
                     duration: duration,
-                    methodName: methodName,
+                    protocolName: protocolName,
                     sessionType: sessionType  // totalPausedDuration defaults to 0
                 )
                 
@@ -147,7 +147,7 @@ class LiveActivityManager: ObservableObject {
                     sharedDefaults.set(false, forKey: "timerIsPaused")
                     sharedDefaults.removeObject(forKey: "timerPausedAt")
                     sharedDefaults.set(duration, forKey: "timerDuration")
-                    sharedDefaults.set(methodName, forKey: "timerMethodName")
+                    sharedDefaults.set(protocolName, forKey: "timerMethodName")
                     sharedDefaults.set(activity.id, forKey: "currentActivityId")
                     sharedDefaults.synchronize()
                     Logger.debug("📝 Stored initial timer state in shared UserDefaults", logger: AppLoggers.liveActivity)
@@ -170,7 +170,7 @@ class LiveActivityManager: ObservableObject {
                 }
                 if #available(iOS 16.2, *) {
                     Logger.verbose("Content State startedAt: \(activity.content.state.startedAt)", logger: AppLoggers.liveActivity)
-                    Logger.verbose("Content State methodName: \(activity.content.state.methodName)", logger: AppLoggers.liveActivity)
+                    Logger.verbose("Content State protocolName: \(activity.content.state.protocolName)", logger: AppLoggers.liveActivity)
                     Logger.verbose("Content State duration: \(activity.content.state.duration)", logger: AppLoggers.liveActivity)
                     Logger.verbose("Content State sessionType: \(activity.content.state.sessionType)", logger: AppLoggers.liveActivity)
                     Logger.verbose("Content State isPaused: \(activity.content.state.isPaused)", logger: AppLoggers.liveActivity)
@@ -539,7 +539,7 @@ class LiveActivityManager: ObservableObject {
                 startedAt: currentState.startedAt,
                 pausedAt: Date(), // Mark as stopped
                 duration: currentState.duration,
-                methodName: currentState.methodName,
+                protocolName: currentState.protocolName,
                 sessionType: .completed, // Use completed session type
                 totalPausedDuration: currentState.totalPausedDuration
             )
@@ -557,7 +557,7 @@ class LiveActivityManager: ObservableObject {
                 startedAt: Date(), // Use current time as we can't access content.state
                 pausedAt: Date(), // Mark as stopped
                 duration: 0, // Default duration
-                methodName: "Timer", // Default name
+                protocolName: "Timer", // Default name
                 sessionType: .completed // Use completed session type - totalPausedDuration defaults to 0
             )
             
@@ -603,7 +603,7 @@ class LiveActivityManager: ObservableObject {
                     startedAt: Date(),
                     pausedAt: Date(),
                     duration: 0,
-                    methodName: "Timer",
+                    protocolName: "Timer",
                     sessionType: .completed,
                     totalPausedDuration: 0
                 )
@@ -850,7 +850,7 @@ class LiveActivityManager: ObservableObject {
                     startedAt: adjustedStartTime,
                     pausedAt: nil,
                     duration: currentState.duration,
-                    methodName: currentState.methodName,
+                    protocolName: currentState.protocolName,
                     sessionType: currentState.sessionType
                 )
                 // Update the total paused duration
@@ -939,7 +939,7 @@ class LiveActivityManager: ObservableObject {
         var contentStateData: [String: Any] = [
             "startedAt": ISO8601DateFormatter().string(from: state.startedAt),
             "duration": state.duration,
-            "methodName": state.methodName,
+            "methodName": state.protocolName,
             "sessionType": state.sessionType.rawValue
         ]
         
@@ -1239,7 +1239,7 @@ class LiveActivityManager: ObservableObject {
     /// Compatibility method for TimerService integration
     func startTimerActivity(
         methodId: String,
-        methodName: String,
+        protocolName: String,
         startTime: Date,
         endTime: Date,
         duration: TimeInterval,
@@ -1248,7 +1248,7 @@ class LiveActivityManager: ObservableObject {
     ) {
         print("🚀 LiveActivityManager.startTimerActivity called:")
         print("  - methodId: '\(methodId)'")
-        print("  - methodName: '\(methodName)'")
+        print("  - protocolName: '\(protocolName)'")
         print("  - startTime: \(startTime)")
         print("  - endTime: \(endTime)")
         print("  - duration: \(duration)")
@@ -1256,17 +1256,17 @@ class LiveActivityManager: ObservableObject {
         print("  - timerType: '\(timerType)'")
         print("  - Thread: \(Thread.current)")
         print("  - App State: \(UIApplication.shared.applicationState.rawValue)")
-        
+
         // Check prerequisite conditions
         print("🔍 Pre-flight checks:")
         print("  - areActivitiesEnabled: \(areActivitiesEnabled)")
         print("  - Current activities count: \(Activity<TimerActivityAttributes>.activities.count)")
-        
+
         // Use our simplified startActivity method based on research
         // Default to countdown
         let timerSessionType: SessionType = .countdown
         print("📱 Delegating to startActivity with sessionType: \(timerSessionType)")
-        startActivity(methodId: methodId, methodName: methodName, duration: duration, sessionType: timerSessionType)
+        startActivity(methodId: methodId, protocolName: protocolName, duration: duration, sessionType: timerSessionType)
     }
     
     /// Compatibility method for TimerService integration
@@ -1329,7 +1329,7 @@ class LiveActivityManager: ObservableObject {
                             startedAt: adjustedStartTime,
                             pausedAt: nil,
                             duration: currentState.duration,
-                            methodName: currentState.methodName,
+                            protocolName: currentState.protocolName,
                             sessionType: currentState.sessionType
                         )
                         // Preserve the total paused duration
@@ -1360,7 +1360,7 @@ class LiveActivityManager: ObservableObject {
                             startedAt: newStartedAt,
                             pausedAt: nil,
                             duration: currentState.duration,
-                            methodName: currentState.methodName,
+                            protocolName: currentState.protocolName,
                             sessionType: currentState.sessionType
                         )
                         // Preserve the total paused duration
@@ -1417,7 +1417,7 @@ class LiveActivityManager: ObservableObject {
         print("🧪 Attempting to start test Live Activity...")
         startActivity(
             methodId: "test-\(UUID().uuidString.prefix(8))",
-            methodName: "Test Timer",
+            protocolName: "Test Timer",
             duration: 300, // 5 minutes
             sessionType: .countdown
         )

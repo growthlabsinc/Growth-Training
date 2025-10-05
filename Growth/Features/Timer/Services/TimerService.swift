@@ -1950,7 +1950,7 @@ class TimerService: ObservableObject {
         // Use simplified Live Activity manager
         LiveActivityManager.shared.startTimerActivity(
             methodId: currentMethodId ?? "",
-            methodName: methodName,
+            protocolName: methodName,
             startTime: startTime,
             endTime: endTime,
             duration: targetDuration,

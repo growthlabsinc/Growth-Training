@@ -42,7 +42,7 @@ struct GrowthTimerWidgetLiveActivity: Widget {
                 // Center content
                 DynamicIslandExpandedRegion(.center) {
                     VStack(spacing: 8) {
-                        Text(context.state.methodName)
+                        Text(context.state.protocolName)
                             .font(.system(size: 14, weight: .semibold))
                             .foregroundColor(.white)
                         
@@ -261,7 +261,7 @@ struct TimerLockScreenView: View {
             // Header
             HStack {
                 Label {
-                    Text(context.state.methodName)
+                    Text(context.state.protocolName)
                         .font(.headline)
                         .foregroundColor(.white)
                 } icon: {

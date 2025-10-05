@@ -209,7 +209,7 @@ class LiveActivityPushService {
             // New simplified format
             "startedAt": ISO8601DateFormatter().string(from: contentState.startedAt),
             "duration": contentState.duration,
-            "methodName": contentState.methodName,
+            "methodName": contentState.protocolName,
             "sessionType": contentState.sessionType.rawValue,
             "isCompleted": contentState.isCompleted,
             
@@ -320,7 +320,7 @@ class LiveActivityPushService {
             // New simplified format
             "startedAt": Timestamp(date: state.startedAt),
             "duration": state.duration,
-            "methodName": state.methodName,
+            "methodName": state.protocolName,
             "sessionType": state.sessionType.rawValue,
             "isCompleted": state.isCompleted,
             

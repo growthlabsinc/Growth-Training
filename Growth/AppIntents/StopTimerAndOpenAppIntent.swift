@@ -90,7 +90,7 @@ public struct StopTimerAndOpenAppIntent: LiveActivityIntent {
             let completionData: [String: Any] = [
                 "elapsedTime": elapsedTime,
                 "startTime": updatedState.startedAt.timeIntervalSince1970,
-                "methodName": updatedState.methodName,
+                "methodName": updatedState.protocolName,
                 "timestamp": now.timeIntervalSince1970
             ]
             sharedDefaults.set(completionData, forKey: "pendingTimerCompletion")
