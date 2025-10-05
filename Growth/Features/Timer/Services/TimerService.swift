@@ -1353,7 +1353,7 @@ class TimerService: ObservableObject {
                         endTime: Date().addingTimeInterval(self.remainingTime),
                         elapsedTime: self.elapsedTime,
                         isPaused: false,
-                        protocolName: self.currentMethodName ?? "Timer",
+                        methodName: self.currentMethodName ?? "Timer",
                         sessionType: self.currentTimerMode.rawValue,
                         activityId: activityId
                     )
