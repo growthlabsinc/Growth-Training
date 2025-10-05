@@ -58,7 +58,7 @@ struct RoutineHistoryView: View {
             NavigationView {
                 SessionDetailView(
                     sessionLog: session,
-                    growthMethod: session.methodId != nil ? sessionHistoryVM.growthMethods[session.methodId!] : nil
+                    growthProtocol: session.methodId != nil ? sessionHistoryVM.growthProtocols[session.methodId!] : nil
                 )
             }
         }
@@ -116,7 +116,7 @@ struct RoutineHistoryView: View {
                 ForEach(filteredSessions) { session in
                     SessionHistoryCard(
                         session: session,
-                        methodName: sessionHistoryVM.getMethodName(methodId: session.methodId),
+                        methodName: sessionHistoryVM.getProtocolName(methodId: session.methodId),
                         action: {
                             showingSessionDetail = session
                         }
