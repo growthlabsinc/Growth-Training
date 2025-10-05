@@ -13,7 +13,7 @@ struct GrowthMethodsListView: View {
     @StateObject private var viewModel = GrowthMethodsViewModel()
     
     /// State for tracking the currently selected method
-    @State private var selectedMethod: GrowthMethod?
+    @State private var selectedMethod: TrainingProtocol?
     
     var body: some View {
         NavigationView {
@@ -43,7 +43,7 @@ struct GrowthMethodsListView: View {
                     
                     // Loading view
                     if viewModel.isLoading {
-                        SwiftUI.ProgressView("Loading methods...")
+                        SwiftUI.ProgressView("Loading protocols...")
                             .progressViewStyle(CircularProgressViewStyle())
                     }
                     
@@ -54,7 +54,7 @@ struct GrowthMethodsListView: View {
                                 .font(.system(size: 48))
                                 .foregroundColor(Color("ErrorColor"))
                             
-                            Text("Error Loading Methods")
+                            Text("Error Loading Protocols")
                                 .font(AppTheme.Typography.gravitySemibold(18))
                                 .foregroundColor(Color("TextColor"))
                             
@@ -78,7 +78,7 @@ struct GrowthMethodsListView: View {
                     }
                 }
             }
-            .navigationTitle("Growth Methods")
+            .navigationTitle("Growth Protocols")
             .navigationBarTitleDisplayMode(.large)
             .navigationBarItems(
                 trailing: Button(action: { viewModel.refreshMethods() }) {
@@ -102,7 +102,7 @@ struct GrowthMethodsListView: View {
             Image(systemName: "magnifyingglass")
                 .foregroundColor(Color("TextSecondaryColor"))
             
-            TextField("Search methods...", text: $viewModel.searchText)
+            TextField("Search protocols...", text: $viewModel.searchText)
                 .font(AppTheme.Typography.gravityBook(14))
                 .foregroundColor(Color("TextColor"))
             
@@ -173,7 +173,7 @@ struct GrowthMethodsListView: View {
     
     // MARK: - Method Row View
     
-    private func methodRowView(method: GrowthMethod) -> some View {
+    private func methodRowView(method: TrainingProtocol) -> some View {
         HStack(alignment: .top, spacing: 12) {
             // Stage indicator
             ZStack {
@@ -193,7 +193,7 @@ struct GrowthMethodsListView: View {
                     .foregroundColor(Color("TextColor"))
                     .lineLimit(1)
                 
-                Text(method.methodDescription)
+                Text(method.protocolDescription)
                     .font(AppTheme.Typography.gravityBook(13))
                     .foregroundColor(Color("TextSecondaryColor"))
                     .lineLimit(2)
@@ -235,7 +235,7 @@ struct GrowthMethodsListView: View {
                 .font(.system(size: 64))
                 .foregroundColor(Color("TextSecondaryColor"))
             
-            Text("No methods found")
+            Text("No protocols found")
                 .font(AppTheme.Typography.gravitySemibold(18))
                 .foregroundColor(Color("TextColor"))
             

@@ -210,7 +210,7 @@ struct GuidedSessionPlaceholderView: View {
 struct QuickSessionMenuView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var navigationContext: NavigationContext
-    @State private var selectedMethod: GrowthMethod?
+    @State private var selectedMethod: TrainingProtocol?
     @State private var showTimer = false
     
     var body: some View {
@@ -218,7 +218,7 @@ struct QuickSessionMenuView: View {
             VStack(spacing: 0) {
                 // Header
                 HStack {
-                    Text("Select Method")
+                    Text("Select Protocol")
                         .font(AppTheme.Typography.headlineFont())
                     
                     Spacer()
@@ -251,7 +251,7 @@ struct QuickSessionMenuView: View {
         }
     }
     
-    private func methodRow(_ method: GrowthMethod) -> some View {
+    private func methodRow(_ method: TrainingProtocol) -> some View {
         Button(action: {
             navigationContext.setupQuickPracticeContext()
             selectedMethod = method
@@ -286,34 +286,34 @@ struct QuickSessionMenuView: View {
     }
     
     // Sample methods for quick practice
-    private var sampleMethods: [GrowthMethod] {
+    private var sampleMethods: [TrainingProtocol] {
         return [
-            GrowthMethod(
+            TrainingProtocol(
                 id: "quick1",
                 stage: 1,
                 classification: "Beginner",
-                title: "PE Foundation Method",
-                methodDescription: "Basic blood flow enhancement",
+                title: "PE Foundation Protocol",
+                protocolDescription: "Basic blood flow enhancement",
                 instructionsText: "Start with basic movements",
                 estimatedDurationMinutes: 20,
                 categories: ["Vascular"]
             ),
-            GrowthMethod(
+            TrainingProtocol(
                 id: "quick2",
                 stage: 1,
                 classification: "Intermediate",
                 title: "Soft Clamping",
-                methodDescription: "Girth focused exercise",
+                protocolDescription: "Girth focused exercise",
                 instructionsText: "Focus on expansion",
                 estimatedDurationMinutes: 15,
                 categories: ["Girth"]
             ),
-            GrowthMethod(
+            TrainingProtocol(
                 id: "quick3",
                 stage: 1,
                 classification: "Beginner",
                 title: "Stretching Routine",
-                methodDescription: "Length focused stretches",
+                protocolDescription: "Length focused stretches",
                 instructionsText: "Gentle stretching routine",
                 estimatedDurationMinutes: 10,
                 categories: ["Length"]

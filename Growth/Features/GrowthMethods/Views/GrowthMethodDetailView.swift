@@ -10,7 +10,7 @@ import SwiftUI
 /// Detail view for a specific growth method
 struct GrowthMethodDetailView: View {
     /// The growth method to display
-    let method: GrowthMethod
+    let method: TrainingProtocol
     
     /// Environment value to dismiss the sheet
     @Environment(\.dismiss) private var dismiss
@@ -24,8 +24,8 @@ struct GrowthMethodDetailView: View {
     
     @StateObject var viewModel: GrowthMethodDetailViewModel
     @State private var showTimerView = false
-    
-    init(method: GrowthMethod) {
+
+    init(method: TrainingProtocol) {
         self.method = method
         _viewModel = StateObject(wrappedValue: GrowthMethodDetailViewModel(method: method))
     }
@@ -208,9 +208,9 @@ struct GrowthMethodDetailView: View {
                            method.title.lowercased().contains("penile") ||
                            method.title.lowercased().contains("enlargement") ||
                            method.title.lowercased().contains("vascular") ||
-                           method.methodDescription.contains("flow") ||
-                           method.methodDescription.contains("shear stress") ||
-                           method.methodDescription.contains("nitric oxide") {
+                           method.protocolDescription.contains("flow") ||
+                           method.protocolDescription.contains("shear stress") ||
+                           method.protocolDescription.contains("nitric oxide") {
                             HStack(spacing: 4) {
                                 Image(systemName: "checkmark.seal.fill")
                                     .font(.system(size: 12))
@@ -225,7 +225,7 @@ struct GrowthMethodDetailView: View {
                         }
                     }
                     
-                    Text(method.methodDescription)
+                    Text(method.protocolDescription)
                         .font(AppTheme.Typography.gravityBook(14))
                         .foregroundColor(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
@@ -234,7 +234,7 @@ struct GrowthMethodDetailView: View {
                     if method.title.lowercased().contains("pe") ||
                        method.title.lowercased().contains("penile") ||
                        method.title.lowercased().contains("enlargement") ||
-                       method.methodDescription.contains("vascular") {
+                       method.protocolDescription.contains("vascular") {
                         NavigationLink(destination: AllCitationsView()) {
                             HStack(spacing: 4) {
                                 Image(systemName: "doc.text.magnifyingglass")
@@ -293,7 +293,7 @@ struct GrowthMethodDetailView: View {
                         .foregroundColor(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
                 } else {
-                    Text("No specific instructions available for this method.")
+                    Text("No specific instructions available for this protocol.")
                         .font(AppTheme.Typography.gravityBook(14))
                         .foregroundColor(.secondary)
                         .italic()
@@ -459,11 +459,11 @@ struct GrowthMethodDetailView: View {
                 .font(.system(size: 64))
                 .foregroundColor(Color("ErrorColor"))
             
-            Text("Unable to Load Method")
+            Text("Unable to Load Protocol")
                 .font(AppTheme.Typography.gravitySemibold(20))
                 .foregroundColor(.primary)
             
-            Text(errorMessage ?? "The method details could not be loaded. Please try again.")
+            Text(errorMessage ?? "The protocol details could not be loaded. Please try again.")
                 .font(AppTheme.Typography.gravityBook(14))
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
@@ -487,17 +487,17 @@ struct GrowthMethodDetailView: View {
     private func validateMethod() {
         if let id = method.id, id.isEmpty {
             hasError = true
-            errorMessage = "Method data is incomplete"
+            errorMessage = "Protocol data is incomplete"
         }
         
         if method.title.isEmpty {
             hasError = true
-            errorMessage = "Method data is incomplete"
+            errorMessage = "Protocol data is incomplete"
         }
         
-        if method.methodDescription.isEmpty || method.methodDescription == "No description available" {
+        if method.protocolDescription.isEmpty || method.protocolDescription == "No description available" {
             hasError = true
-            errorMessage = "Method data is incomplete"
+            errorMessage = "Protocol data is incomplete"
         }
     }
     
@@ -540,11 +540,11 @@ struct GrowthMethodRoundedCard<Content: View>: View {
 
 #Preview {
     // Create a sample method for preview
-    let sampleMethod = GrowthMethod(
+    let sampleMethod = TrainingProtocol(
         id: "preview",
         stage: 2,
         title: "Deliberate Practice",
-        methodDescription: "A structured form of practice aimed at effectively improving specific aspects of performance through repetition, feedback, and focused attention.",
+        protocolDescription: "A structured form of practice aimed at effectively improving specific aspects of performance through repetition, feedback, and focused attention.",
         instructionsText: "1. Identify a specific skill to improve\n2. Break it down into components\n3. Focus intensely on one component at a time\n4. Get immediate feedback\n5. Repeat with adjustments based on feedback",
         visualPlaceholderUrl: "https://example.com/deliberate-practice.jpg",
         equipmentNeeded: ["Notebook", "Timer", "Recording device (optional)"],

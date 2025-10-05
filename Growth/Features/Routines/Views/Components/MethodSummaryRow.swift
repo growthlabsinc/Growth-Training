@@ -11,7 +11,7 @@ import SwiftUI
 struct MethodSummaryRow: View {
     // MARK: - Properties
     
-    let method: GrowthMethod
+    let method: TrainingProtocol
     let index: Int
     @State private var isHovered: Bool = false
     
@@ -37,7 +37,7 @@ struct MethodSummaryRow: View {
                     .lineLimit(1)
                 
                 // Method description
-                Text(method.methodDescription)
+                Text(method.protocolDescription)
                     .font(AppTheme.Typography.gravityBook(12))
                     .foregroundColor(Color("TextSecondaryColor"))
                     .lineLimit(2)
@@ -75,7 +75,7 @@ struct MethodSummaryRow: View {
             }
         }
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("Method \(index): \(method.title), \(method.estimatedDurationMinutes ?? 10) minutes")
+        .accessibilityLabel("Protocol \(index): \(method.title), \(method.estimatedDurationMinutes ?? 10) minutes")
     }
 }
 
@@ -122,7 +122,7 @@ struct TimerConfigBadge: View {
 // MARK: - Expanded Method Row (Alternative Design)
 
 struct ExpandedMethodRow: View {
-    let method: GrowthMethod
+    let method: TrainingProtocol
     let index: Int
     @State private var showDetails: Bool = false
     
@@ -170,7 +170,7 @@ struct ExpandedMethodRow: View {
             // Expanded details
             if showDetails {
                 VStack(alignment: .leading, spacing: 8) {
-                    Text(method.methodDescription)
+                    Text(method.protocolDescription)
                         .font(AppTheme.Typography.gravityBook(13))
                         .foregroundColor(Color("TextSecondaryColor"))
                         .padding(.leading, 44) // Align with content
@@ -216,11 +216,11 @@ struct ExpandedMethodRow: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             
             MethodSummaryRow(
-                method: GrowthMethod(
+                method: TrainingProtocol(
                     id: "1",
                     stage: 1,
                     title: "PE Foundation Method",
-                    methodDescription: "Basic circular movements for vascular development",
+                    protocolDescription: "Basic circular movements for vascular development",
                     instructionsText: "Instructions here",
                     estimatedDurationMinutes: 15,
                     timerConfig: TimerConfiguration(
@@ -233,11 +233,11 @@ struct ExpandedMethodRow: View {
             )
             
             MethodSummaryRow(
-                method: GrowthMethod(
+                method: TrainingProtocol(
                     id: "2",
                     stage: 2,
                     title: "SABRE Method",
-                    methodDescription: "Side-to-side stretching technique",
+                    protocolDescription: "Side-to-side stretching technique",
                     instructionsText: "Instructions here",
                     estimatedDurationMinutes: 10,
                     timerConfig: TimerConfiguration(
@@ -263,11 +263,11 @@ struct ExpandedMethodRow: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             
             ExpandedMethodRow(
-                method: GrowthMethod(
+                method: TrainingProtocol(
                     id: "3",
                     stage: 2,
                     title: "PE Advanced Method",
-                    methodDescription: "Advanced circular movements with increased intensity",
+                    protocolDescription: "Advanced circular movements with increased intensity",
                     instructionsText: "Instructions here",
                     estimatedDurationMinutes: 20,
                     benefits: [

@@ -16,7 +16,7 @@ class PracticeTabViewModel: ObservableObject {
     @Published var selectedPracticeOption: PracticeOption = .guided
     @Published var isLoading: Bool = false
     @Published var error: String?
-    @Published var selectedMethod: GrowthMethod?
+    @Published var selectedMethod: TrainingProtocol?
     
     // Navigation state
     @Published var showTimerView: Bool = false
@@ -42,7 +42,7 @@ class PracticeTabViewModel: ObservableObject {
     
     // MARK: - Dependencies
     private let routinesViewModel: RoutinesViewModel
-    private let growthMethodService = GrowthMethodService.shared
+    private let growthMethodService = TrainingProtocolService.shared
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Current User
@@ -71,7 +71,7 @@ class PracticeTabViewModel: ObservableObject {
         }
     }
     
-    func selectMethod(_ method: GrowthMethod) {
+    func selectMethod(_ method: TrainingProtocol) {
         selectedMethod = method
         showMethodSelection = false
         
@@ -260,7 +260,7 @@ class PracticeTabViewModel: ObservableObject {
     }
     
     func getQuickSessionDescription() -> String {
-        return "Select any method for ad-hoc practice"
+        return "Select any protocol for ad-hoc practice"
     }
     
     func getCompletedSessionsCount() -> Int {

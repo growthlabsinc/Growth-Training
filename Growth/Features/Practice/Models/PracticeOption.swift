@@ -39,7 +39,7 @@ enum PracticeOption: String, CaseIterable {
         case .guided:
             return "Follow your routine with structured sessions"
         case .quick:
-            return "Jump into any method for quick practice"
+            return "Jump into any protocol for quick practice"
         case .freestyle:
             return "Practice freely without time constraints"
         }

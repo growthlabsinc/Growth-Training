@@ -14,13 +14,13 @@ struct QuickPracticeTimerView: View {
     @Environment(\.dismiss) private var dismiss
     
     /// Selected method for the practice session
-    @State private var selectedMethod: GrowthMethod?
+    @State private var selectedMethod: TrainingProtocol?
     
     /// Available methods for selection
-    @State private var availableMethods: [GrowthMethod] = []
+    @State private var availableMethods: [TrainingProtocol] = []
     
     /// Pre-selected method passed from previous view
-    let preSelectedMethod: GrowthMethod?
+    let preSelectedMethod: TrainingProtocol?
     
     /// Quick practice timer service (singleton for state persistence)
     @ObservedObject private var quickTimerService = QuickPracticeTimerService.shared
@@ -73,7 +73,7 @@ struct QuickPracticeTimerView: View {
     /// Flag to prevent multiple restorations
     @State private var hasRestoredFromBackground = false
     
-    init(preSelectedMethod: GrowthMethod? = nil) {
+    init(preSelectedMethod: TrainingProtocol? = nil) {
         self.preSelectedMethod = preSelectedMethod
     }
     
@@ -658,7 +658,7 @@ struct QuickPracticeTimerView: View {
     private var methodSelectionSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("Select Method")
+                Text("Select Protocol")
                     .font(AppTheme.Typography.headlineFont())
                     .foregroundColor(.primary)
                 
@@ -673,7 +673,7 @@ struct QuickPracticeTimerView: View {
                 ProgressView()
                     .frame(maxWidth: .infinity, minHeight: 60)
             } else if availableMethods.isEmpty {
-                Text("No methods available")
+                Text("No protocols available")
                     .font(AppTheme.Typography.subheadlineFont())
                     .foregroundColor(.secondary)
                     .frame(maxWidth: .infinity, minHeight: 60)
@@ -709,7 +709,7 @@ struct QuickPracticeTimerView: View {
             }
             
             if selectedMethod == nil && !isLoadingMethods && !availableMethods.isEmpty {
-                Text("Select a method to start your practice session")
+                Text("Select a protocol to start your practice session")
                     .font(AppTheme.Typography.captionFont())
                     .foregroundColor(.secondary)
                     .italic()
@@ -717,7 +717,7 @@ struct QuickPracticeTimerView: View {
         }
     }
     
-    private func methodCard(method: GrowthMethod) -> some View {
+    private func methodCard(method: TrainingProtocol) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(method.title)
                 .font(AppTheme.Typography.subheadlineFont())
@@ -777,7 +777,7 @@ struct QuickPracticeTimerView: View {
     
     // MARK: - Method Details Section
     
-    private func methodDetailsSection(method: GrowthMethod) -> some View {
+    private func methodDetailsSection(method: TrainingProtocol) -> some View {
         VStack(alignment: .leading, spacing: 16) {
             // Description
             VStack(alignment: .leading, spacing: 8) {
@@ -785,7 +785,7 @@ struct QuickPracticeTimerView: View {
                     .font(AppTheme.Typography.headlineFont())
                     .foregroundColor(.primary)
                 
-                Text(method.methodDescription)
+                Text(method.protocolDescription)
                     .font(AppTheme.Typography.subheadlineFont())
                     .foregroundColor(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -939,7 +939,7 @@ struct QuickPracticeTimerView: View {
     
     // MARK: - Timer Configuration
     
-    private func configureTimer(for method: GrowthMethod) {
+    private func configureTimer(for method: TrainingProtocol) {
         // Set method ID and name for tracking
         quickTimerService.currentMethodId = method.id
         quickTimerService.currentMethodName = method.title
@@ -1052,7 +1052,7 @@ struct QuickPracticeTimerView: View {
     private func loadMethods() {
         isLoadingMethods = true
         
-        GrowthMethodService.shared.fetchAllMethods { result in
+        TrainingProtocolService.shared.fetchAllMethods { result in
             DispatchQueue.main.async {
                 isLoadingMethods = false
                 

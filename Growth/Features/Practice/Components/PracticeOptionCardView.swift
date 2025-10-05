@@ -96,7 +96,7 @@ struct PracticeOptionCardView: View {
         PracticeOptionCardView(
             option: .quick,
             title: "Quick Practice",
-            description: "Jump into any method for quick practice",
+            description: "Jump into any protocol for quick practice",
             isEnabled: true,
             onTap: { print("Quick tapped") } // Release OK - Preview
         )

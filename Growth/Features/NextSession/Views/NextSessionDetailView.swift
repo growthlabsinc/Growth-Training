@@ -27,7 +27,7 @@ struct NextSessionDetailView: View {
             if let method = viewModel.method {
                 GrowthMethodDetailView(method: method)
             } else {
-                Text("Method unavailable")
+                Text("Protocol unavailable")
             }
         }
         // navigationDestination for Timer
@@ -69,7 +69,7 @@ struct NextSessionDetailView: View {
                     .foregroundColor(.secondary)
             } else if let method = viewModel.method {
                 VStack(alignment: .leading, spacing: 12) {
-                    Text(method.methodDescription)
+                    Text(method.protocolDescription)
                         .font(AppTheme.Typography.bodyFont())
                     if !method.equipmentNeeded.isEmpty {
                         VStack(alignment: .leading, spacing: 4) {

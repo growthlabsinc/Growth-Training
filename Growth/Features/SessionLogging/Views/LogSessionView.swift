@@ -9,17 +9,17 @@ struct LogSessionView: View {
     @StateObject private var viewModel: LogSessionViewModel
     
     // Initializer for logging a new session for a specific method
-    init(method: GrowthMethod) {
+    init(method: TrainingProtocol) {
         _viewModel = StateObject(wrappedValue: LogSessionViewModel(methodToLog: method))
     }
     
     // Initializer for logging from timer with duration and optional pre-session mood
-    init(method: GrowthMethod, duration: Int, preMoodBefore: Mood? = nil) {
+    init(method: TrainingProtocol, duration: Int, preMoodBefore: Mood? = nil) {
         _viewModel = StateObject(wrappedValue: LogSessionViewModel(methodToLog: method, durationMinutes: duration, preMoodBefore: preMoodBefore))
     }
 
     // Initializer for editing an existing session log
-    init(sessionLogToEdit: SessionLog, method: GrowthMethod) {
+    init(sessionLogToEdit: SessionLog, method: TrainingProtocol) {
         _viewModel = StateObject(wrappedValue: LogSessionViewModel(sessionLogToEdit: sessionLogToEdit, growthMethod: method))
     }
     
@@ -168,7 +168,7 @@ struct LogSessionView: View {
                 // Method Selection
                 if viewModel.isLoadingMethods {
                     HStack {
-                        Label("Method", systemImage: "figure.mind.and.body")
+                        Label("Protocol", systemImage: "figure.mind.and.body")
                             .font(AppTheme.Typography.bodyFont())
                             .foregroundColor(.secondary)
                         Spacer()
@@ -176,7 +176,7 @@ struct LogSessionView: View {
                     }
                 } else if viewModel.isEditMode {
                     HStack {
-                        Label("Method", systemImage: "figure.mind.and.body")
+                        Label("Protocol", systemImage: "figure.mind.and.body")
                             .font(AppTheme.Typography.bodyFont())
                             .foregroundColor(.secondary)
                         Spacer()
@@ -186,7 +186,7 @@ struct LogSessionView: View {
                     }
                 } else {
                     VStack(alignment: .leading, spacing: 8) {
-                        Label("Method", systemImage: "figure.mind.and.body")
+                        Label("Protocol", systemImage: "figure.mind.and.body")
                             .font(AppTheme.Typography.bodyFont())
                             .foregroundColor(.secondary)
                         
@@ -200,7 +200,7 @@ struct LogSessionView: View {
                             }
                         } label: {
                             HStack {
-                                Text(viewModel.selectedMethodId != nil ? viewModel.getMethodTitle(methodId: viewModel.selectedMethodId) : "Select a method")
+                                Text(viewModel.selectedMethodId != nil ? viewModel.getMethodTitle(methodId: viewModel.selectedMethodId) : "Select a protocol")
                                     .font(AppTheme.Typography.bodyFont())
                                     .foregroundColor(viewModel.selectedMethodId != nil ? .primary : .secondary)
                                 Spacer()
@@ -505,11 +505,11 @@ struct LogSessionView_Previews: PreviewProvider {
                 .previewDisplayName("New Log - Scratch")
 
             // Preview for editing an existing session
-            let mockMethod = GrowthMethod(
+            let mockMethod = TrainingProtocol(
                 id: "gm1",
                 stage: 1,
                 title: "Breathing Exercise",
-                methodDescription: "Desc",
+                protocolDescription: "Desc",
                 instructionsText: "Instr"
             )
             let mockLog = SessionLog(

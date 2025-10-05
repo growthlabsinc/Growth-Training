@@ -14,7 +14,7 @@ struct FixedGrowthMethodsListView: View {
     @StateObject private var viewModel = GrowthMethodsViewModel()
     
     /// State for tracking the currently selected method
-    @State private var selectedMethod: GrowthMethod?
+    @State private var selectedMethod: TrainingProtocol?
     
     var body: some View {
         NavigationView {
@@ -44,7 +44,7 @@ struct FixedGrowthMethodsListView: View {
                     
                     // Loading view
                     if viewModel.isLoading {
-                        SwiftUI.ProgressView("Loading methods...")
+                        SwiftUI.ProgressView("Loading protocols...")
                             .progressViewStyle(CircularProgressViewStyle())
                     }
                     
@@ -55,7 +55,7 @@ struct FixedGrowthMethodsListView: View {
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-            .navigationTitle("Growth Methods")
+            .navigationTitle("Growth Protocols")
             .navigationBarItems(trailing: refreshButton)
             .onAppear {
                 viewModel.loadMethods()
@@ -66,7 +66,7 @@ struct FixedGrowthMethodsListView: View {
                     .onAppear {
                         Logger.debug("Detail sheet appeared with method ID: \(method.id ?? "nil")")
                         Logger.debug("Detail sheet method title: \(method.title)")
-                        Logger.debug("Detail sheet has description length: \(method.methodDescription.count)")
+                        Logger.debug("Detail sheet has description length: \(method.protocolDescription.count)")
                     }
             }
         }
@@ -80,7 +80,7 @@ struct FixedGrowthMethodsListView: View {
             Image(systemName: "magnifyingglass")
                 .foregroundColor(.gray)
             
-            TextField("Search methods", text: $viewModel.searchText)
+            TextField("Search protocols", text: $viewModel.searchText)
                 .foregroundColor(.primary)
             
             if !viewModel.searchText.isEmpty {
@@ -151,13 +151,13 @@ struct FixedGrowthMethodsListView: View {
                     MethodCardView(method: method)
                         .onTapGesture {
                             Logger.debug("Method tapped in fixed view - ID: \(method.id ?? "nil"), Title: \(method.title)")
-                            Logger.debug("Description length: \(method.methodDescription.count), Instructions length: \(method.instructionsText.count)")
+                            Logger.debug("Description length: \(method.protocolDescription.count), Instructions length: \(method.instructionsText.count)")
                             // Create a copy of the method to avoid reference issues
-                            let methodCopy = GrowthMethod(
+                            let methodCopy = TrainingProtocol(
                                 id: method.id,
                                 stage: method.stage,
                                 title: method.title,
-                                methodDescription: method.methodDescription,
+                                protocolDescription: method.protocolDescription,
                                 instructionsText: method.instructionsText,
                                 visualPlaceholderUrl: method.visualPlaceholderUrl,
                                 equipmentNeeded: method.equipmentNeeded,
@@ -194,17 +194,17 @@ struct FixedGrowthMethodsListView: View {
                 .foregroundColor(.gray)
             
             if viewModel.filteredMethods.isEmpty {
-                Text("No methods available")
+                Text("No protocols available")
                     .font(AppTheme.Typography.title3Font())
                     .fontWeight(.medium)
                 
-                Text("Check back later for growth methods")
+                Text("Check back later for growth protocols")
                     .font(AppTheme.Typography.bodyFont())
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 32)
             } else {
-                Text("No matching methods")
+                Text("No matching protocols")
                     .font(AppTheme.Typography.title3Font())
                     .fontWeight(.medium)
                 
@@ -231,7 +231,7 @@ struct FixedGrowthMethodsListView: View {
                 .font(.system(size: 64))
                 .foregroundColor(.orange)
             
-            Text("Error Loading Methods")
+            Text("Error Loading Protocols")
                 .font(AppTheme.Typography.title3Font())
                 .fontWeight(.medium)
             

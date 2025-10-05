@@ -490,7 +490,7 @@ struct PracticeTabView: View {
                     .font(AppTheme.Typography.gravitySemibold(24))
                     .foregroundColor(Color("TextColor"))
                 
-                Text("Great job completing all \(totalSessions) methods today")
+                Text("Great job completing all \(totalSessions) protocols today")
                     .font(AppTheme.Typography.gravityBook(16))
                     .foregroundColor(Color("TextSecondaryColor"))
                     .multilineTextAlignment(.center)

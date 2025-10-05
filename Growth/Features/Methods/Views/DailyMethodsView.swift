@@ -3,12 +3,12 @@ import SwiftUI
 /// View that displays the growth methods scheduled for **today** based on the user's selected routine.
 struct DailyMethodsView: View {
     @StateObject private var viewModel = DailyMethodsViewModel()
-    @State private var selectedMethod: GrowthMethod?
+    @State private var selectedMethod: TrainingProtocol?
 
     var body: some View {
         NavigationView {
             content
-                .navigationTitle("Today's Methods")
+                .navigationTitle("Today's Protocols")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {
@@ -38,7 +38,7 @@ struct DailyMethodsView: View {
         } else if viewModel.isRestDay {
             restDayView
         } else if viewModel.methods.isEmpty {
-            Text("No methods scheduled for today.")
+            Text("No protocols scheduled for today.")
                 .foregroundColor(.secondary)
         } else {
             methodsList
@@ -68,7 +68,7 @@ struct DailyMethodsView: View {
             Text("No Routine Selected")
                 .font(AppTheme.Typography.title3Font())
                 .bold()
-            Text("Select a routine to see your scheduled methods.")
+            Text("Select a routine to see your scheduled protocols.")
                 .multilineTextAlignment(.center)
                 .foregroundColor(.secondary)
         }

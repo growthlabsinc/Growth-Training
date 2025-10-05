@@ -2,7 +2,7 @@ import SwiftUI
 
 struct MethodsOverviewView: View {
     @StateObject private var viewModel = GrowthMethodsViewModel()
-    @State private var selectedMethod: GrowthMethod? = nil
+    @State private var selectedMethod: TrainingProtocol? = nil
     @State private var showDetail = false
     @State private var showAllMethods = false
 
@@ -10,14 +10,14 @@ struct MethodsOverviewView: View {
         NavigationStack {
             ZStack {
                 if viewModel.isLoading {
-                    SwiftUI.ProgressView("Loading methods...")
+                    SwiftUI.ProgressView("Loading protocols...")
                         .progressViewStyle(CircularProgressViewStyle())
                 } else if let error = viewModel.errorMessage {
                     VStack(spacing: 16) {
                         Image(systemName: "exclamationmark.triangle")
                             .font(.system(size: 48))
                             .foregroundColor(.orange)
-                        Text("Error loading methods")
+                        Text("Error loading protocols")
                             .font(AppTheme.Typography.title3Font())
                             .fontWeight(.medium)
                         Text(error)
@@ -63,18 +63,18 @@ struct MethodsOverviewView: View {
                     }
                 }
             }
-            .navigationTitle("Methods")
+            .navigationTitle("Protocols")
             .navigationBarTitleDisplayMode(.large)
             .onAppear {
                 viewModel.loadMethods()
             }
             .sheet(isPresented: $showDetail) {
-                // TODO: Replace with real Method Detail screen
+                // TODO: Replace with real Protocol Detail screen
                 if let method = selectedMethod {
                     VStack(spacing: 24) {
                         Text(method.title)
                             .font(AppTheme.Typography.title1Font())
-                        Text(method.methodDescription)
+                        Text(method.protocolDescription)
                             .font(AppTheme.Typography.bodyFont())
                         Button("Close") { showDetail = false }
                     }
@@ -86,7 +86,7 @@ struct MethodsOverviewView: View {
                     Button(action: {
                         showAllMethods = true
                     }) {
-                        Text("View All Methods")
+                        Text("View All Protocols")
                             .font(AppTheme.Typography.bodyFont())
                             .fontWeight(.medium)
                             .foregroundColor(Color("MintGreen"))
@@ -102,7 +102,7 @@ struct MethodsOverviewView: View {
     }
 
     // Group methods by stage (e.g., Beginner, Intermediate, etc.)
-    private var groupedMethods: [String: [GrowthMethod]] {
+    private var groupedMethods: [String: [TrainingProtocol]] {
         Dictionary(grouping: viewModel.methods) { method in
             stageTitle(for: method.stage)
         }
@@ -123,7 +123,7 @@ struct MethodsOverviewView: View {
 }
 
 struct MethodOverviewCard: View {
-    let method: GrowthMethod
+    let method: TrainingProtocol
     // Use the same margin as Dashboard cards
     private let horizontalMargin: CGFloat = 16
     var body: some View {
@@ -159,7 +159,7 @@ struct MethodOverviewCard: View {
                         .font(AppTheme.Typography.headlineFont())
                         .foregroundColor(.white)
                         .shadow(radius: 8)
-                    Text(method.methodDescription)
+                    Text(method.protocolDescription)
                         .font(AppTheme.Typography.subheadlineFont())
                         .foregroundColor(.white.opacity(0.9))
                         .shadow(radius: 6)

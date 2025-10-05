@@ -6,18 +6,18 @@ struct SessionDetailView: View {
     @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject var authViewModel: AuthViewModel
 
-    init(sessionLog: SessionLog, growthMethod: GrowthMethod?) {
+    init(sessionLog: SessionLog, growthMethod: TrainingProtocol?) {
         _viewModel = StateObject(wrappedValue: SessionDetailViewModel(sessionLog: sessionLog, growthMethod: growthMethod))
     }
 
     var body: some View {
         List {
-            Section(header: Text("Method Details").font(AppTheme.Typography.headlineFont())) {
+            Section(header: Text("Protocol Details").font(AppTheme.Typography.headlineFont())) {
                 HStack {
-                    Text("Method:")
+                    Text("Protocol:")
                         .font(AppTheme.Typography.bodyFont())
                     Spacer()
-                    Text(viewModel.growthMethod?.title ?? "Unknown Method")
+                    Text(viewModel.growthMethod?.title ?? "Unknown Protocol")
                         .font(AppTheme.Typography.bodyFont())
                         .foregroundColor(AppTheme.Colors.textSecondary)
                 }
@@ -72,7 +72,7 @@ struct SessionDetailView: View {
         .sheet(isPresented: $viewModel.showEditSheet) {
             LogSessionView(
                 sessionLogToEdit: viewModel.sessionLog,
-                method: viewModel.growthMethod ?? GrowthMethod(id: "unknown", stage: 0, title: "Unknown Method", methodDescription: "", instructionsText: "")
+                method: viewModel.growthMethod ?? TrainingProtocol(id: "unknown", stage: 0, title: "Unknown Protocol", protocolDescription: "", instructionsText: "")
             )
             .environmentObject(authViewModel)
         }
@@ -160,11 +160,11 @@ struct SessionDetailView_Previews: PreviewProvider {
             moodAfter: .positive
         )
         
-        let mockMethod = GrowthMethod(
+        let mockMethod = TrainingProtocol(
             id: "previewMethod1",
             stage: 1,
-            title: "PE Foundation Method",
-            methodDescription: "A foundational method for beginners to improve vascular health through specific manual exercises.",
+            title: "PE Foundation Protocol",
+            protocolDescription: "A foundational method for beginners to improve vascular health through specific manual exercises.",
             instructionsText: "1. Preparation: Ensure you're in a comfortable, private setting. Have a towel and lubricant ready.\n2. Warm-up: Perform a 5-minute gentle massage to increase blood flow to the area.\n3. Main Exercise: Apply light to moderate pressure using circular motions along the targeted vessels for 10 minutes. Focus on consistent rhythm and pressure.\n4. Cool Down: Perform gentle stretching for 2-3 minutes to relax the area.",
             visualPlaceholderUrl: nil, // No image for preview
             equipmentNeeded: ["Towel", "Lubricant"],
