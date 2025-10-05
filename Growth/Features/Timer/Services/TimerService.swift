@@ -765,7 +765,7 @@ class TimerService: ObservableObject {
     /// Save state when view disappears with active timer
     func saveStateForBackground(protocolName: String? = nil, isQuickPractice: Bool = false) {
         if #available(iOS 16.1, *) {
-            BackgroundTimerTracker.shared.saveTimerState(from: self, protocolName: methodName ?? currentMethodName ?? "Practice Session", isQuickPractice: isQuickPractice)
+            BackgroundTimerTracker.shared.saveTimerState(from: self, methodName: protocolName ?? currentMethodName ?? "Practice Session", isQuickPractice: isQuickPractice)
         }
     }
     
@@ -1173,7 +1173,7 @@ class TimerService: ObservableObject {
         // This should be done BEFORE the regular state save to capture the running state
         if timerState == .running {
             let methodName = currentMethodName ?? "Practice Session"
-            BackgroundTimerTracker.shared.saveTimerState(from: self, protocolName: methodName, isQuickPractice: isQuickPracticeTimer)
+            BackgroundTimerTracker.shared.saveTimerState(from: self, methodName: methodName, isQuickPractice: isQuickPracticeTimer)
         }
         
         // Then save the regular state (which may pause the timer)
@@ -1324,7 +1324,7 @@ class TimerService: ObservableObject {
                         endTime: Date().addingTimeInterval(self.remainingTime),
                         elapsedTime: self.elapsedTime,
                         isPaused: true,
-                        protocolName: self.currentMethodName ?? "Timer",
+                        methodName: self.currentMethodName ?? "Timer",
                         sessionType: self.currentTimerMode.rawValue,
                         activityId: activityId
                     )
@@ -1897,25 +1897,25 @@ class TimerService: ObservableObject {
         guard timerState == .stopped else {
             return
         }
-        
+
         // Configure timer with remote parameters
         let config = TimerConfiguration(
             recommendedDurationSeconds: Int(duration),
             isCountdown: sessionType == .countdown,
             intervals: nil
         )
-        
+
         // Store method info
         currentMethodId = methodId
-        currentMethodName = methodName
-        
+        currentMethodName = protocolName
+
         // Configure timer
         configure(with: config)
-        
+
         // Start the timer
         start()
-        
-        print("✅ TimerService: Remote timer started - \(methodName) for \(duration)s")
+
+        print("✅ TimerService: Remote timer started - \(protocolName) for \(duration)s")
     }
     
     
@@ -1950,7 +1950,7 @@ class TimerService: ObservableObject {
         // Use simplified Live Activity manager
         LiveActivityManager.shared.startTimerActivity(
             methodId: currentMethodId ?? "",
-            protocolName: methodName,
+            methodName: methodName,
             startTime: startTime,
             endTime: endTime,
             duration: targetDuration,
