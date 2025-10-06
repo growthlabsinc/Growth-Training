@@ -87,31 +87,45 @@ struct EducationalResourceDetailView: View {
                         FormattedTextView(content: resource.contentText)
                             .padding(.horizontal, AppTheme.Layout.spacingM)
                             .padding(.bottom, AppTheme.Layout.spacingL)
-                        
-                        // Show citations if content mentions scientific claims
-                        if resource.contentText.contains("research") || 
-                           resource.contentText.contains("study") || 
-                           resource.contentText.contains("evidence") ||
-                           resource.category == .science {
-                            VStack(alignment: .leading, spacing: 8) {
+
+                        // References section (citations)
+                        if viewModel.hasCitations {
+                            VStack(alignment: .leading, spacing: AppTheme.Layout.spacingM) {
                                 Divider()
                                     .padding(.horizontal, AppTheme.Layout.spacingM)
-                                
-                                NavigationLink(destination: AllCitationsView()) {
-                                    HStack {
-                                        Image(systemName: "doc.text.magnifyingglass")
-                                            .font(.system(size: 14))
-                                        Text("View Scientific References")
-                                            .font(AppTheme.Typography.captionFont())
-                                        Spacer()
-                                        Image(systemName: "chevron.right")
-                                            .font(.system(size: 12))
-                                    }
-                                    .foregroundColor(AppTheme.Colors.primary)
+
+                                // Section header
+                                Text("References")
+                                    .font(AppTheme.Typography.headlineFont())
+                                    .foregroundColor(AppTheme.Colors.text)
                                     .padding(.horizontal, AppTheme.Layout.spacingM)
-                                    .padding(.vertical, AppTheme.Layout.spacingS)
+
+                                // Medical disclaimer (if present)
+                                if let disclaimer = viewModel.medicalDisclaimer {
+                                    Text(disclaimer)
+                                        .font(AppTheme.Typography.captionFont())
+                                        .foregroundColor(AppTheme.Colors.textSecondary)
+                                        .padding(.horizontal, AppTheme.Layout.spacingM)
+                                        .padding(.vertical, AppTheme.Layout.spacingS)
+                                        .background(AppTheme.Colors.systemGray.opacity(0.1))
+                                        .cornerRadius(AppTheme.Layout.cornerRadiusS)
+                                        .padding(.horizontal, AppTheme.Layout.spacingM)
+                                }
+
+                                // Citations list
+                                if let citations = viewModel.resource?.citations {
+                                    ForEach(citations) { citation in
+                                        CitationRowView(citation: citation)
+                                            .padding(.horizontal, AppTheme.Layout.spacingM)
+
+                                        if citation.id != citations.last?.id {
+                                            Divider()
+                                                .padding(.horizontal, AppTheme.Layout.spacingM)
+                                        }
+                                    }
                                 }
                             }
+                            .padding(.bottom, AppTheme.Layout.spacingL)
                         }
                     }
                 } else if let errorMessage = viewModel.errorMessage {
