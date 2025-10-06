@@ -16,6 +16,27 @@ class EducationalResourceDetailViewModel: ObservableObject {
         fetchResource()
     }
     
+    // MARK: - Citations Support
+
+    /// Returns true if the resource has citations
+    var hasCitations: Bool {
+        guard let resource = resource else { return false }
+        return resource.citations?.isEmpty == false
+    }
+
+    /// Returns formatted citations in APA style
+    var formattedCitations: [String] {
+        guard let citations = resource?.citations else { return [] }
+        return citations.map { $0.formattedAPA }
+    }
+
+    /// Returns the medical disclaimer text if present
+    var medicalDisclaimer: String? {
+        resource?.medicalDisclaimer
+    }
+
+    // MARK: - Resource Fetching
+
     /// Fetches the resource data from Firestore
     func fetchResource() {
         guard !resourceId.isEmpty else {

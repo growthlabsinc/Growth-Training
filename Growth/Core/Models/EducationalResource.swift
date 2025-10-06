@@ -28,15 +28,23 @@ struct EducationalResource: Codable, Identifiable, Hashable {
     
     /// Local image asset name (takes precedence over visualPlaceholderUrl if provided)
     let localImageName: String?
-    
+
+    /// Array of scientific citations for the resource (optional)
+    let citations: [Citation]?
+
+    /// Medical disclaimer text for safety warnings (optional)
+    let medicalDisclaimer: String?
+
     // Explicit memberwise initializer for previews and testing
-    init(id: String? = nil, title: String, contentText: String, category: ResourceCategory, visualPlaceholderUrl: String? = nil, localImageName: String? = nil) {
+    init(id: String? = nil, title: String, contentText: String, category: ResourceCategory, visualPlaceholderUrl: String? = nil, localImageName: String? = nil, citations: [Citation]? = nil, medicalDisclaimer: String? = nil) {
         self.id = id
         self.title = title
         self.contentText = contentText
         self.category = category
         self.visualPlaceholderUrl = visualPlaceholderUrl
         self.localImageName = localImageName
+        self.citations = citations
+        self.medicalDisclaimer = medicalDisclaimer
     }
     
     // MARK: - Coding Keys
@@ -50,6 +58,8 @@ struct EducationalResource: Codable, Identifiable, Hashable {
         case category // Assumes Firestore field name is "category"
         case visualPlaceholderUrl = "visual_placeholder_url" // Explicitly maps
         case localImageName = "local_image_name" // Maps to "local_image_name" in Firestore
+        case citations // Maps to "citations" array in Firestore
+        case medicalDisclaimer = "medical_disclaimer" // Maps to "medical_disclaimer" in Firestore
     }
     
     // MARK: - Firestore Conversion
@@ -78,10 +88,39 @@ struct EducationalResource: Codable, Identifiable, Hashable {
         self.title = title
         self.contentText = contentText
         self.category = category
-        
+
         // Extract optional fields
         self.visualPlaceholderUrl = data["visual_placeholder_url"] as? String // Corresponds to CodingKeys
         self.localImageName = data["local_image_name"] as? String // Corresponds to CodingKeys
+
+        // Parse citations array if present
+        if let citationsArray = data["citations"] as? [[String: Any]] {
+            self.citations = citationsArray.compactMap { citationData in
+                guard let id = citationData["id"] as? String,
+                      let authors = citationData["authors"] as? String,
+                      let year = citationData["year"] as? String,
+                      let title = citationData["title"] as? String,
+                      let journal = citationData["journal"] as? String else {
+                    return nil
+                }
+                return Citation(
+                    id: id,
+                    authors: authors,
+                    year: year,
+                    title: title,
+                    journal: journal,
+                    volume: citationData["volume"] as? String,
+                    pages: citationData["pages"] as? String,
+                    doi: citationData["doi"] as? String,
+                    url: citationData["url"] as? String
+                )
+            }
+        } else {
+            self.citations = nil
+        }
+
+        // Extract medical disclaimer
+        self.medicalDisclaimer = data["medical_disclaimer"] as? String
     }
     
     /// Converts the EducationalResource to a dictionary for Firestore.
@@ -106,7 +145,15 @@ struct EducationalResource: Codable, Identifiable, Hashable {
         if let localImage = localImageName {
             data[CodingKeys.localImageName.rawValue] = localImage
         }
-        
+
+        if let cites = citations {
+            data[CodingKeys.citations.rawValue] = cites.map { $0.toFirestoreData() }
+        }
+
+        if let disclaimer = medicalDisclaimer {
+            data[CodingKeys.medicalDisclaimer.rawValue] = disclaimer
+        }
+
         return data
     }
 
