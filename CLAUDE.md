@@ -119,6 +119,18 @@ GCLOUD_PROJECT=growth-training-app node scripts/deploy-pe-exercises.js
 - Proper categorization: length, girth, conditioning, eq
 - Classification levels: Beginner, Intermediate, Advanced
 
+### PE Routine Template Deployment
+- Routine templates stored in Firestore `routines` collection
+- Deploy routines: `GCLOUD_PROJECT=growth-training-app node scripts/deploy-pe-routines.js`
+- See `scripts/README-deploy-routines.md` for full documentation
+- 6 structured routine templates (2 beginner, 2 intermediate, 2 advanced)
+- Based on Reddit PE community best practices (r/ScienceofPE, r/GettingBigger)
+- Reference exercises from `growth_exercises` collection by document ID
+- Include complete DaySchedule and MethodSchedule structures
+- Difficulty levels: beginner, intermediate, advanced
+- Focus areas: length, girth, or balanced (both)
+- Routine patterns: 1on/1off, 2on/1off, daily with active recovery, alternating focus
+
 ## Live Activity Architecture
 
 ### Core Components
