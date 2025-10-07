@@ -103,6 +103,24 @@ struct EducationalResource: Codable, Identifiable, Hashable {
                       let journal = citationData["journal"] as? String else {
                     return nil
                 }
+
+                // Parse citation type, default to journalArticle
+                let citationType: CitationType
+                if let typeString = citationData["citation_type"] as? String,
+                   let type = CitationType(rawValue: typeString) {
+                    citationType = type
+                } else {
+                    citationType = .journalArticle
+                }
+
+                // Parse access date if present
+                let accessDate: Date?
+                if let timestamp = citationData["access_date"] as? Timestamp {
+                    accessDate = timestamp.dateValue()
+                } else {
+                    accessDate = nil
+                }
+
                 return Citation(
                     id: id,
                     authors: authors,
@@ -110,9 +128,13 @@ struct EducationalResource: Codable, Identifiable, Hashable {
                     title: title,
                     journal: journal,
                     volume: citationData["volume"] as? String,
+                    issue: citationData["issue"] as? String,
                     pages: citationData["pages"] as? String,
                     doi: citationData["doi"] as? String,
-                    url: citationData["url"] as? String
+                    pmid: citationData["pmid"] as? String,
+                    url: citationData["url"] as? String,
+                    accessDate: accessDate,
+                    citationType: citationType
                 )
             }
         } else {
