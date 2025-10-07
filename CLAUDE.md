@@ -105,7 +105,19 @@ firebase functions:log --only generateAIResponse
 
 # Deploy knowledge base content
 node deployPelvicFloorKnowledge.js  # or other deployment scripts
+
+# Deploy PE exercise library
+GCLOUD_PROJECT=growth-training-app node scripts/deploy-pe-exercises.js
 ```
+
+### PE Exercise Library Deployment
+- Exercise data stored in Firestore `growth_exercises` collection
+- Deploy exercises: `GCLOUD_PROJECT=growth-training-app node scripts/deploy-pe-exercises.js`
+- See `scripts/README-deploy-exercises.md` for full documentation
+- 16+ exercises covering manual methods, device-based training, and advanced techniques
+- All exercises include comprehensive safety notes and medical disclaimers
+- Proper categorization: length, girth, conditioning, eq
+- Classification levels: Beginner, Intermediate, Advanced
 
 ## Live Activity Architecture
 
