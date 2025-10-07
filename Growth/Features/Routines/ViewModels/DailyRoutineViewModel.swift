@@ -3,10 +3,10 @@ import Combine
 import FirebaseFirestore
 import FirebaseAuth
 
-/// ViewModel that loads the GrowthMethods for a DaySchedule and tracks routine timer state.
+/// ViewModel that loads the TrainingProtocols for a DaySchedule and tracks routine timer state.
 @MainActor
 class DailyRoutineViewModel: ObservableObject {
-    @Published var methods: [GrowthMethod] = []
+    @Published var methods: [TrainingProtocol] = []
     @Published var isTimerRunning: Bool = false
     @Published var remainingSeconds: Int = 0
     
@@ -147,12 +147,12 @@ class DailyRoutineViewModel: ObservableObject {
     // MARK: - Private Helpers
     private func loadMethods() {
         guard let ids = schedule.methodIds, !ids.isEmpty else { return }
-        var loadedMethods: [GrowthMethod] = []
+        var loadedMethods: [TrainingProtocol] = []
         let dispatchGroup = DispatchGroup()
         
         for id in ids {
             dispatchGroup.enter()
-            GrowthMethodService.shared.fetchMethod(withId: id) { result in
+            TrainingProtocolService.shared.fetchMethod(withId: id) { result in
                 switch result {
                 case .success(let method):
                     loadedMethods.append(method)

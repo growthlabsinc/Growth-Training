@@ -11,7 +11,7 @@ struct MethodsGuideView: View {
     @StateObject private var viewModel = MethodsGuideViewModel()
     @State private var searchText = ""
     @State private var selectedCategory = "All"
-    @State private var selectedMethod: GrowthMethod?
+    @State private var selectedMethod: TrainingProtocol?
     @State private var showMethodDetail = false
 
     var body: some View {
@@ -107,11 +107,11 @@ struct MethodsGuideView: View {
     }
     
     // MARK: - Filtering Logic
-    private var filteredMethods: [GrowthMethod] {
+    private var filteredMethods: [TrainingProtocol] {
         viewModel.methods.filter { method in
             let matchesSearch = searchText.isEmpty || 
                 method.title.localizedCaseInsensitiveContains(searchText) ||
-                method.methodDescription.localizedCaseInsensitiveContains(searchText)
+                method.protocolDescription.localizedCaseInsensitiveContains(searchText)
             
             let matchesCategory = selectedCategory == "All" || 
                 method.categories.contains(selectedCategory)
@@ -144,7 +144,7 @@ struct CategoryChip: View {
 
 // MARK: - Method Card Component
 struct MethodCard: View {
-    let method: GrowthMethod
+    let method: TrainingProtocol
     let action: () -> Void
     
     var body: some View {
@@ -183,7 +183,7 @@ struct MethodCard: View {
                         .multilineTextAlignment(.leading)
                         .lineLimit(2)
                     
-                    Text(method.methodDescription)
+                    Text(method.protocolDescription)
                         .font(AppTheme.Typography.gravityBook(12))
                         .foregroundColor(Color("TextSecondaryColor"))
                         .multilineTextAlignment(.leading)
@@ -218,7 +218,7 @@ struct MethodCard: View {
 
 // MARK: - Method Detail Guide View
 struct MethodDetailGuideView: View {
-    let method: GrowthMethod
+    let method: TrainingProtocol
     let onDismiss: () -> Void
     @Environment(\.dismiss) private var dismiss
     
@@ -321,7 +321,7 @@ struct MethodDetailGuideView: View {
                 .font(AppTheme.Typography.gravitySemibold(24))
                 .foregroundColor(Color("TextColor"))
             
-            Text(method.methodDescription)
+            Text(method.protocolDescription)
                 .font(AppTheme.Typography.gravityBook(16))
                 .foregroundColor(Color("TextSecondaryColor"))
                 .fixedSize(horizontal: false, vertical: true)

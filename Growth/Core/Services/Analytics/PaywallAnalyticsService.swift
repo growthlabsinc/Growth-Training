@@ -44,7 +44,7 @@ public class PaywallAnalyticsService: ObservableObject {
     
     // Access entitlements through UserDefaults to avoid MainActor isolation issues
     private func checkPremiumStatus() -> Bool {
-        let userDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthmethod") ?? UserDefaults.standard
+        let userDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthtraining") ?? UserDefaults.standard
         return userDefaults.bool(forKey: "hasPremium")
     }
     

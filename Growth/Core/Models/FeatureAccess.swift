@@ -22,7 +22,7 @@ public class DefaultEntitlementProvider: EntitlementProvider {
     private let userDefaults: UserDefaults
     
     public init() {
-        self.userDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthmethod") ?? UserDefaults.standard
+        self.userDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthtraining") ?? UserDefaults.standard
     }
     
     public var hasPremium: Bool {

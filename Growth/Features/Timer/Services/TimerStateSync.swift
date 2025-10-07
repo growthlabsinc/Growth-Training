@@ -288,7 +288,7 @@ class TimerStateSync {
                     startedAt: startedAt,
                     pausedAt: pausedAt,
                     duration: duration,
-                    methodName: methodName,
+                    protocolName: methodName,
                     sessionType: sessionType
                 )
                 

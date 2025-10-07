@@ -2,8 +2,8 @@
 // This file contains all the build settings for development builds
 
 // Bundle Configuration
-PRODUCT_BUNDLE_IDENTIFIER = com.growthlabs.growthmethod.dev
-PRODUCT_NAME = Growth: Method Dev
+PRODUCT_BUNDLE_IDENTIFIER = com.growthlabs.growthtraining.dev
+PRODUCT_NAME = Growth: Training Dev
 PRODUCT_MODULE_NAME = Growth
 DEVELOPMENT_TEAM = 62T6J77P6R
 

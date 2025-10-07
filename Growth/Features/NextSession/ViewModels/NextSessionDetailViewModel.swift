@@ -5,7 +5,7 @@ import Combine
 @MainActor
 class NextSessionDetailViewModel: ObservableObject {
     // MARK: - Published
-    @Published var method: GrowthMethod?
+    @Published var method: TrainingProtocol?
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
 

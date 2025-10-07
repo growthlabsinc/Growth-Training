@@ -13,7 +13,7 @@ struct RoutineDetailView: View {
     @StateObject private var viewModel = RoutineDetailViewModel()
     let routineId: String
     @State private var expandedDays: Set<Int> = []
-    @State private var methodsCache: [String: GrowthMethod] = [:]
+    @State private var methodsCache: [String: TrainingProtocol] = [:]
     @Environment(\.dismiss) private var dismiss
     @State private var showingDeleteAlert = false
     @State private var showingShareToggle = false
@@ -23,7 +23,7 @@ struct RoutineDetailView: View {
     @State private var deleteError: String?
     @State private var selectedReportReason: ReportReason?
     
-    private let growthMethodService = GrowthMethodService.shared
+    private let growthMethodService = TrainingProtocolService.shared
     
     var body: some View {
         ZStack {

@@ -7,7 +7,7 @@ import FirebaseAuth
 public class CreateCustomRoutineViewModel: ObservableObject {
     @Published var routineName: String = ""
     @Published var routineDescription: String = ""
-    @Published var selectedMethods: [GrowthMethod] = []
+    @Published var selectedMethods: [TrainingProtocol] = []
     @Published var selectedDifficulty: RoutineDifficulty = .intermediate
     @Published var selectedDuration: Int = 14
     @Published var shareWithCommunity: Bool = false

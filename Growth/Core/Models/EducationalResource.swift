@@ -20,8 +20,11 @@ struct EducationalResource: Codable, Identifiable, Hashable {
     /// Main content text of the resource
     let contentText: String
     
-    /// Category of the resource
+    /// Category of the resource (stored as string, may not match enum)
     let category: ResourceCategory
+
+    /// Raw category string from Firestore (for categories not in enum)
+    let categoryRaw: String?
     
     /// URL for an image placeholder
     let visualPlaceholderUrl: String?
@@ -42,18 +45,92 @@ struct EducationalResource: Codable, Identifiable, Hashable {
     /// Possible values: "verified", "broken_links", "needs_review"
     let verificationStatus: String?
 
+    /// Subcategories for more specific classification (optional)
+    let subcategories: [String]?
+
+    /// Reading difficulty level (optional)
+    let readingLevel: String?
+
+    /// Word count of the article (optional)
+    let wordCount: Int?
+
+    /// Number of citations (optional)
+    let citationCount: Int?
+
+    /// Medical review status (optional)
+    let medicalReviewStatus: String?
+
+    /// Legal review status (optional)
+    let legalReviewStatus: String?
+
+    /// Last updated timestamp (optional)
+    let lastUpdated: String?
+
+    /// Firestore creation timestamp (optional)
+    let createdAt: Date?
+
+    /// Firestore update timestamp (optional)
+    let updatedAt: Date?
+
+    // MARK: - Custom Codable Implementation
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        // Decode simple fields
+        title = try container.decode(String.self, forKey: .title)
+        contentText = try container.decode(String.self, forKey: .contentText)
+        visualPlaceholderUrl = try container.decodeIfPresent(String.self, forKey: .visualPlaceholderUrl)
+        localImageName = try container.decodeIfPresent(String.self, forKey: .localImageName)
+        citations = try container.decodeIfPresent([Citation].self, forKey: .citations)
+        medicalDisclaimer = try container.decodeIfPresent(String.self, forKey: .medicalDisclaimer)
+        lastVerified = try container.decodeIfPresent(Date.self, forKey: .lastVerified)
+        verificationStatus = try container.decodeIfPresent(String.self, forKey: .verificationStatus)
+        subcategories = try container.decodeIfPresent([String].self, forKey: .subcategories)
+        readingLevel = try container.decodeIfPresent(String.self, forKey: .readingLevel)
+        wordCount = try container.decodeIfPresent(Int.self, forKey: .wordCount)
+        citationCount = try container.decodeIfPresent(Int.self, forKey: .citationCount)
+        medicalReviewStatus = try container.decodeIfPresent(String.self, forKey: .medicalReviewStatus)
+        legalReviewStatus = try container.decodeIfPresent(String.self, forKey: .legalReviewStatus)
+        lastUpdated = try container.decodeIfPresent(String.self, forKey: .lastUpdated)
+        createdAt = try container.decodeIfPresent(Date.self, forKey: .createdAt)
+        updatedAt = try container.decodeIfPresent(Date.self, forKey: .updatedAt)
+
+        // Decode category with fallback
+        let categoryString = try container.decode(String.self, forKey: .category)
+        categoryRaw = categoryString
+
+        // Try to map to enum, fallback to .science if unknown
+        if let mappedCategory = ResourceCategory(rawValue: categoryString) {
+            category = mappedCategory
+        } else {
+            // Map unknown categories to .science as default
+            category = .science
+        }
+    }
+
     // Explicit memberwise initializer for previews and testing
-    init(id: String? = nil, title: String, contentText: String, category: ResourceCategory, visualPlaceholderUrl: String? = nil, localImageName: String? = nil, citations: [Citation]? = nil, medicalDisclaimer: String? = nil, lastVerified: Date? = nil, verificationStatus: String? = nil) {
+    init(id: String? = nil, title: String, contentText: String, category: ResourceCategory, visualPlaceholderUrl: String? = nil, localImageName: String? = nil, citations: [Citation]? = nil, medicalDisclaimer: String? = nil, lastVerified: Date? = nil, verificationStatus: String? = nil, subcategories: [String]? = nil, readingLevel: String? = nil, wordCount: Int? = nil, citationCount: Int? = nil, medicalReviewStatus: String? = nil, legalReviewStatus: String? = nil, lastUpdated: String? = nil, createdAt: Date? = nil, updatedAt: Date? = nil, categoryRaw: String? = nil) {
         self.id = id
         self.title = title
         self.contentText = contentText
         self.category = category
+        self.categoryRaw = categoryRaw
         self.visualPlaceholderUrl = visualPlaceholderUrl
         self.localImageName = localImageName
         self.citations = citations
         self.medicalDisclaimer = medicalDisclaimer
         self.lastVerified = lastVerified
         self.verificationStatus = verificationStatus
+        self.subcategories = subcategories
+        self.readingLevel = readingLevel
+        self.wordCount = wordCount
+        self.citationCount = citationCount
+        self.medicalReviewStatus = medicalReviewStatus
+        self.legalReviewStatus = legalReviewStatus
+        self.lastUpdated = lastUpdated
+        self.createdAt = createdAt
+        self.updatedAt = updatedAt
     }
     
     // MARK: - Coding Keys
@@ -65,12 +142,22 @@ struct EducationalResource: Codable, Identifiable, Hashable {
         case title // Assumes Firestore field name is "title"
         case contentText = "content_text" // Explicitly maps to "content_text" in Firestore
         case category // Assumes Firestore field name is "category"
+        case categoryRaw // Not stored in Firestore, computed from category
         case visualPlaceholderUrl = "visual_placeholder_url" // Explicitly maps
         case localImageName = "local_image_name" // Maps to "local_image_name" in Firestore
         case citations // Maps to "citations" array in Firestore
         case medicalDisclaimer = "medical_disclaimer" // Maps to "medical_disclaimer" in Firestore
         case lastVerified = "last_verified" // Maps to "last_verified" timestamp in Firestore
         case verificationStatus = "verification_status" // Maps to "verification_status" string in Firestore
+        case subcategories
+        case readingLevel = "reading_level"
+        case wordCount = "word_count"
+        case citationCount = "citation_count"
+        case medicalReviewStatus = "medical_review_status"
+        case legalReviewStatus = "legal_review_status"
+        case lastUpdated = "last_updated"
+        case createdAt = "created_at"
+        case updatedAt = "updated_at"
     }
     
     // MARK: - Firestore Conversion
@@ -90,15 +177,21 @@ struct EducationalResource: Codable, Identifiable, Hashable {
         // Extract required fields from the document data
         guard let title = data["title"] as? String,
               let contentText = data["content_text"] as? String, // Corresponds to CodingKeys
-              let categoryRaw = data["category"] as? String,
-              let category = ResourceCategory(rawValue: categoryRaw) else { // Ensure categoryRaw matches enum cases
+              let categoryString = data["category"] as? String else {
             Logger.error("Error: Missing or invalid required fields (title, content_text, category) for document ID: \(document.documentID)")
             return nil
         }
-        
+
         self.title = title
         self.contentText = contentText
-        self.category = category
+        self.categoryRaw = categoryString
+
+        // Try to map category to enum, fallback to .science if unknown
+        if let mappedCategory = ResourceCategory(rawValue: categoryString) {
+            self.category = mappedCategory
+        } else {
+            self.category = .science
+        }
 
         // Extract optional fields
         self.visualPlaceholderUrl = data["visual_placeholder_url"] as? String // Corresponds to CodingKeys
@@ -162,6 +255,28 @@ struct EducationalResource: Codable, Identifiable, Hashable {
             self.lastVerified = nil
         }
         self.verificationStatus = data["verification_status"] as? String
+
+        // Extract additional metadata fields
+        self.subcategories = data["subcategories"] as? [String]
+        self.readingLevel = data["reading_level"] as? String
+        self.wordCount = data["word_count"] as? Int
+        self.citationCount = data["citation_count"] as? Int
+        self.medicalReviewStatus = data["medical_review_status"] as? String
+        self.legalReviewStatus = data["legal_review_status"] as? String
+        self.lastUpdated = data["last_updated"] as? String
+
+        // Extract Firestore timestamps
+        if let createdTimestamp = data["created_at"] as? Timestamp {
+            self.createdAt = createdTimestamp.dateValue()
+        } else {
+            self.createdAt = nil
+        }
+
+        if let updatedTimestamp = data["updated_at"] as? Timestamp {
+            self.updatedAt = updatedTimestamp.dateValue()
+        } else {
+            self.updatedAt = nil
+        }
     }
     
     /// Converts the EducationalResource to a dictionary for Firestore.

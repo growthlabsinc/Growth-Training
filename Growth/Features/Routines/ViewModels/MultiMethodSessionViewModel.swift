@@ -20,16 +20,16 @@ class MultiMethodSessionViewModel: ObservableObject {
     @Published var totalMethods: Int = 0
     
     /// Array of all methods in the session
-    @Published var methods: [GrowthMethod] = []
+    @Published var methods: [TrainingProtocol] = []
     
     /// Method schedules with custom durations
     private var methodSchedules: [MethodSchedule] = []
     
     /// Current method being practiced
-    @Published var currentMethod: GrowthMethod?
+    @Published var currentMethod: TrainingProtocol?
     
     /// Next method in queue (nil if on last method)
-    @Published var nextMethod: GrowthMethod?
+    @Published var nextMethod: TrainingProtocol?
     
     /// Total session time in minutes
     @Published var totalSessionTime: Int = 0
@@ -59,7 +59,7 @@ class MultiMethodSessionViewModel: ObservableObject {
     // MARK: - Private Properties
     
     private let schedule: DaySchedule
-    private let growthMethodService: GrowthMethodService
+    private let growthMethodService: TrainingProtocolService
     private var cancellables = Set<AnyCancellable>()
     private var upNextTimer: Timer?
     
@@ -139,7 +139,7 @@ class MultiMethodSessionViewModel: ObservableObject {
     
     // MARK: - Initialization
     
-    init(schedule: DaySchedule, growthMethodService: GrowthMethodService = .shared) {
+    init(schedule: DaySchedule, growthMethodService: TrainingProtocolService = .shared) {
         self.schedule = schedule
         self.growthMethodService = growthMethodService
         
@@ -471,7 +471,7 @@ class MultiMethodSessionViewModel: ObservableObject {
         // Load all methods for the session
         Task { @MainActor in
             do {
-                var loadedMethods: [GrowthMethod] = []
+                var loadedMethods: [TrainingProtocol] = []
                 
                 // Load methods sequentially to preserve order
                 for methodId in methodIds {

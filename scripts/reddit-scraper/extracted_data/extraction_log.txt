@@ -1,0 +1,21 @@
+2025-10-07 14:09:51,965 - INFO - ✅ Successfully connected to Reddit API
+2025-10-07 14:09:51,966 - INFO - Starting extraction from 3 subreddits
+2025-10-07 14:09:51,966 - INFO - 
+==================================================
+2025-10-07 14:09:51,966 - INFO - Processing r/thescienceofpe
+2025-10-07 14:09:51,966 - INFO - ==================================================
+2025-10-07 14:09:51,966 - INFO - Extracting wiki pages from r/thescienceofpe
+2025-10-07 14:09:51,966 - INFO -   - Fetching wiki page: index
+2025-10-07 14:09:54,155 - INFO -   - Fetching wiki page: beginner
+2025-10-07 14:09:54,291 - WARNING -   - Could not fetch wiki page beginner: received 404 HTTP response
+2025-10-07 14:09:54,291 - INFO -   - Fetching wiki page: exercises
+2025-10-07 14:09:54,440 - WARNING -   - Could not fetch wiki page exercises: received 404 HTTP response
+2025-10-07 14:09:54,440 - INFO -   - Fetching wiki page: routines
+2025-10-07 14:09:54,579 - WARNING -   - Could not fetch wiki page routines: received 404 HTTP response
+2025-10-07 14:09:54,579 - INFO -   - Fetching wiki page: safety
+2025-10-07 14:09:54,719 - WARNING -   - Could not fetch wiki page safety: received 404 HTTP response
+2025-10-07 14:09:54,719 - INFO -   - Fetching wiki page: glossary
+2025-10-07 14:09:54,854 - WARNING -   - Could not fetch wiki page glossary: received 404 HTTP response
+2025-10-07 14:09:54,854 - INFO -   - Fetching wiki page: faq
+2025-10-07 14:09:54,990 - WARNING -   - Could not fetch wiki page faq: received 404 HTTP response
+2025-10-07 14:09:54,990 - INFO -   - Fetching wiki page: progression

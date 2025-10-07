@@ -7,13 +7,13 @@ import Combine
 class RecommendedRoutineCardViewModel: ObservableObject {
     // MARK: - Published Properties
     @Published private(set) var nextDaySchedule: DaySchedule?
-    @Published private(set) var nextMethod: GrowthMethod?
+    @Published private(set) var nextMethod: TrainingProtocol?
     @Published private(set) var isLoadingMethod: Bool = false
     @Published private(set) var errorMessage: String? = nil
     
     // MARK: - Properties
     private let routine: Routine?
-    private let methodService = GrowthMethodService.shared
+    private let methodService = TrainingProtocolService.shared
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Initialization

@@ -25,7 +25,7 @@ class FirestoreService {
         static let users = "users"
         static let methods = "growthMethods"
         static let logs = "sessionLogs"
-        static let resources = "educationalResources"
+        static let resources = "educational_resources"
         static let badges = "badges"
     }
     
@@ -205,13 +205,13 @@ class FirestoreService {
     /// Retrieves a growth method by ID
     /// - Parameters:
     ///   - methodId: The ID of the growth method to retrieve
-    ///   - completion: Completion handler with optional GrowthMethod and Error
-    func getGrowthMethod(methodId: String, completion: @escaping (Growth.GrowthMethod?, Error?) -> Void) {
+    ///   - completion: Completion handler with optional TrainingProtocol and Error
+    func getGrowthMethod(methodId: String, completion: @escaping (Growth.TrainingProtocol?, Error?) -> Void) {
         let docRef = db.collection(Collection.methods).document(methodId)
         
         docRef.getDocument { (document, error) in
             if let error = error {
-                completion(nil as Growth.GrowthMethod?, error)
+                completion(nil as Growth.TrainingProtocol?, error)
                 return
             }
             
@@ -220,7 +220,7 @@ class FirestoreService {
                 return
             }
             
-            if let method = Growth.GrowthMethod(document: document) {
+            if let method = Growth.TrainingProtocol(document: document) {
                 completion(method, nil)
             } else {
                 completion(nil, NSError(domain: "FirestoreService", code: 500, userInfo: [NSLocalizedDescriptionKey: "Failed to parse growth method data"]))
@@ -229,8 +229,8 @@ class FirestoreService {
     }
     
     /// Retrieves all growth methods
-    /// - Parameter completion: Completion handler with array of Growth.GrowthMethod and optional Error
-    func getAllGrowthMethods(completion: @escaping ([Growth.GrowthMethod], Error?) -> Void) {
+    /// - Parameter completion: Completion handler with array of Growth.TrainingProtocol and optional Error
+    func getAllGrowthMethods(completion: @escaping ([Growth.TrainingProtocol], Error?) -> Void) {
         db.collection(Collection.methods)
             .order(by: "stage")
             .getDocuments { (querySnapshot, error) in
@@ -239,10 +239,10 @@ class FirestoreService {
                     return
                 }
                 
-                var methods: [Growth.GrowthMethod] = []
+                var methods: [Growth.TrainingProtocol] = []
                 
                 for document in querySnapshot?.documents ?? [] {
-                    if let method = Growth.GrowthMethod(document: document) {
+                    if let method = Growth.TrainingProtocol(document: document) {
                         methods.append(method)
                     }
                 }
@@ -254,8 +254,8 @@ class FirestoreService {
     /// Retrieves growth methods by stage
     /// - Parameters:
     ///   - stage: The stage to filter by
-    ///   - completion: Completion handler with array of Growth.GrowthMethod and optional Error
-    func getGrowthMethodsByStage(stage: Int, completion: @escaping ([Growth.GrowthMethod], Error?) -> Void) {
+    ///   - completion: Completion handler with array of Growth.TrainingProtocol and optional Error
+    func getGrowthMethodsByStage(stage: Int, completion: @escaping ([Growth.TrainingProtocol], Error?) -> Void) {
         db.collection(Collection.methods)
             .whereField("stage", isEqualTo: stage)
             .getDocuments { (querySnapshot, error) in
@@ -264,10 +264,10 @@ class FirestoreService {
                     return
                 }
                 
-                var methods: [Growth.GrowthMethod] = []
+                var methods: [Growth.TrainingProtocol] = []
                 
                 for document in querySnapshot?.documents ?? [] {
-                    if let method = Growth.GrowthMethod(document: document) {
+                    if let method = Growth.TrainingProtocol(document: document) {
                         methods.append(method)
                     }
                 }
@@ -603,19 +603,7 @@ class FirestoreService {
         Logger.info("🔍 FirestoreService: Starting getAllEducationalResources request")
         Logger.info("📱 Current user: \(Auth.auth().currentUser?.uid ?? "none")")
         Logger.info("📱 User authenticated: \(Auth.auth().currentUser != nil)")
-        
-        // Define the allowed articles for the Learn tab
-        let allowedArticleTitles = [
-            "Beginner's Guide to PE Training: Unlocking Your Growth Potential",
-            "Preparing for PE: Foundations for Health and Growth",
-            "Intermediate PE: Mastering Length and Girth Techniques",
-            "Intermediate PE: Progressive Training for Size Development",
-            "Advanced PE: Advanced Techniques for Maximum Gains",
-            "PE Methods – An Evolving Approach to Male Enhancement and Growth",
-            "The Core Mechanisms of Tissue Expansion and Growth",
-            "Holistic Male Sexual Health and Growth: Diet, Exercise, and Lifestyle"
-        ]
-        
+
         db.collection(Collection.resources)
             .order(by: "title") // Optionally order by title, or another relevant field
             .getDocuments { (querySnapshot, error) in
@@ -643,21 +631,19 @@ class FirestoreService {
                         // Explicitly assign the document ID, even though @DocumentID should handle it.
                         // This is a fallback/debugging step.
                         resource.id = document.documentID
-                        
-                        // Filter to only include allowed articles for the Learn tab
-                        if allowedArticleTitles.contains(resource.title) {
-                            return resource
-                        } else {
-                            Logger.info("📋 Filtering out article: \(resource.title)")
-                            return nil
-                        }
+                        Logger.info("📚 Decoded resource: \(resource.title) (category: \(resource.category.rawValue))")
+                        return resource
                     } catch {
                         Logger.info("❌ Error decoding educational resource \(document.documentID): \(error.localizedDescription)")
+                        Logger.info("❌ Full error: \(error)")
+                        // Print document data for debugging
+                        let data = document.data()
+                        Logger.info("❌ Document keys: \(data.keys.joined(separator: ", "))")
                         return nil // If decoding fails, exclude this item
                     }
                 }
-                
-                Logger.info("✅ FirestoreService: Successfully decoded \(resources.count) resources after filtering")
+
+                Logger.info("✅ FirestoreService: Successfully decoded \(resources.count) resources")
                 completion(.success(resources))
             }
     }

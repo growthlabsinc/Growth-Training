@@ -11,7 +11,7 @@ struct Goal: Identifiable, Codable {
     var title: String
     var description: String
 
-    /// IDs of GrowthMethod documents this goal applies to.
+    /// IDs of TrainingProtocol documents this goal applies to.
     var associatedMethodIds: [String]
 
     /// Numeric target value (e.g. 30 sessions, 600 minutes)

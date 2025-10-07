@@ -10,7 +10,7 @@ class EditCustomRoutineViewModel: ObservableObject {
     @Published var selectedDifficulty: RoutineDifficulty = .intermediate
     @Published var selectedDuration = 14
     @Published var shareWithCommunity = false
-    @Published var selectedMethods: [GrowthMethod] = []
+    @Published var selectedMethods: [TrainingProtocol] = []
     @Published var daySchedules: [DaySchedule] = []
     @Published var methodSchedulingConfigs: [String: MethodSchedulingConfig] = [:]
     
@@ -20,7 +20,7 @@ class EditCustomRoutineViewModel: ObservableObject {
     @Published var saveSuccess = false
     
     private let routineService = RoutineService.shared
-    private let growthMethodService = GrowthMethodService.shared
+    private let growthMethodService = TrainingProtocolService.shared
     private var cancellables = Set<AnyCancellable>()
     
     func loadRoutine(_ routine: Routine) {
@@ -62,7 +62,7 @@ class EditCustomRoutineViewModel: ObservableObject {
         }
         
         // Load all methods
-        var loadedMethods: [GrowthMethod] = []
+        var loadedMethods: [TrainingProtocol] = []
         let group = DispatchGroup()
         
         for methodId in methodIds {

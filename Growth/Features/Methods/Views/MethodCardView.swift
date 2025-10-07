@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct MethodCardView: View {
-    let method: GrowthMethod
+    let method: TrainingProtocol
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -33,7 +33,7 @@ struct MethodCardView: View {
             }
             
             // Description
-            Text(method.methodDescription)
+            Text(method.protocolDescription)
                 .font(AppTheme.Typography.subheadlineFont())
                 .foregroundColor(Color("TextSecondaryColor"))
                 .lineLimit(3)
@@ -83,11 +83,11 @@ struct MethodCardView: View {
 }
 
 #Preview {
-    MethodCardView(method: GrowthMethod(
+    MethodCardView(method: TrainingProtocol(
         id: "preview1",
         stage: 1,
         title: "Basic Manual Stretch",
-        methodDescription: "The fundamental length exercise for tissue elongation",
+        protocolDescription: "The fundamental length exercise for tissue elongation",
         instructionsText: "Follow the instructions...",
         estimatedDurationMinutes: 10,
         categories: ["Length"]

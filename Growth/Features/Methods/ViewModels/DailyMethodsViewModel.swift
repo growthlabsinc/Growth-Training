@@ -6,7 +6,7 @@ import Combine
 @MainActor
 final class DailyMethodsViewModel: ObservableObject {
     // MARK: - Published
-    @Published private(set) var methods: [GrowthMethod] = []
+    @Published private(set) var methods: [TrainingProtocol] = []
     @Published private(set) var scheduleForToday: DaySchedule?
     @Published private(set) var isLoading: Bool = false
     @Published private(set) var errorMessage: String?
@@ -16,7 +16,7 @@ final class DailyMethodsViewModel: ObservableObject {
     // MARK: - Dependencies
     private let routineService = RoutineService.shared
     private let userService = UserService()
-    private let methodService = GrowthMethodService.shared
+    private let methodService = TrainingProtocolService.shared
 
     private var cancellables = Set<AnyCancellable>()
 
@@ -100,12 +100,12 @@ final class DailyMethodsViewModel: ObservableObject {
             case .success(let allMethods):
                 Task { @MainActor in
                     // Create a dictionary for fast lookup
-                    let methodsDict: [String: GrowthMethod] = Dictionary(uniqueKeysWithValues: allMethods.compactMap { method in
+                    let methodsDict: [String: TrainingProtocol] = Dictionary(uniqueKeysWithValues: allMethods.compactMap { method in
                         guard let id = method.id else { return nil }
                         return (id, method)
                     })
                     
-                    // Sort method schedules by order and map to GrowthMethod objects
+                    // Sort method schedules by order and map to TrainingProtocol objects
                     let sortedMethods = methodSchedules
                         .sorted { $0.order < $1.order }
                         .compactMap { schedule in methodsDict[schedule.methodId] }

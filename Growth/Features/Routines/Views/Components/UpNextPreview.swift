@@ -11,7 +11,7 @@ import SwiftUI
 struct UpNextPreview: View {
     // MARK: - Properties
     
-    let nextMethod: GrowthMethod
+    let nextMethod: TrainingProtocol
     @State private var isVisible: Bool = false
     
     // MARK: - Body
@@ -45,7 +45,7 @@ struct UpNextPreview: View {
                     .foregroundColor(Color("TextColor"))
                     .lineLimit(1)
                 
-                Text(nextMethod.methodDescription)
+                Text(nextMethod.protocolDescription)
                     .font(AppTheme.Typography.gravityBook(13))
                     .foregroundColor(Color("TextSecondaryColor"))
                     .lineLimit(2)
@@ -81,12 +81,12 @@ struct UpNextPreview: View {
 #Preview {
     VStack {
         UpNextPreview(
-            nextMethod: GrowthMethod(
+            nextMethod: TrainingProtocol(
                 id: "preview1",
                 stage: 2,
                 classification: "Intermediate",
                 title: "PE Advanced Method",
-                methodDescription: "Intermediate circular movements for enhanced circulation",
+                protocolDescription: "Intermediate circular movements for enhanced circulation",
                 instructionsText: "Sample instructions",
                 estimatedDurationMinutes: 15,
                 categories: ["intermediate"],

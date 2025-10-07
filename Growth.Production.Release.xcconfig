@@ -2,8 +2,8 @@
 // This file contains all the build settings for App Store releases
 
 // Bundle Configuration
-PRODUCT_BUNDLE_IDENTIFIER = com.growthlabs.growthmethod
-PRODUCT_NAME = Growth: Method
+PRODUCT_BUNDLE_IDENTIFIER = com.growthlabs.growthtraining
+PRODUCT_NAME = Growth: Training
 PRODUCT_MODULE_NAME = Growth
 DEVELOPMENT_TEAM = 62T6J77P6R
 

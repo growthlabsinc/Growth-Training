@@ -18,7 +18,7 @@ import Combine
 public class SimplifiedEntitlementManagerWithTrial: ObservableObject {
 
     // MARK: - App Group UserDefaults
-    static let userDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthmethod")!
+    static let userDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthtraining")!
 
     // MARK: - Singleton
     public static let shared = SimplifiedEntitlementManagerWithTrial()
@@ -45,7 +45,7 @@ public class SimplifiedEntitlementManagerWithTrial: ObservableObject {
     @Published private(set) var nextLimitResetTime: Date?
 
     // MARK: - Private Properties
-    private let keychainService = "com.growthlabs.growthmethod"
+    private let keychainService = "com.growthlabs.growthtraining"
     private let functions = Functions.functions()
     private var serverTimeOffset: TimeInterval = 0
     private var updateTimer: Timer?

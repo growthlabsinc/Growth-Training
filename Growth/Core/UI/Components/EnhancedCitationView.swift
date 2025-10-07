@@ -123,7 +123,7 @@ struct EnhancedCitationDetailView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var copiedToClipboard = false
     @State private var showingExportSheet = false
-    @State private var selectedExportFormat: ExportFormat = .apa
+    @State private var selectedExportFormat: CitationExportFormat = .apa
 
     var body: some View {
         ScrollView {
@@ -272,17 +272,17 @@ struct EnhancedCitationDetailView: View {
     }
 
     private var citationTypeBadge: some View {
-        HStack(spacing: AppTheme.Layout.spacingXS) {
-            let typeText: String
-            switch citation.citationType {
-            case .journalArticle: typeText = "Journal Article"
-            case .book: typeText = "Book"
-            case .bookChapter: typeText = "Book Chapter"
-            case .report: typeText = "Report"
-            case .thesis: typeText = "Thesis"
-            case .conference: typeText = "Conference"
-            }
+        let typeText: String
+        switch citation.citationType {
+        case .journalArticle: typeText = "Journal Article"
+        case .book: typeText = "Book"
+        case .bookChapter: typeText = "Book Chapter"
+        case .report: typeText = "Report"
+        case .thesis: typeText = "Thesis"
+        case .conference: typeText = "Conference"
+        }
 
+        return HStack(spacing: AppTheme.Layout.spacingXS) {
             Text(typeText)
                 .font(AppTheme.Typography.gravitySemibold(12))
         }
@@ -336,7 +336,7 @@ struct EnhancedCitationDetailView: View {
 struct ExportFormatSelectionView: View {
     let citation: Citation
     @Environment(\.dismiss) private var dismiss
-    @State private var selectedFormat: ExportFormat = .apa
+    @State private var selectedFormat: CitationExportFormat = .apa
 
     var body: some View {
         NavigationView {
@@ -347,7 +347,7 @@ struct ExportFormatSelectionView: View {
                     .padding(.top)
 
                 VStack(spacing: AppTheme.Layout.spacingM) {
-                    ForEach(ExportFormat.allCases, id: \.self) { format in
+                    ForEach(CitationExportFormat.allCases, id: \.self) { format in
                         Button(action: { selectedFormat = format }) {
                             HStack {
                                 VStack(alignment: .leading) {

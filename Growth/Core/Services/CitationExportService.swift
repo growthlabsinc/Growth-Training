@@ -229,7 +229,7 @@ class CitationExportService {
     // MARK: - Copy Single Citation
 
     /// Returns formatted string for a single citation in specified format
-    func formatCitationForCopy(_ citation: Citation, format: ExportFormat) -> String {
+    func formatCitationForCopy(_ citation: Citation, format: CitationExportFormat) -> String {
         switch format {
         case .apa:
             return citation.formattedAPA
@@ -243,7 +243,7 @@ class CitationExportService {
 
 // MARK: - Export Formats
 
-private enum ExportFormat: String, CaseIterable {
+enum CitationExportFormat: String, CaseIterable {
     case apa = "APA 7th Edition"
     case bibtex = "BibTeX"
     case ris = "RIS"

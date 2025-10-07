@@ -441,7 +441,7 @@ struct EditReviewStepView: View {
     let description: String
     let difficulty: RoutineDifficulty
     let duration: Int
-    let methods: [GrowthMethod]
+    let methods: [TrainingProtocol]
     let daySchedules: [DaySchedule]
     @Binding var shareWithCommunity: Bool
     

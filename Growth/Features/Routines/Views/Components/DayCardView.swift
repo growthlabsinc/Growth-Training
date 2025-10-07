@@ -15,10 +15,10 @@ struct DayCardView: View {
     let daySchedule: DaySchedule
     @Binding var isExpanded: Bool
     let isToday: Bool
-    @State private var methods: [GrowthMethod] = []
+    @State private var methods: [TrainingProtocol] = []
     @State private var isLoading: Bool = false
     
-    private let growthMethodService = GrowthMethodService.shared
+    private let growthMethodService = TrainingProtocolService.shared
     
     // MARK: - Computed Properties
     
@@ -326,7 +326,7 @@ struct DayCardView: View {
         isLoading = true
         
         Task {
-            var loadedMethods: [GrowthMethod] = []
+            var loadedMethods: [TrainingProtocol] = []
             
             for methodSchedule in daySchedule.methods {
                 do {

@@ -25,23 +25,20 @@ struct EducationalResourceDetailView: View {
                         .padding(.top, AppTheme.Layout.spacingXL)
                 } else if let resource = viewModel.resource {
                     VStack(alignment: .leading, spacing: AppTheme.Layout.spacingM) {
-                        // Title
-                        Text(resource.title)
-                            .font(AppTheme.Typography.title1Font())
-                            .foregroundColor(AppTheme.Colors.text)
-                            .padding(.horizontal, AppTheme.Layout.spacingM)
-                            .padding(.top, AppTheme.Layout.spacingM)
-                        
-                        // Category
-                        Text(resource.category.rawValue)
-                            .font(AppTheme.Typography.captionFont())
-                            .foregroundColor(AppTheme.Colors.textSecondary)
-                            .padding(.horizontal, AppTheme.Layout.spacingM)
-                            .padding(.vertical, AppTheme.Layout.spacingXS)
-                            .background(AppTheme.Colors.systemGray.opacity(0.2))
-                            .cornerRadius(AppTheme.Layout.cornerRadiusS)
-                            .padding(.horizontal, AppTheme.Layout.spacingM)
-                        
+                        // Category badge at top
+                        HStack {
+                            Text(resource.category.rawValue)
+                                .font(AppTheme.Typography.captionFont())
+                                .foregroundColor(AppTheme.Colors.textSecondary)
+                                .padding(.horizontal, AppTheme.Layout.spacingM)
+                                .padding(.vertical, AppTheme.Layout.spacingXS)
+                                .background(AppTheme.Colors.systemGray.opacity(0.2))
+                                .cornerRadius(AppTheme.Layout.cornerRadiusS)
+                            Spacer()
+                        }
+                        .padding(.horizontal, AppTheme.Layout.spacingM)
+                        .padding(.top, AppTheme.Layout.spacingM)
+
                         // Visual placeholder/image - local image takes precedence
                         if let localImageName = resource.localImageName {
                             Image(localImageName)
@@ -81,6 +78,18 @@ struct EducationalResourceDetailView: View {
                                 }
                             }
                             .padding(.horizontal, AppTheme.Layout.spacingM)
+                        } else {
+                            // Default placeholder when no image is provided
+                            Rectangle()
+                                .fill(AppTheme.Colors.systemGray.opacity(0.3))
+                                .frame(height: 200)
+                                .cornerRadius(AppTheme.Layout.cornerRadiusM)
+                                .overlay(
+                                    Image(systemName: "photo.on.rectangle.angled")
+                                        .font(AppTheme.Typography.largeTitleFont())
+                                        .foregroundColor(AppTheme.Colors.textSecondary)
+                                )
+                                .padding(.horizontal, AppTheme.Layout.spacingM)
                         }
                         
                         // Content text with markdown support

@@ -8,7 +8,7 @@
 import Foundation
 
 /// Result of citation validation
-struct ValidationResult {
+struct CitationValidationResult {
     let isValid: Bool
     let errors: [String]
     let warnings: [String]
@@ -233,7 +233,7 @@ class CitationService {
     // MARK: - Validation
 
     /// Validates a citation's completeness and checks for broken links
-    func validateCitation(_ citation: Citation) async -> ValidationResult {
+    func validateCitation(_ citation: Citation) async -> CitationValidationResult {
         var errors: [String] = []
         var warnings: [String] = []
 
@@ -271,7 +271,7 @@ class CitationService {
             }
         }
 
-        return ValidationResult(
+        return CitationValidationResult(
             isValid: errors.isEmpty,
             errors: errors,
             warnings: warnings

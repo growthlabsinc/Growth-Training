@@ -56,8 +56,39 @@ struct Citation: Codable, Identifiable, Hashable {
     /// Date when the source was accessed (optional)
     let accessDate: Date?
 
-    /// Type of citation source
-    let citationType: CitationType
+    /// Type of citation source (defaults to journalArticle if not specified)
+    var citationType: CitationType
+
+    // MARK: - Custom Codable Implementation
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        id = try container.decode(String.self, forKey: .id)
+        authors = try container.decode(String.self, forKey: .authors)
+        year = try container.decode(String.self, forKey: .year)
+        title = try container.decode(String.self, forKey: .title)
+        journal = try container.decode(String.self, forKey: .journal)
+        volume = try container.decodeIfPresent(String.self, forKey: .volume)
+        issue = try container.decodeIfPresent(String.self, forKey: .issue)
+        pages = try container.decodeIfPresent(String.self, forKey: .pages)
+        doi = try container.decodeIfPresent(String.self, forKey: .doi)
+
+        // PMID can be either String or Int in Firestore, handle both
+        if let pmidString = try? container.decodeIfPresent(String.self, forKey: .pmid) {
+            pmid = pmidString
+        } else if let pmidInt = try? container.decodeIfPresent(Int.self, forKey: .pmid) {
+            pmid = String(pmidInt)
+        } else {
+            pmid = nil
+        }
+
+        url = try container.decodeIfPresent(String.self, forKey: .url)
+        accessDate = try container.decodeIfPresent(Date.self, forKey: .accessDate)
+
+        // citationType defaults to journalArticle if not present or invalid
+        citationType = (try? container.decodeIfPresent(CitationType.self, forKey: .citationType)) ?? .journalArticle
+    }
 
     // Explicit memberwise initializer for previews and testing
     init(

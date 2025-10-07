@@ -12,7 +12,7 @@ import SwiftUI
 public class SimplifiedEntitlementManager: ObservableObject {
     
     // MARK: - App Group UserDefaults
-    static let userDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthmethod")!
+    static let userDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthtraining")!
     
     // MARK: - Entitlement Flags
     @AppStorage("hasPremium", store: userDefaults)

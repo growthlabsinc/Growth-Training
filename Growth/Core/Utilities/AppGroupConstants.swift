@@ -3,7 +3,7 @@ import Foundation
 /// Constants for App Group functionality
 struct AppGroupConstants {
     /// The app group identifier used for data sharing between app and widgets
-    static let identifier = "group.com.growthlabs.growthmethod"
+    static let identifier = "group.com.growthlabs.growthtraining"
     
     /// UserDefaults instance for the app group
     static var sharedDefaults: UserDefaults? {
@@ -12,16 +12,16 @@ struct AppGroupConstants {
     
     /// Keys for storing data in shared UserDefaults
     struct Keys {
-        static let timerState = "com.growthlabs.growthmethod.timerState"
-        static let timerStartTime = "com.growthlabs.growthmethod.timerStartTime"
-        static let timerEndTime = "com.growthlabs.growthmethod.timerEndTime"
-        static let timerElapsedTime = "com.growthlabs.growthmethod.timerElapsedTime"
-        static let timerIsPaused = "com.growthlabs.growthmethod.timerIsPaused"
-        static let timerMethodName = "com.growthlabs.growthmethod.timerMethodName"
-        static let timerSessionType = "com.growthlabs.growthmethod.timerSessionType"
-        static let liveActivityId = "com.growthlabs.growthmethod.liveActivityId"
-        static let timerIsCompleted = "com.growthlabs.growthmethod.timerIsCompleted"
-        static let timerCompletionMessage = "com.growthlabs.growthmethod.timerCompletionMessage"
+        static let timerState = "com.growthlabs.growthtraining.timerState"
+        static let timerStartTime = "com.growthlabs.growthtraining.timerStartTime"
+        static let timerEndTime = "com.growthlabs.growthtraining.timerEndTime"
+        static let timerElapsedTime = "com.growthlabs.growthtraining.timerElapsedTime"
+        static let timerIsPaused = "com.growthlabs.growthtraining.timerIsPaused"
+        static let timerMethodName = "com.growthlabs.growthtraining.timerMethodName"
+        static let timerSessionType = "com.growthlabs.growthtraining.timerSessionType"
+        static let liveActivityId = "com.growthlabs.growthtraining.liveActivityId"
+        static let timerIsCompleted = "com.growthlabs.growthtraining.timerIsCompleted"
+        static let timerCompletionMessage = "com.growthlabs.growthtraining.timerCompletionMessage"
         
         // Additional keys for Live Activity integration
         static let currentTimerActivityId = "currentTimerActivityId"

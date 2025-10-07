@@ -10,14 +10,14 @@ import SwiftUI
 /// A compact inline timer view that can be embedded in any view
 struct InlineTimerView: View {
     @StateObject private var timerService = TimerService.shared
-    let method: GrowthMethod?
+    let method: TrainingProtocol?
     let onExpand: (() -> Void)?
     
     @State private var isExpanded = false
     @StateObject private var quickPracticeTracker = QuickPracticeTimerTracker.shared
     @State private var showTimerConflictAlert = false
     
-    init(method: GrowthMethod? = nil,
+    init(method: TrainingProtocol? = nil,
          onExpand: (() -> Void)? = nil) {
         self.method = method
         self.onExpand = onExpand
@@ -132,7 +132,7 @@ struct InlineTimerView: View {
                         .font(AppTheme.Typography.gravitySemibold(14))
                         .foregroundColor(Color("TextColor"))
                     
-                    Text(method.methodDescription)
+                    Text(method.protocolDescription)
                         .font(AppTheme.Typography.gravityBook(12))
                         .foregroundColor(Color("TextSecondaryColor"))
                         .lineLimit(2)
@@ -230,7 +230,7 @@ struct InlineTimerView: View {
         timerService.stop()
     }
     
-    private func configureTimer(for method: GrowthMethod) {
+    private func configureTimer(for method: TrainingProtocol) {
         // Set method ID and name for tracking
         timerService.currentMethodId = method.id
         timerService.currentMethodName = method.title
@@ -279,11 +279,11 @@ struct InlineTimerView: View {
 
 #Preview("Compact") {
     InlineTimerView(
-        method: GrowthMethod(
+        method: TrainingProtocol(
             id: "1",
             stage: 1,
             title: "Manual Stretching",
-            methodDescription: "Basic stretching technique",
+            protocolDescription: "Basic stretching technique",
             instructionsText: "Sample instructions",
             equipmentNeeded: [],
             estimatedDurationMinutes: 10,
@@ -295,11 +295,11 @@ struct InlineTimerView: View {
 
 #Preview("Expanded") {
     InlineTimerView(
-        method: GrowthMethod(
+        method: TrainingProtocol(
             id: "1",
             stage: 1,
             title: "Manual Stretching",
-            methodDescription: "Basic stretching technique",
+            protocolDescription: "Basic stretching technique",
             instructionsText: "Sample instructions",
             equipmentNeeded: [],
             estimatedDurationMinutes: 10,

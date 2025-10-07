@@ -326,7 +326,7 @@ class RoutinesViewModel: ObservableObject {
     }
     
     /// Returns the next method for the provided date based on progress.
-    func nextMethod(for date: Date) -> GrowthMethod? {
+    func nextMethod(for date: Date) -> TrainingProtocol? {
         guard let routineId = selectedRoutineId,
               let routine = routines.first(where: { $0.id == routineId }),
               let progress = routineProgress else { return nil }
@@ -343,8 +343,8 @@ class RoutinesViewModel: ObservableObject {
         let methodId = ids[0]
         
         // Try to get from cache synchronously (if available)
-        if let cachedData = GrowthMethodService.shared.methodCache.object(forKey: methodId as NSString) as? Data,
-           let cachedMethod = try? NSKeyedUnarchiver.unarchivedObject(ofClass: GrowthMethod.self, from: cachedData) {
+        if let cachedData = TrainingProtocolService.shared.protocolCache.object(forKey: methodId as NSString) as? Data,
+           let cachedMethod = try? NSKeyedUnarchiver.unarchivedObject(ofClass: TrainingProtocol.self, from: cachedData) {
             return cachedMethod
         }
         // Otherwise, return nil (async fetch would require refactor)
