@@ -243,7 +243,7 @@ class CitationExportService {
 
 // MARK: - Export Formats
 
-enum ExportFormat: String, CaseIterable {
+private enum ExportFormat: String, CaseIterable {
     case apa = "APA 7th Edition"
     case bibtex = "BibTeX"
     case ris = "RIS"

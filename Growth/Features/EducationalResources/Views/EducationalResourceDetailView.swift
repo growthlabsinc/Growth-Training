@@ -88,6 +88,40 @@ struct EducationalResourceDetailView: View {
                             .padding(.horizontal, AppTheme.Layout.spacingM)
                             .padding(.bottom, AppTheme.Layout.spacingL)
 
+                        // Medical Disclaimer - Prominently displayed with warning styling
+                        if let disclaimer = viewModel.medicalDisclaimer {
+                            VStack(alignment: .leading, spacing: AppTheme.Layout.spacingS) {
+                                // Warning header with icon
+                                HStack(spacing: AppTheme.Layout.spacingS) {
+                                    Image(systemName: "exclamationmark.triangle.fill")
+                                        .font(AppTheme.Typography.bodyFont())
+                                        .foregroundColor(AppTheme.Colors.warningColor)
+
+                                    Text("Medical Disclaimer")
+                                        .font(AppTheme.Typography.subheadlineFont())
+                                        .fontWeight(.semibold)
+                                        .foregroundColor(AppTheme.Colors.warningColor)
+                                }
+
+                                // Disclaimer text
+                                Text(disclaimer)
+                                    .font(AppTheme.Typography.footnoteFont())
+                                    .foregroundColor(AppTheme.Colors.text)
+                                    .lineSpacing(4)
+                            }
+                            .padding(AppTheme.Layout.spacingM)
+                            .background(
+                                RoundedRectangle(cornerRadius: AppTheme.Layout.cornerRadiusM)
+                                    .fill(AppTheme.Colors.warningColor.opacity(0.08))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: AppTheme.Layout.cornerRadiusM)
+                                            .strokeBorder(AppTheme.Colors.warningColor.opacity(0.3), lineWidth: 1.5)
+                                    )
+                            )
+                            .padding(.horizontal, AppTheme.Layout.spacingM)
+                            .padding(.bottom, AppTheme.Layout.spacingL)
+                        }
+
                         // References section (citations)
                         if viewModel.hasCitations {
                             VStack(alignment: .leading, spacing: AppTheme.Layout.spacingM) {
@@ -99,18 +133,6 @@ struct EducationalResourceDetailView: View {
                                     .font(AppTheme.Typography.headlineFont())
                                     .foregroundColor(AppTheme.Colors.text)
                                     .padding(.horizontal, AppTheme.Layout.spacingM)
-
-                                // Medical disclaimer (if present)
-                                if let disclaimer = viewModel.medicalDisclaimer {
-                                    Text(disclaimer)
-                                        .font(AppTheme.Typography.captionFont())
-                                        .foregroundColor(AppTheme.Colors.textSecondary)
-                                        .padding(.horizontal, AppTheme.Layout.spacingM)
-                                        .padding(.vertical, AppTheme.Layout.spacingS)
-                                        .background(AppTheme.Colors.systemGray.opacity(0.1))
-                                        .cornerRadius(AppTheme.Layout.cornerRadiusS)
-                                        .padding(.horizontal, AppTheme.Layout.spacingM)
-                                }
 
                                 // Citations list
                                 if let citations = viewModel.resource?.citations {

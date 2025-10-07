@@ -222,6 +222,7 @@ struct AppTheme {
         // Functional Colors
         static let success = Color("SuccessColor") // For positive actions and progress
         static let warning = Color("ErrorColor") // For cautionary states
+        static let warningColor = Color("ErrorColor") // For warnings and disclaimers (alias for warning)
         static let errorColor = Color("ErrorColor") // For errors and critical states
         
         // System colors for fallback or initial state

@@ -219,18 +219,19 @@ The paradox of recovery is that rest, which feels like "doing nothing," is when 
 
 ## Medical Disclaimer
 
-**This article is for educational and informational purposes only and does not constitute medical advice.** The information presented is based on scientific research and medical literature but should not be used as a substitute for professional medical advice, diagnosis, or treatment.
+⚠️ **IMPORTANT HEALTH INFORMATION**
 
-**Always seek the advice of your physician or other qualified health provider** with any questions you may have regarding a medical condition or before beginning any new health regimen. Never disregard professional medical advice or delay in seeking it because of something you have read in this article.
+This information is for educational purposes only and does not constitute medical advice. Consult with a healthcare provider before beginning any exercise program.
 
-**Individual results may vary.** The effectiveness of techniques or protocols discussed in this article can differ significantly from person to person based on genetics, health status, age, adherence, and other factors.
+Individual results may vary. This app does not guarantee specific outcomes or results from following the information provided.
 
-**Potential risks exist.** Any physical intervention carries potential risks. Be aware of warning signs of injury and discontinue immediately if you experience pain, discomfort, or other concerning symptoms.
+Every individual's physiology is different. What works for one person may not work for another.
 
-**Age restriction:** This content is intended for adults 18 years of age and older only.
+There are inherent risks associated with physical exercise programs. Stop immediately if you experience pain, discomfort, or unusual symptoms, and seek medical attention.
 
-If you experience any adverse effects or have concerns about your health, seek immediate medical attention.
+This app and its content are intended for adults 18 years of age and older only.
 
+---
 ---
 
 ## References
