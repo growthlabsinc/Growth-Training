@@ -1051,14 +1051,15 @@ struct QuickPracticeTimerView: View {
     
     private func loadMethods() {
         isLoadingMethods = true
-        
-        TrainingProtocolService.shared.fetchAllMethods { result in
+
+        // Use fetchActionableProtocols to exclude Level 0 educational protocols
+        TrainingProtocolService.shared.fetchActionableProtocols { result in
             DispatchQueue.main.async {
                 isLoadingMethods = false
-                
+
                 switch result {
                 case .success(let methods):
-                    // Show all methods, sorted by stage
+                    // Show all actionable methods, sorted by stage
                     availableMethods = methods.sorted { $0.stage < $1.stage }
                     
                     // Set selected method based on preSelectedMethod or auto-select first

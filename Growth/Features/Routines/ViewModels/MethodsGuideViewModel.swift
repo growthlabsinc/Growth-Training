@@ -10,13 +10,13 @@ import Combine
 import SwiftUI
 
 class MethodsGuideViewModel: ObservableObject {
-    @Published var methods: [GrowthMethod] = []
+    @Published var methods: [TrainingProtocol] = []
     @Published var categories: [String] = ["All"]
     @Published var isLoading = false
     @Published var error: String?
     
     private var cancellables = Set<AnyCancellable>()
-    private let growthMethodService = GrowthMethodService.shared
+    private let growthMethodService = TrainingProtocolService.shared
     
     init() {
         loadMethods()
@@ -25,8 +25,10 @@ class MethodsGuideViewModel: ObservableObject {
     func loadMethods() {
         isLoading = true
         error = nil
-        
-        growthMethodService.fetchAllMethods { [weak self] result in
+
+        // Use fetchActionableProtocols to exclude Level 0 educational protocols
+        // Level 0 protocols are educational content meant for the Learning Center
+        growthMethodService.fetchActionableProtocols { [weak self] result in
             DispatchQueue.main.async {
                 self?.isLoading = false
                 switch result {
@@ -55,19 +57,19 @@ class MethodsGuideViewModel: ObservableObject {
         categories = ["All"] + uniqueCategories.sorted()
     }
     
-    func methodsForCategory(_ category: String) -> [GrowthMethod] {
+    func methodsForCategory(_ category: String) -> [TrainingProtocol] {
         if category == "All" {
             return methods
         }
         return methods.filter { $0.categories.contains(category) }
     }
     
-    func searchMethods(query: String) -> [GrowthMethod] {
+    func searchMethods(query: String) -> [TrainingProtocol] {
         guard !query.isEmpty else { return methods }
         
         return methods.filter { method in
             method.title.localizedCaseInsensitiveContains(query) ||
-            method.methodDescription.localizedCaseInsensitiveContains(query) ||
+            method.protocolDescription.localizedCaseInsensitiveContains(query) ||
             method.instructionsText.localizedCaseInsensitiveContains(query)
         }
     }

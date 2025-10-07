@@ -12,7 +12,7 @@ struct PremiumCreateCustomRoutineView: View {
     @State private var animationProgress: CGFloat = 0
     @State private var showErrorAlert = false
     @State private var errorMessage = ""
-    @State private var selectedMethods: [GrowthMethod] = []
+    @State private var selectedMethods: [TrainingProtocol] = []
     @State private var routineName = ""
     @State private var routineDescription = ""
     @State private var selectedDifficulty: RoutineDifficulty = .intermediate
@@ -1211,7 +1211,7 @@ struct TimelineVisualization: View {
 }
 
 struct PremiumMethodSelectionView: View {
-    @Binding var selectedMethods: [GrowthMethod]
+    @Binding var selectedMethods: [TrainingProtocol]
     @Binding var methodSchedulingConfigs: [String: MethodSchedulingConfig]
     @StateObject private var methodsLoader = MethodsLoader()
     @State private var searchText = ""
@@ -1219,7 +1219,7 @@ struct PremiumMethodSelectionView: View {
     let duration: Int
     let schedulingType: RoutineSchedulingType
     
-    init(selectedMethods: Binding<[GrowthMethod]>, duration: Int = 14, schedulingType: RoutineSchedulingType, methodSchedulingConfigs: Binding<[String: MethodSchedulingConfig]>) {
+    init(selectedMethods: Binding<[TrainingProtocol]>, duration: Int = 14, schedulingType: RoutineSchedulingType, methodSchedulingConfigs: Binding<[String: MethodSchedulingConfig]>) {
         self._selectedMethods = selectedMethods
         self._methodSchedulingConfigs = methodSchedulingConfigs
         self.duration = duration
@@ -1326,18 +1326,18 @@ struct PremiumMethodSelectionView: View {
         }
     }
     
-    private var filteredMethods: [GrowthMethod] {
+    private var filteredMethods: [TrainingProtocol] {
         if searchText.isEmpty {
             return methodsLoader.methods
         } else {
             return methodsLoader.methods.filter { method in
                 method.title.localizedCaseInsensitiveContains(searchText) ||
-                method.methodDescription.localizedCaseInsensitiveContains(searchText)
+                method.protocolDescription.localizedCaseInsensitiveContains(searchText)
             }
         }
     }
     
-    private func toggleMethod(_ method: GrowthMethod) {
+    private func toggleMethod(_ method: TrainingProtocol) {
         guard let methodId = method.id else { return }
         
         if selectedMethods.contains(where: { $0.id == methodId }) {
@@ -1374,7 +1374,7 @@ struct PremiumMethodSelectionView: View {
         }
     }
     
-    private func deselectMethod(_ method: GrowthMethod) {
+    private func deselectMethod(_ method: TrainingProtocol) {
         guard let methodId = method.id else { return }
         
         if let index = selectedMethods.firstIndex(where: { $0.id == methodId }) {
@@ -1388,7 +1388,7 @@ struct PremiumMethodSelectionView: View {
 }
 
 struct MethodSelectionCard: View {
-    let method: GrowthMethod
+    let method: TrainingProtocol
     let isSelected: Bool
     let action: () -> Void
     
@@ -1412,7 +1412,7 @@ struct MethodSelectionCard: View {
                         .foregroundColor(AppTheme.Colors.text)
                         .multilineTextAlignment(.leading)
                     
-                    Text(method.methodDescription)
+                    Text(method.protocolDescription)
                         .font(AppTheme.Typography.footnoteFont())
                         .foregroundColor(AppTheme.Colors.text.opacity(0.7))
                         .lineLimit(2)
@@ -1454,7 +1454,7 @@ struct MethodSelectionCard: View {
 }
 
 struct EnhancedMethodSelectionCard: View {
-    let method: GrowthMethod
+    let method: TrainingProtocol
     let isSelected: Bool
     let isExpanded: Bool
     let schedulingConfig: MethodSchedulingConfig
@@ -1490,7 +1490,7 @@ struct EnhancedMethodSelectionCard: View {
                             .foregroundColor(AppTheme.Colors.text)
                             .multilineTextAlignment(.leading)
                         
-                        Text(method.methodDescription)
+                        Text(method.protocolDescription)
                             .font(AppTheme.Typography.footnoteFont())
                             .foregroundColor(AppTheme.Colors.text.opacity(0.7))
                             .lineLimit(2)
@@ -1846,7 +1846,7 @@ struct CompactDurationPicker: View {
 
 struct ScheduleCustomizationView: View {
     @Binding var daySchedules: [DaySchedule]
-    let selectedMethods: [GrowthMethod]
+    let selectedMethods: [TrainingProtocol]
     let duration: Int
     let schedulingType: RoutineSchedulingType
     let onScheduleUpdate: () -> Void
@@ -2015,7 +2015,7 @@ struct ReviewStepView: View {
     let description: String
     let difficulty: RoutineDifficulty
     let duration: Int
-    let methods: [GrowthMethod]
+    let methods: [TrainingProtocol]
     let daySchedules: [DaySchedule]
     let schedulingType: RoutineSchedulingType
     @Binding var shareWithCommunity: Bool
@@ -2246,7 +2246,7 @@ struct SummaryCard: View {
 }
 
 struct MethodChip: View {
-    let method: GrowthMethod
+    let method: TrainingProtocol
     
     var body: some View {
         Text(method.title)
@@ -2284,9 +2284,9 @@ extension RoutineDifficulty {
 
 // Methods Loader
 class MethodsLoader: ObservableObject {
-    @Published var methods: [GrowthMethod] = []
+    @Published var methods: [TrainingProtocol] = []
     @Published var isLoading = false
-    private let growthMethodService = GrowthMethodService.shared
+    private let growthMethodService = TrainingProtocolService.shared
     private var loadTask: DispatchWorkItem?
     
     deinit {
@@ -2301,7 +2301,8 @@ class MethodsLoader: ObservableObject {
         isLoading = true
         
         let task = DispatchWorkItem { [weak self] in
-            self?.growthMethodService.fetchAllMethods { result in
+            // Use fetchActionableProtocols to exclude Level 0 educational protocols
+            self?.growthMethodService.fetchActionableProtocols { result in
                 DispatchQueue.main.async { [weak self] in
                     guard let self = self else { return }
                     self.isLoading = false

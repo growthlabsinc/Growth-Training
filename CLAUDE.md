@@ -164,6 +164,32 @@ Located in `/functions/` directory:
 - Environment variable: `FIRAAppCheckDebugToken` (note the extra 'A')
 - Register debug tokens at: https://console.firebase.google.com/project/growth-training-app/appcheck/apps
 
+## Training Protocol Architecture
+
+### Level 0 Protocol Filtering (Epic 8, Story 8.1)
+**Important: As of Story 8.1, Level 0 protocols are filtered from user-facing UIs.**
+
+- **TrainingProtocolService** provides two fetch methods:
+  - `fetchAllMethods()` - Returns ALL protocols including Level 0 (for backward compatibility)
+  - `fetchActionableProtocols()` - Returns only stage > 0 protocols (for UI display)
+
+- **Level 0 Protocols** are educational content meant for the Learning Center (future feature)
+- **Actionable Protocols** (stage > 0) are training exercises shown in:
+  - Methods Guide
+  - Custom Routine Creation
+  - Quick Practice Timer
+  - Method selection UIs
+
+- **Backward Compatibility:**
+  - `DailyMethodsViewModel` continues using `fetchAllMethods()` to ensure existing routines with Level 0 references load correctly
+  - No Firestore data changes - filtering happens in-memory
+  - Separate cache keys maintain performance: `"allMethods"` and `"actionableMethods"`
+
+- **Data Preservation:**
+  - Level 0 protocols remain in Firestore `growth_exercises` collection
+  - Ready for future Learning Center migration
+  - No data deletion - only view filtering
+
 ## State Management
 
 ### Primary Patterns

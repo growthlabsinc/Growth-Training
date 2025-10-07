@@ -1096,20 +1096,20 @@ struct LegacyMethodSelectionView: View {
         }
     }
     
-    private var filteredMethods: [GrowthMethod] {
+    private var filteredMethods: [TrainingProtocol] {
         if searchText.isEmpty {
             return viewModel.methods
         } else {
             return viewModel.methods.filter { method in
                 method.title.localizedCaseInsensitiveContains(searchText) ||
-                method.methodDescription.localizedCaseInsensitiveContains(searchText)
+                method.protocolDescription.localizedCaseInsensitiveContains(searchText)
             }
         }
     }
 }
 
 struct MethodSelectionRow: View {
-    let method: GrowthMethod
+    let method: TrainingProtocol
     let isSelected: Bool
     let onToggle: () -> Void
     
@@ -1140,14 +1140,15 @@ struct MethodSelectionRow: View {
 }
 
 class MethodSelectionViewModel: ObservableObject {
-    @Published var methods: [GrowthMethod] = []
+    @Published var methods: [TrainingProtocol] = []
     @Published var isLoading = false
     
-    private let growthMethodService = GrowthMethodService.shared
+    private let growthMethodService = TrainingProtocolService.shared
     
     func loadMethods() {
         isLoading = true
-        growthMethodService.fetchAllMethods { [weak self] result in
+        // Use fetchActionableProtocols to exclude Level 0 educational protocols
+        growthMethodService.fetchActionableProtocols { [weak self] result in
             DispatchQueue.main.async {
                 self?.isLoading = false
                 switch result {
@@ -1409,7 +1410,7 @@ struct EditDayScheduleView: View {
 struct MethodScheduleRow: View {
     @Binding var methodSchedule: MethodSchedule
     let availableMethods: [String]
-    let methodsInfo: [GrowthMethod]
+    let methodsInfo: [TrainingProtocol]
     let onDelete: () -> Void
     
     @State private var showingDurationPicker = false
