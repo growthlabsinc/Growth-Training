@@ -10,7 +10,8 @@
     "serve": "firebase emulators:start --only functions",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "verify-citations": "node ../scripts/verify-citations.js"
   },
   "dependencies": {
     "@google-cloud/secret-manager": "^5.6.0",

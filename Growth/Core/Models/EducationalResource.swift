@@ -35,8 +35,15 @@ struct EducationalResource: Codable, Identifiable, Hashable {
     /// Medical disclaimer text for safety warnings (optional)
     let medicalDisclaimer: String?
 
+    /// Last verification timestamp for citations (optional)
+    let lastVerified: Date?
+
+    /// Verification status of citations (optional)
+    /// Possible values: "verified", "broken_links", "needs_review"
+    let verificationStatus: String?
+
     // Explicit memberwise initializer for previews and testing
-    init(id: String? = nil, title: String, contentText: String, category: ResourceCategory, visualPlaceholderUrl: String? = nil, localImageName: String? = nil, citations: [Citation]? = nil, medicalDisclaimer: String? = nil) {
+    init(id: String? = nil, title: String, contentText: String, category: ResourceCategory, visualPlaceholderUrl: String? = nil, localImageName: String? = nil, citations: [Citation]? = nil, medicalDisclaimer: String? = nil, lastVerified: Date? = nil, verificationStatus: String? = nil) {
         self.id = id
         self.title = title
         self.contentText = contentText
@@ -45,6 +52,8 @@ struct EducationalResource: Codable, Identifiable, Hashable {
         self.localImageName = localImageName
         self.citations = citations
         self.medicalDisclaimer = medicalDisclaimer
+        self.lastVerified = lastVerified
+        self.verificationStatus = verificationStatus
     }
     
     // MARK: - Coding Keys
@@ -60,6 +69,8 @@ struct EducationalResource: Codable, Identifiable, Hashable {
         case localImageName = "local_image_name" // Maps to "local_image_name" in Firestore
         case citations // Maps to "citations" array in Firestore
         case medicalDisclaimer = "medical_disclaimer" // Maps to "medical_disclaimer" in Firestore
+        case lastVerified = "last_verified" // Maps to "last_verified" timestamp in Firestore
+        case verificationStatus = "verification_status" // Maps to "verification_status" string in Firestore
     }
     
     // MARK: - Firestore Conversion
@@ -143,6 +154,14 @@ struct EducationalResource: Codable, Identifiable, Hashable {
 
         // Extract medical disclaimer
         self.medicalDisclaimer = data["medical_disclaimer"] as? String
+
+        // Extract verification fields
+        if let verifiedTimestamp = data["last_verified"] as? Timestamp {
+            self.lastVerified = verifiedTimestamp.dateValue()
+        } else {
+            self.lastVerified = nil
+        }
+        self.verificationStatus = data["verification_status"] as? String
     }
     
     /// Converts the EducationalResource to a dictionary for Firestore.

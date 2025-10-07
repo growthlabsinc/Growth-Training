@@ -1,0 +1,17 @@
+{
+  "name": "growth-training-scripts",
+  "version": "1.0.0",
+  "description": "Scripts for Growth Training app maintenance",
+  "private": true,
+  "scripts": {
+    "verify-citations": "node scripts/verify-citations.js",
+    "test:citations": "node scripts/verify-citations.test.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^11.11.1",
+    "node-fetch": "^2.7.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
