@@ -12,7 +12,6 @@ struct MethodsGuideView: View {
     @State private var searchText = ""
     @State private var selectedCategory = "All"
     @State private var selectedMethod: TrainingProtocol?
-    @State private var showMethodDetail = false
 
     var body: some View {
         ZStack {
@@ -32,16 +31,12 @@ struct MethodsGuideView: View {
             }
             .background(Color(.systemGroupedBackground))
         }
-        .navigationDestination(isPresented: $showMethodDetail) {
-            if let method = selectedMethod {
+        .sheet(item: $selectedMethod) { method in
+            NavigationStack {
                 MethodDetailGuideView(method: method) {
-                    showMethodDetail = false
                     selectedMethod = nil
                 }
             }
-        }
-        .onChange(of: selectedMethod) { newValue in
-            showMethodDetail = newValue != nil
         }
         .onAppear {
             viewModel.loadMethods()
@@ -55,7 +50,7 @@ struct MethodsGuideView: View {
                 .foregroundColor(Color("TextSecondaryColor"))
                 .font(.system(size: 16))
             
-            TextField("Search methods...", text: $searchText)
+            TextField("Search exercises...", text: $searchText)
                 .font(AppTheme.Typography.gravityBook(14))
                 .foregroundColor(Color("TextColor"))
                 .autocapitalization(.none)

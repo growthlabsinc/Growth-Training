@@ -237,20 +237,26 @@ struct RoutineDetailView: View {
     }
     
     // MARK: - Hero Section
-    
+
     private func heroSection(routine: Routine) -> some View {
         VStack(alignment: .leading, spacing: 16) {
-            // Gradient background with routine info
+            // Hero image/gradient background with routine info
             VStack(alignment: .leading, spacing: 0) {
-                LinearGradient(
-                    gradient: Gradient(colors: [
-                        Color("GrowthGreen"),
-                        Color("BrightTeal")
-                    ]),
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-                .overlay(
+                ZStack {
+                    // Hero image or gradient background
+                    heroBackground(for: routine)
+
+                    // Dark overlay for text readability
+                    LinearGradient(
+                        gradient: Gradient(colors: [
+                            Color.black.opacity(0.3),
+                            Color.black.opacity(0.7)
+                        ]),
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+
+                    // Routine info overlay
                     VStack(alignment: .leading, spacing: 12) {
                         Text(routine.name)
                             .font(AppTheme.Typography.gravityBoldFont(22))
@@ -258,13 +264,13 @@ struct RoutineDetailView: View {
                             .lineLimit(nil)
                             .fixedSize(horizontal: false, vertical: true)
                             .minimumScaleFactor(0.8)
-                        
+
                         Text(routine.description)
                             .font(AppTheme.Typography.bodyFont())
                             .foregroundColor(.white.opacity(0.9))
                             .lineLimit(nil)
                             .fixedSize(horizontal: false, vertical: true)
-                        
+
                         // Difficulty Badge
                         HStack {
                             Image(systemName: difficultyIcon(for: routine.difficultyLevel))
@@ -277,18 +283,72 @@ struct RoutineDetailView: View {
                         .padding(.vertical, 6)
                         .background(Color.white.opacity(0.2))
                         .cornerRadius(20)
-                        
+
                         Spacer(minLength: 8)
                     }
                     .padding(20)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                )
+                }
                 .frame(minHeight: 240)
             }
             .cornerRadius(16)
-            .shadow(color: Color("GrowthGreen").opacity(0.3), radius: 8, x: 0, y: 4)
+            .shadow(color: Color.black.opacity(0.2), radius: 8, x: 0, y: 4)
         }
         .padding(.horizontal)
+    }
+
+    @ViewBuilder
+    private func heroBackground(for routine: Routine) -> some View {
+        if let heroImage = heroImageName(for: routine.id) {
+            Image(heroImage)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(minHeight: 240)
+                .clipped()
+        } else {
+            // Default gradient for routines without hero images
+            LinearGradient(
+                gradient: Gradient(colors: [
+                    Color("GrowthGreen"),
+                    Color("BrightTeal")
+                ]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        }
+    }
+
+    private func heroImageName(for routineId: String) -> String? {
+        switch routineId {
+        case "standard_growth_routine":
+            return "standard_routine_hero"
+        case "beginner_express":
+            return "beginner_express_hero"
+        case "routine_beginner_length_focused":
+            return "length-focused-beginner"
+        case "routine_beginner_balanced":
+            return "standard_routine_hero"
+        case "routine_intermediate_shock_loading":
+            return "intermediate-mastering"
+        case "routine_intermediate_pumping":
+            return "intermediate_pumping_hero"
+        case "intermediate_progressive":
+            return "growth_training_hero"
+        case "advanced_intensive":
+            return "advanced_intensive_hero"
+        case "routine_advanced_rip":
+            return "training_hero"
+        case "routine_advanced_pac":
+            return "advanced_intensive_hero"
+        case "janus_protocol_12week":
+            return "janus_hero"
+        case "two_week_transformation":
+            return "two_week_transformation_hero"
+        case "recovery_focus":
+            return "recovery_focus_hero"
+        default:
+            return nil
+        }
     }
     
     // MARK: - Weekly Schedule Section

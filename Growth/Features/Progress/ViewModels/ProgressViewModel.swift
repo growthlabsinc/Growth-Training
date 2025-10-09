@@ -353,7 +353,7 @@ class ProgressViewModel: ObservableObject {
     private func generateStatisticsHighlights() -> [StatisticHighlight] {
         var highlights: [StatisticHighlight] = []
         
-        // Total Sessions
+        // Total Sessions - Gray
         let sessionsTrend = trendSessionsPercent.map { TrendInfo(percentageChange: $0, description: "vs last \(selectedTimeRange.rawValue.lowercased())") }
         highlights.append(StatisticHighlight(
             title: "Total Sessions",
@@ -361,10 +361,10 @@ class ProgressViewModel: ObservableObject {
             subtitle: "In last \(selectedTimeRange.rawValue.lowercased())",
             iconName: "figure.mind.and.body",
             trend: sessionsTrend,
-            colorTheme: "GrowthGreen"
+            colorTheme: "NeutralGray"
         ))
-        
-        // Total Time
+
+        // Total Time - Orange
         let minutesTrend = trendMinutesPercent.map { TrendInfo(percentageChange: $0, description: "vs last \(selectedTimeRange.rawValue.lowercased())") }
         let hours = totalMinutesInRange / 60
         let minutes = totalMinutesInRange % 60
@@ -375,10 +375,10 @@ class ProgressViewModel: ObservableObject {
             subtitle: "Practice time",
             iconName: "clock.fill",
             trend: minutesTrend,
-            colorTheme: "BrightTeal"
+            colorTheme: "MintGreen"
         ))
-        
-        // Average Session
+
+        // Average Session - Blue
         let avgTrend = trendAvgDurationPercent.map { TrendInfo(percentageChange: $0, description: "vs last \(selectedTimeRange.rawValue.lowercased())") }
         highlights.append(StatisticHighlight(
             title: "Average Session",
@@ -386,10 +386,10 @@ class ProgressViewModel: ObservableObject {
             subtitle: "Per session",
             iconName: "chart.bar.fill",
             trend: avgTrend,
-            colorTheme: "MintGreen"
+            colorTheme: "StatsBlue"
         ))
-        
-        // Current Streak
+
+        // Current Streak - Green
         let currentStreak = calculateCurrentStreak()
         highlights.append(StatisticHighlight(
             title: "Current Streak",
@@ -397,7 +397,7 @@ class ProgressViewModel: ObservableObject {
             subtitle: currentStreak == 1 ? "day" : "days",
             iconName: "flame.fill",
             trend: nil,
-            colorTheme: "ErrorColor"
+            colorTheme: "StatsGreen"
         ))
         
         // Routine Adherence

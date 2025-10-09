@@ -215,7 +215,7 @@ struct BrowseRoutinesView: View {
     private var heroCardSection: some View {
         ZStack(alignment: .bottomLeading) {
             // Hero image
-            Image("waterfall-hero")
+            Image("growth_training_hero")
                 .resizable()
                 .aspectRatio(contentMode: .fill)
                 .frame(height: 200)
@@ -603,7 +603,7 @@ struct FeaturedRoutineCard: View {
                                 .aspectRatio(contentMode: .fill)
                                 .frame(height: 120)
                                 .clipped()
-                            
+
                             // Lighter overlay to preserve the golden sunrise
                             LinearGradient(
                                 gradient: Gradient(colors: [
@@ -615,10 +615,90 @@ struct FeaturedRoutineCard: View {
                             )
                             .frame(height: 120)
                         }
-                    } else if routine.id == "intermediate_progressive" {
-                        // Waterfall image for intermediate progressive routine
+                    } else if routine.id == "routine_beginner_length_focused" {
+                        // Length-Focused Beginner routine
                         ZStack {
-                            Image("waterfall-hero")
+                            Image("length-focused-beginner")
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(height: 120)
+                                .clipped()
+
+                            // Gradient overlay for text readability
+                            LinearGradient(
+                                gradient: Gradient(colors: [
+                                    Color.black.opacity(0.2),
+                                    Color.black.opacity(0.5)
+                                ]),
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                            .frame(height: 120)
+                        }
+                    } else if routine.id == "routine_beginner_balanced" {
+                        // Balanced Beginner routine
+                        ZStack {
+                            Image("standard_routine_hero")
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(height: 120)
+                                .clipped()
+
+                            // Gradient overlay for text readability
+                            LinearGradient(
+                                gradient: Gradient(colors: [
+                                    Color.black.opacity(0.3),
+                                    Color.black.opacity(0.6)
+                                ]),
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                            .frame(height: 120)
+                        }
+                    } else if routine.id == "routine_intermediate_shock_loading" {
+                        // Intermediate Shock Loading routine
+                        ZStack {
+                            Image("intermediate-mastering")
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(height: 120)
+                                .clipped()
+
+                            // Gradient overlay for text readability
+                            LinearGradient(
+                                gradient: Gradient(colors: [
+                                    Color.black.opacity(0.2),
+                                    Color.black.opacity(0.5)
+                                ]),
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                            .frame(height: 120)
+                        }
+                    } else if routine.id == "routine_intermediate_pumping" {
+                        // Intermediate Pumping routine
+                        ZStack {
+                            Image("intermediate_pumping_hero")
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(height: 120)
+                                .clipped()
+
+                            // Gradient overlay for text readability
+                            LinearGradient(
+                                gradient: Gradient(colors: [
+                                    Color.black.opacity(0.2),
+                                    Color.black.opacity(0.5)
+                                ]),
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                            .frame(height: 120)
+                        }
+                    } else if routine.id == "intermediate_progressive" {
+                        // Growth Training image for intermediate progressive routine
+                        ZStack {
+                            Image("growth_training_hero")
                                 .resizable()
                                 .aspectRatio(contentMode: .fill)
                                 .frame(height: 120)
@@ -703,12 +783,52 @@ struct FeaturedRoutineCard: View {
                                 .aspectRatio(contentMode: .fill)
                                 .frame(height: 120)
                                 .clipped()
-                            
+
                             // Gradient overlay for text readability
                             LinearGradient(
                                 gradient: Gradient(colors: [
                                     Color.black.opacity(0.2),
                                     Color.black.opacity(0.5)
+                                ]),
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                            .frame(height: 120)
+                        }
+                    } else if routine.id == "routine_advanced_rip" {
+                        // Advanced RIP Protocol hero image
+                        ZStack {
+                            Image("training_hero")
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(height: 120)
+                                .clipped()
+
+                            // Gradient overlay for text readability
+                            LinearGradient(
+                                gradient: Gradient(colors: [
+                                    Color.black.opacity(0.3),
+                                    Color.black.opacity(0.7)
+                                ]),
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                            .frame(height: 120)
+                        }
+                    } else if routine.id == "routine_advanced_pac" {
+                        // Advanced PAC Protocol hero image
+                        ZStack {
+                            Image("advanced_intensive_hero")
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(height: 120)
+                                .clipped()
+
+                            // Gradient overlay for text readability
+                            LinearGradient(
+                                gradient: Gradient(colors: [
+                                    Color.black.opacity(0.3),
+                                    Color.black.opacity(0.7)
                                 ]),
                                 startPoint: .top,
                                 endPoint: .bottom
@@ -856,21 +976,101 @@ struct RoutineGridCard: View {
                                 .frame(height: 60)
                                 .clipped()
                                 .cornerRadius(12)
-                            
+
                             // Light overlay to preserve golden tones
                             RoundedRectangle(cornerRadius: 12)
                                 .fill(Color.black.opacity(0.15))
                                 .frame(height: 60)
-                            
+
                             // Icon overlay
                             Image(systemName: "sun.max.fill")
                                 .font(AppTheme.Typography.gravitySemibold(20))
                                 .foregroundColor(.white)
                         }
-                    } else if routine.id == "intermediate_progressive" {
-                        // Waterfall image for intermediate progressive routine
+                    } else if routine.id == "routine_beginner_length_focused" {
+                        // Length-Focused Beginner routine
                         ZStack {
-                            Image("waterfall-hero")
+                            Image("length-focused-beginner")
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(height: 60)
+                                .clipped()
+                                .cornerRadius(12)
+
+                            // Overlay for text readability
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color.black.opacity(0.25))
+                                .frame(height: 60)
+
+                            // Icon overlay
+                            Image(systemName: "ruler")
+                                .font(AppTheme.Typography.gravitySemibold(20))
+                                .foregroundColor(.white)
+                        }
+                    } else if routine.id == "routine_beginner_balanced" {
+                        // Balanced Beginner routine
+                        ZStack {
+                            Image("standard_routine_hero")
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(height: 60)
+                                .clipped()
+                                .cornerRadius(12)
+
+                            // Subtle overlay for text readability
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color.black.opacity(0.2))
+                                .frame(height: 60)
+
+                            // Icon overlay
+                            Image(systemName: "scale.3d")
+                                .font(AppTheme.Typography.gravitySemibold(20))
+                                .foregroundColor(.white)
+                        }
+                    } else if routine.id == "routine_intermediate_shock_loading" {
+                        // Intermediate Shock Loading routine
+                        ZStack {
+                            Image("intermediate-mastering")
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(height: 60)
+                                .clipped()
+                                .cornerRadius(12)
+
+                            // Overlay for text readability
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color.black.opacity(0.25))
+                                .frame(height: 60)
+
+                            // Icon overlay
+                            Image(systemName: "bolt.horizontal.fill")
+                                .font(AppTheme.Typography.gravitySemibold(20))
+                                .foregroundColor(.white)
+                        }
+                    } else if routine.id == "routine_intermediate_pumping" {
+                        // Intermediate Pumping routine
+                        ZStack {
+                            Image("intermediate_pumping_hero")
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(height: 60)
+                                .clipped()
+                                .cornerRadius(12)
+
+                            // Overlay for text readability
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color.black.opacity(0.25))
+                                .frame(height: 60)
+
+                            // Icon overlay
+                            Image(systemName: "pump.fill")
+                                .font(AppTheme.Typography.gravitySemibold(20))
+                                .foregroundColor(.white)
+                        }
+                    } else if routine.id == "intermediate_progressive" {
+                        // Growth Training image for intermediate progressive routine
+                        ZStack {
+                            Image("growth_training_hero")
                                 .resizable()
                                 .aspectRatio(contentMode: .fill)
                                 .frame(height: 60)
@@ -956,14 +1156,54 @@ struct RoutineGridCard: View {
                                 .frame(height: 60)
                                 .clipped()
                                 .cornerRadius(12)
-                            
+
                             // Overlay for text readability
                             RoundedRectangle(cornerRadius: 12)
                                 .fill(Color.black.opacity(0.25))
                                 .frame(height: 60)
-                            
+
                             // Icon overlay
                             Image(systemName: "leaf.circle.fill")
+                                .font(AppTheme.Typography.gravitySemibold(20))
+                                .foregroundColor(.white)
+                        }
+                    } else if routine.id == "routine_advanced_rip" {
+                        // Advanced RIP Protocol hero image
+                        ZStack {
+                            Image("training_hero")
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(height: 60)
+                                .clipped()
+                                .cornerRadius(12)
+
+                            // Overlay for text readability
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color.black.opacity(0.3))
+                                .frame(height: 60)
+
+                            // Icon overlay
+                            Image(systemName: "arrow.up.arrow.down.circle.fill")
+                                .font(AppTheme.Typography.gravitySemibold(20))
+                                .foregroundColor(.white)
+                        }
+                    } else if routine.id == "routine_advanced_pac" {
+                        // Advanced PAC Protocol hero image
+                        ZStack {
+                            Image("advanced_intensive_hero")
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(height: 60)
+                                .clipped()
+                                .cornerRadius(12)
+
+                            // Overlay for text readability
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color.black.opacity(0.3))
+                                .frame(height: 60)
+
+                            // Icon overlay
+                            Image(systemName: "gauge.high")
                                 .font(AppTheme.Typography.gravitySemibold(20))
                                 .foregroundColor(.white)
                         }

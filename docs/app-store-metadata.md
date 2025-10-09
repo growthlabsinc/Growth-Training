@@ -21,35 +21,57 @@ This document contains all metadata required for App Store Connect submission.
 ## 2. App Description
 
 ```
-Transform your wellness journey with Growth - the comprehensive personal development app designed for modern adults.
-
-Growth combines evidence-based fitness techniques, mindful practices, and intelligent progress tracking to help you achieve your wellness goals. Whether you're beginning your health journey or looking to enhance your current routine, Growth provides the tools and guidance you need.
+Growth: Training is your ultimate fitness companion, designed to help you achieve consistent progress through structured timer-based workouts and intelligent tracking.
 
 KEY FEATURES:
 
-• Guided Fitness Methods: Access scientifically-informed exercise techniques with step-by-step instructions and safety guidelines
+  ▸ Smart Timer System
+Experience our advanced timer with multiple modes - stopwatch, countdown, and interval training. Features pause/resume functionality, background tracking, and Live Activities that keep your workout visible even when your phone is locked.
 
-• Intelligent AI Coach: Get personalized guidance and answers to your wellness questions (note: not medical advice)
+  ▸ Personalized Routines
+Choose from expertly crafted workout programs or create your own custom routines. Our flexible scheduling system adapts to your lifestyle, whether you prefer daily workouts or a custom weekly schedule.
 
-• Progress Tracking: Monitor your development with detailed logs, visual progress charts, and achievement badges
+  ▸ Progress Tracking
+Monitor your growth with detailed analytics and visual progress charts. Track completed sessions, maintain streaks, and celebrate milestones as you build lasting fitness habits.
 
-• Educational Resources: Learn from curated content covering fitness fundamentals, safety practices, and wellness science
+  ▸ Live Activities & Dynamic Island
+Stay focused with our innovative Live Activity support. See your timer progress on the Lock Screen and Dynamic Island without unlocking your phone. Perfect for hands-free workouts.
 
-• Flexible Routines: Create custom routines or follow pre-designed programs that adapt to your schedule
+  ▸ AI-Powered Coaching
+Get personalized guidance from our intelligent coach that learns your patterns and provides tailored advice to optimize your training and recovery.
 
-• Privacy-First Design: Your health data stays private with end-to-end encryption and local storage options
+  ▸ Quick Practice Mode
+Jump into instant workouts when you're short on time. No setup required - just start and go.
 
-SAFETY & DISCLAIMERS:
-Growth prioritizes your safety with prominent medical disclaimers, overexertion warnings, and encouragement to consult healthcare professionals. The app provides educational content only and is not a substitute for professional medical advice.
+PREMIUM FEATURES:
+  • Unlimited custom routines
+  • Advanced analytics and insights
+  • Priority AI coaching responses
+  • Extended workout history
+  • Ad-free experience
 
-Perfect for adults looking to take control of their wellness journey with a comprehensive, science-based approach to personal development.
+BUILT FOR YOUR SUCCESS:
+Growth isn't just another timer app - it's a comprehensive training system designed to help you build consistency, track progress, and achieve your fitness goals. Whether you're a beginner starting your journey or an athlete optimizing performance, our app adapts to your needs.
 
-Download Growth today and start building healthier habits that last.
+PRIVACY FIRST:
+Your data is encrypted and stored securely. We never share your personal information with third parties. Full control over your data with easy export and deletion options.
+
+Join thousands of users who have transformed their fitness journey with Growth. Your growth starts today!
+
+SUBSCRIPTION INFORMATION:
+• Growth Premium Weekly - $4.99/week
+• Growth Premium Quarterly - $29.99/3 months (Save 40%)
+• Growth Premium Annual - $49.99/year (Save 80%, includes 5-day free trial)
+
+Payment will be charged to your iTunes Account at confirmation of purchase. Subscription automatically renews unless auto-renew is turned off at least 24-hours before the end of the current period. Your account will be charged for renewal within 24-hours prior to the end of the current period. You can manage or turn off auto-renew in your Account settings after purchase.
+
+Terms of Use: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
+Privacy Policy: https://www.growthlabs.coach/privacy-policy
 ```
 
 ## 3. Keywords
 
-`health, fitness, wellness, exercise, personal development, habits, routines, progress tracking, mindfulness, adult health, guided workouts, fitness education`
+`fitness timer, workout timer, interval training, live activities, dynamic island, progress tracking, custom routines, AI coach, fitness tracking, health habits, workout tracker, training app`
 
 ## 4. Support & Marketing URLs
 
@@ -144,20 +166,21 @@ The app does not diagnose, treat, or cure any medical conditions. It provides ed
 
 ## 8. Promotional Text (170 characters max)
 
-"Transform your wellness with science-based fitness methods, AI guidance, and comprehensive progress tracking. Your health journey starts here."
+"Smart timer workouts with Live Activities, AI coaching, and detailed progress tracking. Build consistency and achieve your fitness goals today!"
 
 ## 9. Version Release Notes
 
 ### Version 1.0
 "Welcome to Growth! 🌱
 
-• Comprehensive fitness method library with safety guidelines
-• AI-powered wellness coach for personalized guidance  
-• Detailed progress tracking and achievement system
+• Smart timer system with stopwatch, countdown, and interval modes
+• Live Activities support for Lock Screen and Dynamic Island
+• AI-powered coaching for personalized training guidance
+• Customizable routines and expertly crafted workout programs
+• Detailed progress tracking with visual analytics
 • Privacy-first design with encrypted data storage
-• Educational resources for safe, effective training
 
-Start your wellness transformation today with evidence-based methods designed for lasting results."
+Build consistency and transform your fitness journey with Growth!"
 
 ## 10. App Store Connect Configuration
 
@@ -195,5 +218,6 @@ Start your wellness transformation today with evidence-based methods designed fo
 
 | Date | Version | Notes |
 |------|---------|-------|
+| 2025-10-08 | 1.0 | Updated app description, promotional text, keywords, and release notes to highlight timer features and Live Activities |
 | 2025-06-11 | 1.0 | Complete metadata for App Store submission |
 | YYYY-MM-DD | 0.1 | Initial skeleton created | 
