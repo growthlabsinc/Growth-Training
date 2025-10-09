@@ -47,7 +47,35 @@ struct SettingsView: View {
                         Spacer()
                     }
                     .padding(.vertical, 8)
-                    
+
+                    // Trial Status Display
+                    if entitlements.isInTrial {
+                        HStack {
+                            Image(systemName: "clock.badge.checkmark")
+                                .foregroundColor(.blue)
+                                .frame(width: 25, height: 25)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 5)
+                                        .fill(Color.blue.opacity(0.2))
+                                        .frame(width: 30, height: 30)
+                                )
+
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Trial Active")
+                                    .font(AppTheme.Typography.gravityBook(14))
+                                    .padding(.leading, 5)
+
+                                Text("\(entitlements.trialDaysRemaining) days remaining")
+                                    .font(AppTheme.Typography.gravitySemibold(13))
+                                    .foregroundColor(.blue)
+                                    .padding(.leading, 5)
+                            }
+
+                            Spacer()
+                        }
+                        .padding(.vertical, 4)
+                    }
+
                     NavigationLink {
                         AccountView(authViewModel: authViewModel)
                     } label: {
@@ -407,7 +435,7 @@ struct SettingsView: View {
                 .font(AppTheme.Typography.gravitySemibold(13))
                 .foregroundColor(Color("TextColor"))) {
                 NavigationLink {
-                    Text("Mock Data Manager").navigationTitle("Mock Data")
+                    DebugMockDataView()
                 } label: {
                     settingRow(title: "Mock Data Manager", icon: "hammer.fill", color: .orange)
                 }
