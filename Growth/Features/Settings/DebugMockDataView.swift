@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FirebaseAuth
 
 #if DEBUG
 struct DebugMockDataView: View {
@@ -115,16 +116,46 @@ struct DebugMockDataView: View {
         isGenerating = true
 
         Task {
-            // Force re-initialization which will generate data
-            DebugMockDataService.shared.initializeMockDataIfNeeded()
+            // First check if user is authenticated
+            guard Auth.auth().currentUser != nil else {
+                await MainActor.run {
+                    isGenerating = false
+                    alertMessage = "Error: No authenticated user. Please sign in first."
+                    showingAlert = true
+                }
+                return
+            }
 
-            // Wait for the async operation to complete
-            try? await Task.sleep(nanoseconds: 1_500_000_000) // 1.5 seconds
+            // Check if mock data already exists
+            let hasMock = await withCheckedContinuation { continuation in
+                DebugMockDataService.shared.hasMockData { exists in
+                    continuation.resume(returning: exists)
+                }
+            }
+
+            if hasMock {
+                await MainActor.run {
+                    isGenerating = false
+                    alertMessage = "Mock data already exists. Use 'Force Regenerate' to replace it, or 'Clear' to remove it first."
+                    showingAlert = true
+                }
+                return
+            }
+
+            // Generate new mock data
+            await withCheckedContinuation { continuation in
+                DebugMockDataService.shared.generateMockDataForced { error in
+                    continuation.resume()
+                }
+            }
+
+            // Wait a moment for data to propagate
+            try? await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds
 
             await MainActor.run {
                 isGenerating = false
                 checkMockDataStatus()
-                alertMessage = "Mock sessions have been generated. Check your Progress tab and Session History to see them."
+                alertMessage = "Mock data generated successfully!\n\n✓ Session history\n✓ Progress tracking\n\nCheck the Progress and History tabs to see your data."
                 showingAlert = true
             }
         }
@@ -132,15 +163,35 @@ struct DebugMockDataView: View {
     
     private func forceRegenerateMockData() {
         isGenerating = true
-        
-        DebugMockDataService.shared.forceRegenerateMockData { error in
-            DispatchQueue.main.async {
+
+        Task {
+            // First check if user is authenticated
+            guard Auth.auth().currentUser != nil else {
+                await MainActor.run {
+                    isGenerating = false
+                    alertMessage = "Error: No authenticated user. Please sign in first."
+                    showingAlert = true
+                }
+                return
+            }
+
+            // Force regenerate (clears and creates new)
+            let error = await withCheckedContinuation { continuation in
+                DebugMockDataService.shared.forceRegenerateMockData { error in
+                    continuation.resume(returning: error)
+                }
+            }
+
+            // Wait a moment for data to propagate
+            try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 second
+
+            await MainActor.run {
                 isGenerating = false
-                
+
                 if let error = error {
-                    alertMessage = "Failed to regenerate mock data: \(error.localizedDescription)"
+                    alertMessage = "Failed to regenerate: \(error.localizedDescription)"
                 } else {
-                    alertMessage = "Mock data has been regenerated. Check your Progress tab to see the data."
+                    alertMessage = "Mock data regenerated successfully!\n\n✓ Previous data cleared\n✓ New sessions created\n✓ Progress data added\n\nCheck Progress and History tabs."
                     hasMockData = true
                 }
                 showingAlert = true
@@ -151,18 +202,35 @@ struct DebugMockDataView: View {
     
     private func clearMockData() {
         isClearing = true
-        
-        DebugMockDataService.shared.clearAllMockData { error in
-            DispatchQueue.main.async {
+
+        Task {
+            // First check if user is authenticated
+            guard Auth.auth().currentUser != nil else {
+                await MainActor.run {
+                    isClearing = false
+                    alertMessage = "Error: No authenticated user. Please sign in first."
+                    showingAlert = true
+                }
+                return
+            }
+
+            let error = await withCheckedContinuation { continuation in
+                DebugMockDataService.shared.clearAllMockData { error in
+                    continuation.resume(returning: error)
+                }
+            }
+
+            await MainActor.run {
                 isClearing = false
-                
+
                 if let error = error {
-                    alertMessage = "Failed to clear mock data: \(error.localizedDescription)"
+                    alertMessage = "Failed to clear: \(error.localizedDescription)"
                 } else {
-                    alertMessage = "All mock data has been cleared."
+                    alertMessage = "All mock data cleared successfully!\n\nYour Progress and History tabs are now empty."
                     hasMockData = false
                 }
                 showingAlert = true
+                checkMockDataStatus()
             }
         }
     }

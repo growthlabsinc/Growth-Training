@@ -353,7 +353,7 @@ class DebugMockDataService {
     }
     
     // MARK: - Force Regeneration
-    
+
     /// Force regenerate mock data regardless of existing data
     func forceRegenerateMockData(completion: @escaping (Error?) -> Void) {
         #if DEBUG
@@ -363,14 +363,14 @@ class DebugMockDataService {
             completion(NSError(domain: "DebugMockDataService", code: 0, userInfo: [NSLocalizedDescriptionKey: "Cannot generate mock data in production"]))
             return
         }
-        
+
         guard let userId = Auth.auth().currentUser?.uid else {
             completion(NSError(domain: "DebugMockDataService", code: 0, userInfo: [NSLocalizedDescriptionKey: "No authenticated user"]))
             return
         }
-        
+
         Logger.debug("[DebugMockData] Force regenerating mock data for user: \(userId)")
-        
+
         // First clear existing mock data
         clearAllMockData { [weak self] error in
             if let error = error {
@@ -378,12 +378,38 @@ class DebugMockDataService {
                 completion(error)
                 return
             }
-            
+
             // Generate both session and gains mock data
             self?.generateMockSessions(userId: userId)
             self?.generateMockGainsData(userId: userId)
             completion(nil)
         }
+        #else
+        completion(nil)
+        #endif
+    }
+
+    /// Generate mock data without checking for existing data (for first-time generation)
+    func generateMockDataForced(completion: @escaping (Error?) -> Void) {
+        #if DEBUG
+        // Additional production safeguard
+        if let bundleId = Bundle.main.bundleIdentifier,
+           bundleId == "com.growthlabs.growthmethod" {
+            completion(NSError(domain: "DebugMockDataService", code: 0, userInfo: [NSLocalizedDescriptionKey: "Cannot generate mock data in production"]))
+            return
+        }
+
+        guard let userId = Auth.auth().currentUser?.uid else {
+            completion(NSError(domain: "DebugMockDataService", code: 0, userInfo: [NSLocalizedDescriptionKey: "No authenticated user"]))
+            return
+        }
+
+        Logger.debug("[DebugMockData] Generating mock data for user: \(userId)")
+
+        // Generate both session and gains mock data
+        generateMockSessions(userId: userId)
+        generateMockGainsData(userId: userId)
+        completion(nil)
         #else
         completion(nil)
         #endif
