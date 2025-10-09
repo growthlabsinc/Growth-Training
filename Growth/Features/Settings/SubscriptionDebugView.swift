@@ -206,6 +206,31 @@ struct SubscriptionDebugView: View {
                 }
             }
 
+            Section("Remote Config") {
+                HStack {
+                    Text("Trial Enabled (Remote)")
+                    Spacer()
+                    Text(RemoteConfigManager.shared.isTrialEnabled ? "Yes" : "No")
+                        .foregroundColor(RemoteConfigManager.shared.isTrialEnabled ? .green : .red)
+                }
+
+                HStack {
+                    Text("Trial Duration (Remote)")
+                    Spacer()
+                    Text("\(RemoteConfigManager.shared.trialDurationDays) days")
+                        .foregroundColor(.secondary)
+                }
+
+                #if targetEnvironment(simulator) || DEBUG
+                if !RemoteConfigManager.shared.isTrialEnabled {
+                    Text("⚠️ Trial is disabled in Remote Config. In DEBUG/simulator builds, trial won't work unless Remote Config is updated.")
+                        .font(.caption)
+                        .foregroundColor(.orange)
+                        .padding(.vertical, 4)
+                }
+                #endif
+            }
+
             Section("Trial Debug Actions") {
                 Button("Start New Trial") {
                     Task {
@@ -311,6 +336,8 @@ struct SubscriptionDebugView: View {
 
     // MARK: - Debug Actions
     private func startNewTrialDebug() async {
+        print("🔧 [Debug] Starting new trial...")
+
         // Clear existing trial data
         SimplifiedEntitlementManagerWithTrial.userDefaults.removeObject(forKey: "com.growthlabs.firstLaunchTimestamp")
         SimplifiedEntitlementManagerWithTrial.userDefaults.removeObject(forKey: "com.growthlabs.dailyAICoachUsage")
@@ -322,12 +349,28 @@ struct SubscriptionDebugView: View {
         // Set new trial start time
         let now = Date().timeIntervalSince1970
         SimplifiedEntitlementManagerWithTrial.userDefaults.set(now, forKey: "com.growthlabs.firstLaunchTimestamp")
+        SimplifiedEntitlementManagerWithTrial.userDefaults.set(0, forKey: "com.growthlabs.dailyAICoachUsage")
+        SimplifiedEntitlementManagerWithTrial.userDefaults.set(0, forKey: "com.growthlabs.dailyGuidedSessionUsage")
         SimplifiedEntitlementManagerWithTrial.userDefaults.synchronize()
 
-        // Refresh trial status
+        print("🔧 [Debug] Trial timestamp set: \(now)")
+        print("🔧 [Debug] Trial enabled in Remote Config: \(RemoteConfigManager.shared.isTrialEnabled)")
+        print("🔧 [Debug] Trial duration days: \(RemoteConfigManager.shared.trialDurationDays)")
+
+        // Refresh trial status and wait for it to complete
         await entitlementManager.refreshTrialStatus()
 
-        lastTrialAction = "New trial started (3 days from now)"
+        // Give it a moment to propagate
+        try? await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds
+
+        // Force UI update
+        await MainActor.run {
+            entitlementManager.objectWillChange.send()
+        }
+
+        let trialDays = RemoteConfigManager.shared.trialDurationDays
+        let daysRemaining = entitlementManager.trialDaysRemaining
+        lastTrialAction = "New trial started! \(daysRemaining) of \(trialDays) days remaining.\n\nNote: If trial is disabled in Remote Config (simulator/debug only), it won't be active."
         showTrialActionConfirmation = true
     }
 

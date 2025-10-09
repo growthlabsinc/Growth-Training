@@ -113,16 +113,20 @@ struct DebugMockDataView: View {
     
     private func generateMockData() {
         isGenerating = true
-        
-        // Force re-initialization which will generate data
-        DebugMockDataService.shared.initializeMockDataIfNeeded()
-        
-        // Wait a bit for the async operation to complete
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
-            isGenerating = false
-            checkMockDataStatus()
-            alertMessage = "Mock sessions have been generated. Check your Session History to see them."
-            showingAlert = true
+
+        Task {
+            // Force re-initialization which will generate data
+            DebugMockDataService.shared.initializeMockDataIfNeeded()
+
+            // Wait for the async operation to complete
+            try? await Task.sleep(nanoseconds: 1_500_000_000) // 1.5 seconds
+
+            await MainActor.run {
+                isGenerating = false
+                checkMockDataStatus()
+                alertMessage = "Mock sessions have been generated. Check your Progress tab and Session History to see them."
+                showingAlert = true
+            }
         }
     }
     
