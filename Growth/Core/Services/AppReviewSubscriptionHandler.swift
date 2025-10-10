@@ -60,8 +60,8 @@ public final class AppReviewSubscriptionHandler {
         // StoreKitEnvironmentHandler was deleted - using direct check
         let productIds = [
             "com.growthlabs.growthmethod.subscription.premium.weekly",
-            "com.growthlabs.growthmethod.subscription.premium.quarterly",
-            "com.growthlabs.growthmethod.subscription.premium.yearly"
+            "com.growthlabs.growthtraining.subscription.premium.quarterly",
+            "com.growthlabs.growthtraining.subscription.premium.yearly"
         ]
         logger.info("AppReview: Product IDs to load: \(productIds)")
         
@@ -228,8 +228,8 @@ public final class AppReviewSubscriptionHandler {
         
         let productIds = [
             "com.growthlabs.growthmethod.subscription.premium.weekly",
-            "com.growthlabs.growthmethod.subscription.premium.quarterly",
-            "com.growthlabs.growthmethod.subscription.premium.yearly"
+            "com.growthlabs.growthtraining.subscription.premium.quarterly",
+            "com.growthlabs.growthtraining.subscription.premium.yearly"
         ]
         
         for productId in productIds {

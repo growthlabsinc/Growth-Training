@@ -92,11 +92,11 @@ public struct SubscriptionProduct: Codable, Identifiable, Hashable {
 public enum SubscriptionProductIDs {
     // Premium tier - the only tier with actual products in App Store Connect
     public static let premiumWeekly = "com.growthlabs.growthmethod.subscription.premium.weekly"
-    public static let premiumQuarterly = "com.growthlabs.growthmethod.subscription.premium.quarterly"
-    public static let premiumYearly = "com.growthlabs.growthmethod.subscription.premium.yearly"
+    public static let premiumQuarterly = "com.growthlabs.growthtraining.subscription.premium.quarterly"
+    public static let premiumYearly = "com.growthlabs.growthtraining.subscription.premium.yearly"
     
     // Aliases for backward compatibility
-    public static let monthly = "com.growthlabs.growthmethod.premium.monthly"
+    public static let monthly = "com.growthlabs.growthtraining.premium.monthly"
     public static let quarterly = premiumQuarterly
     public static let annual = premiumYearly
     public static let all: Set<String> = [premiumWeekly, premiumQuarterly, premiumYearly]
@@ -223,7 +223,7 @@ public struct SubscriptionProductCatalog {
         
         for product in products {
             // Check product ID format
-            guard product.id.contains("com.growthlabs.growthmethod.subscription.premium") else {
+            guard product.id.contains("com.growthlabs.growthtraining.subscription.premium") else {
                 return false
             }
             
@@ -256,21 +256,21 @@ public struct SubscriptionMigration {
     /// Map old product IDs to new system - Maps to the 3 actual products
     public static func migrateProductId(_ oldProductId: String) -> String? {
         switch oldProductId {
-        case "com.growthlabs.growthmethod.basic_monthly",
-             "com.growthlabs.growthmethod.subscription.basic.monthly":
+        case "com.growthlabs.growthtraining.basic_monthly",
+             "com.growthlabs.growthtraining.subscription.basic.monthly":
             return SubscriptionProductIDs.premiumWeekly  // Map basic monthly to weekly
-        case "com.growthlabs.growthmethod.basic_yearly",
-             "com.growthlabs.growthmethod.subscription.basic.yearly":
+        case "com.growthlabs.growthtraining.basic_yearly",
+             "com.growthlabs.growthtraining.subscription.basic.yearly":
             return SubscriptionProductIDs.premiumYearly
-        case "com.growthlabs.growthmethod.premium_monthly",
-             "com.growthlabs.growthmethod.subscription.premium.monthly",
-             "com.growthlabs.growthmethod.elite_monthly",
-             "com.growthlabs.growthmethod.subscription.elite.monthly":
+        case "com.growthlabs.growthtraining.premium_monthly",
+             "com.growthlabs.growthtraining.subscription.premium.monthly",
+             "com.growthlabs.growthtraining.elite_monthly",
+             "com.growthlabs.growthtraining.subscription.elite.monthly":
             return SubscriptionProductIDs.premiumQuarterly  // Map all monthly to quarterly
-        case "com.growthlabs.growthmethod.premium_yearly",
-             "com.growthlabs.growthmethod.subscription.premium.yearly",
-             "com.growthlabs.growthmethod.elite_yearly",
-             "com.growthlabs.growthmethod.subscription.elite.yearly":
+        case "com.growthlabs.growthtraining.premium_yearly",
+             "com.growthlabs.growthtraining.subscription.premium.yearly",
+             "com.growthlabs.growthtraining.elite_yearly",
+             "com.growthlabs.growthtraining.subscription.elite.yearly":
             return SubscriptionProductIDs.premiumYearly
         default:
             return nil

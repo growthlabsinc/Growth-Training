@@ -773,12 +773,12 @@ extension SimplifiedEntitlementManagerWithTrial {
         // Check for known product IDs
         let premiumProductIds = [
             "com.growthlabs.growthmethod.subscription.premium.weekly",
-            "com.growthlabs.growthmethod.subscription.premium.quarterly",
-            "com.growthlabs.growthmethod.subscription.premium.yearly"
+            "com.growthlabs.growthtraining.subscription.premium.quarterly",
+            "com.growthlabs.growthtraining.subscription.premium.yearly"
         ]
 
         let lifetimeProductIds = [
-            "com.growthlabs.growthmethod.lifetime"
+            "com.growthlabs.growthtraining.lifetime"
         ]
 
         // Update entitlements
