@@ -91,7 +91,7 @@ public struct SubscriptionProduct: Codable, Identifiable, Hashable {
 /// App Store Connect product identifiers - Only 3 products as configured
 public enum SubscriptionProductIDs {
     // Premium tier - the only tier with actual products in App Store Connect
-    public static let premiumWeekly = "com.growthlabs.growthmethod.subscription.premium.weekly"
+    public static let premiumWeekly = "com.growthlabs.growthtraining.subscription.premium.weekly"
     public static let premiumQuarterly = "com.growthlabs.growthtraining.subscription.premium.quarterly"
     public static let premiumYearly = "com.growthlabs.growthtraining.subscription.premium.yearly"
     

@@ -772,7 +772,7 @@ extension SimplifiedEntitlementManagerWithTrial {
     public func updateFromPurchasedProducts(_ purchasedIDs: Set<String>) {
         // Check for known product IDs
         let premiumProductIds = [
-            "com.growthlabs.growthmethod.subscription.premium.weekly",
+            "com.growthlabs.growthtraining.subscription.premium.weekly",
             "com.growthlabs.growthtraining.subscription.premium.quarterly",
             "com.growthlabs.growthtraining.subscription.premium.yearly"
         ]

@@ -59,7 +59,7 @@ public final class AppReviewSubscriptionHandler {
         logger.info("AppReview: Starting product load")
         // StoreKitEnvironmentHandler was deleted - using direct check
         let productIds = [
-            "com.growthlabs.growthmethod.subscription.premium.weekly",
+            "com.growthlabs.growthtraining.subscription.premium.weekly",
             "com.growthlabs.growthtraining.subscription.premium.quarterly",
             "com.growthlabs.growthtraining.subscription.premium.yearly"
         ]
@@ -227,11 +227,11 @@ public final class AppReviewSubscriptionHandler {
         var products: [Product] = []
         
         let productIds = [
-            "com.growthlabs.growthmethod.subscription.premium.weekly",
+            "com.growthlabs.growthtraining.subscription.premium.weekly",
             "com.growthlabs.growthtraining.subscription.premium.quarterly",
             "com.growthlabs.growthtraining.subscription.premium.yearly"
         ]
-        
+
         for productId in productIds {
             do {
                 let product = try await Product.products(for: [productId])

@@ -28,7 +28,7 @@ class SimplifiedPurchaseManager: NSObject, ObservableObject {
 
     // MARK: - Product Configuration
     private let productIds = [
-        "com.growthlabs.growthmethod.subscription.premium.weekly",
+        "com.growthlabs.growthtraining.subscription.premium.weekly",
         "com.growthlabs.growthtraining.subscription.premium.quarterly",
         "com.growthlabs.growthtraining.subscription.premium.yearly"
     ]
