@@ -35,7 +35,8 @@ function initializeAppStoreConfig() {
 }
 
 // Initialize on module load
-initializeAppStoreConfig();
+// NOTE: Commented out to prevent deployment timeouts
+// initializeAppStoreConfig();
 
 // Export secrets for use in functions
 module.exports = {

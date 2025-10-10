@@ -311,32 +311,44 @@ class UserService {
     /// - Returns: True if available, false if taken
     func checkUsernameAvailability(_ username: String) async throws -> Bool {
         let lowercaseUsername = username.lowercased()
-        
+
+        Logger.debug("🔍 UserService: Checking username availability for: '\(lowercaseUsername)'")
+
         // Basic validation - check format first
         let usernameRegex = "^[a-zA-Z0-9_]{3,20}$"
         let usernamePredicate = NSPredicate(format: "SELF MATCHES %@", usernameRegex)
-        
+
         if !usernamePredicate.evaluate(with: lowercaseUsername) {
+            Logger.error("❌ UserService: Invalid username format: '\(lowercaseUsername)'")
             throw NSError(domain: "UserService", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid username format"])
         }
-        
+
+        Logger.debug("✅ UserService: Username format valid, calling Cloud Function...")
+
         // Call Firebase Function to check username availability
         do {
             let functions = Functions.functions()
             let callable = functions.httpsCallable("checkUsernameAvailability")
-            
+
+            Logger.debug("📡 UserService: Calling checkUsernameAvailability function with username: '\(lowercaseUsername)'")
             let result = try await callable.call(["username": lowercaseUsername])
-            
+            Logger.debug("📥 UserService: Received response from function: \(result.data)")
+
             if let data = result.data as? [String: Any],
                let available = data["available"] as? Bool {
+                Logger.info("✅ UserService: Username '\(lowercaseUsername)' availability: \(available)")
                 return available
             } else {
                 // If we can't parse the response, assume username is taken for safety
-                Logger.error("UserService: Invalid response from checkUsernameAvailability function")
+                Logger.error("❌ UserService: Invalid response from checkUsernameAvailability function. Response data: \(result.data)")
                 return false
             }
-        } catch {
-            Logger.error("UserService: Error calling checkUsernameAvailability function: \(error)")
+        } catch let error as NSError {
+            Logger.error("❌ UserService: Error calling checkUsernameAvailability function: \(error)")
+            Logger.error("   Error domain: \(error.domain)")
+            Logger.error("   Error code: \(error.code)")
+            Logger.error("   Error userInfo: \(error.userInfo)")
+
             // If the function fails, we should still allow the user to proceed
             // The server will validate again during account creation
             throw NSError(domain: "UserService", code: 1, userInfo: [NSLocalizedDescriptionKey: "Unable to verify username availability. Please try again."])

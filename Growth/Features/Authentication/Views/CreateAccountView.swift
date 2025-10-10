@@ -488,44 +488,57 @@ struct CreateAccountView: View {
     private func validateUsername(_ username: String) {
         usernameError = ""
         usernameAvailable = nil
-        
+
         guard !username.isEmpty else { return }
-        
+
         // Validate format
         let usernameRegex = "^[a-zA-Z0-9_]{3,20}$"
         let usernamePredicate = NSPredicate(format: "SELF MATCHES %@", usernameRegex)
-        
+
         if !usernamePredicate.evaluate(with: username) {
             usernameError = "Username must be 3-20 characters, letters, numbers, and underscores only"
             return
         }
-        
+
+        print("🔍 CreateAccountView: Username format valid, scheduling availability check...")
+
         // Check availability with debouncing
         usernameDebouncer.debounce {
+            print("🔍 CreateAccountView: Debouncer triggered, calling checkUsernameAvailability...")
             Task {
                 await checkUsernameAvailability(username)
             }
         }
     }
-    
+
     private func checkUsernameAvailability(_ username: String) async {
+        print("🔍 CreateAccountView: checkUsernameAvailability started for '\(username)'")
+
         await MainActor.run {
             isCheckingUsername = true
+            print("🔍 CreateAccountView: Set isCheckingUsername = true")
         }
-        
+
         do {
+            print("🔍 CreateAccountView: Calling UserService.checkUsernameAvailability...")
             let available = try await UserService.shared.checkUsernameAvailability(username)
+            print("✅ CreateAccountView: Received result - available: \(available)")
+
             await MainActor.run {
                 isCheckingUsername = false
                 usernameAvailable = available
                 if !available {
                     usernameError = "Username is already taken"
                 }
+                print("🔍 CreateAccountView: Updated UI - usernameAvailable: \(String(describing: usernameAvailable)), error: '\(usernameError)'")
             }
         } catch {
+            print("❌ CreateAccountView: Error checking username: \(error)")
+            print("   Error description: \(error.localizedDescription)")
+
             await MainActor.run {
                 isCheckingUsername = false
-                usernameError = "Error checking username availability"
+                usernameError = "Error checking username availability: \(error.localizedDescription)"
             }
         }
     }
