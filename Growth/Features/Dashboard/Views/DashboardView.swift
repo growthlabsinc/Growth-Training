@@ -99,7 +99,7 @@ struct DashboardView: View {
                 )
                 
                 // Gains Tracking Card
-                GainsInputCard()
+                EnhancedGainsInputCard()
                 
                 // Contextual Quick Actions - Tertiary Section
                 ContextualQuickActionsView(

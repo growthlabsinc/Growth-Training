@@ -134,7 +134,7 @@ struct SessionCompletionPromptView: View {
             
             // Show gains input card if requested
             if showGainsInput {
-                GainsInputCard(sessionId: sessionProgress.sessionId) { _ in
+                EnhancedGainsInputCard(sessionId: sessionProgress.sessionId) { _ in
                     showGainsInput = false
                 }
                 .padding(.horizontal, AppTheme.Layout.spacingL)

@@ -19,7 +19,7 @@ struct GainsProgressView: View {
                 headerView
                 
                 // Gains input card for adding measurements
-                GainsInputCard()
+                EnhancedGainsInputCard()
                 
                 if gainsService.isLoading {
                     ProgressView("Loading measurements...")
@@ -152,47 +152,44 @@ struct GainsProgressView: View {
     // MARK: - Progress Charts View
     
     private var progressChartsView: some View {
-        VStack(spacing: 16) {
-            // Time range selector
-            HStack {
-                Text("Progress Over Time")
-                    .font(AppTheme.Typography.gravitySemibold(18))
-                    .foregroundColor(Color("TextColor"))
-                
-                Spacer()
-                
-                Picker("Time Range", selection: $selectedTimeRange) {
-                    ForEach(TimeRange.allCases, id: \.self) { range in
-                        Text(range.rawValue).tag(range)
-                    }
-                }
-                .pickerStyle(MenuPickerStyle())
-                .tint(Color("GrowthGreen"))
+        VStack(spacing: 24) {
+            // New measurement type charts for specific tracking
+
+            // Length measurements chart (BPEL, NBPEL, etc.)
+            CardView {
+                MeasurementTypeChart(measurementCategory: .length)
             }
-            
-            // Length Chart
-            TrendChartView(
-                data: lengthChartData,
-                title: "Length Over Time",
-                color: Color("GrowthGreen"),
-                yAxisUnit: "Length (\(gainsService.preferredUnit.lengthSymbol))"
-            )
-            
-            // Girth Chart
-            TrendChartView(
-                data: girthChartData,
-                title: "Girth Over Time", 
-                color: Color("BrightTeal"),
-                yAxisUnit: "Girth (\(gainsService.preferredUnit.lengthSymbol))"
-            )
-            
-            // Volume Chart
-            TrendChartView(
-                data: volumeChartData,
-                title: "Volume Over Time",
-                color: Color("MintGreen"),
-                yAxisUnit: "Volume (\(gainsService.preferredUnit.volumeSymbol))"
-            )
+
+            // Girth measurements chart (MSEG, BEG, etc.)
+            CardView {
+                MeasurementTypeChart(measurementCategory: .girth)
+            }
+
+            // Original Volume Chart (calculated metric)
+            VStack(spacing: 16) {
+                HStack {
+                    Text("Volume Progress")
+                        .font(AppTheme.Typography.gravitySemibold(18))
+                        .foregroundColor(Color("TextColor"))
+
+                    Spacer()
+
+                    Picker("Time Range", selection: $selectedTimeRange) {
+                        ForEach(TimeRange.allCases, id: \.self) { range in
+                            Text(range.rawValue).tag(range)
+                        }
+                    }
+                    .pickerStyle(MenuPickerStyle())
+                    .tint(Color("MintGreen"))
+                }
+
+                TrendChartView(
+                    data: volumeChartData,
+                    title: "Volume Over Time",
+                    color: Color("MintGreen"),
+                    yAxisUnit: "Volume (\(gainsService.preferredUnit.volumeSymbol))"
+                )
+            }
         }
     }
     
