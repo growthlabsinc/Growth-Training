@@ -1,0 +1,59 @@
+============================================================
+PE MEASUREMENT TERMINOLOGY ANALYSIS
+============================================================
+Analysis Date: 2025-10-23T14:56:57.127258
+Posts Analyzed: 900
+Comments Analyzed: 25787
+Total Measurements Found: 3550
+
+TOP 10 MOST COMMON MEASUREMENTS:
+------------------------------------------------------------
+ 1. Loss of Tugback                          (1341 mentions)
+ 2. Erection Quality                         (760 mentions)
+ 3. Bone Pressed Erect Length                (502 mentions)
+ 4. Volume                                   (355 mentions)
+ 5. Non-Bone Pressed Erect Length            (144 mentions)
+ 6. Mid-Shaft Erect Girth                    (127 mentions)
+ 7. Bone Pressed Flaccid Stretched Length    (125 mentions)
+ 8. Circumference                            (70 mentions)
+ 9. Erect Girth                              (48 mentions)
+10. Base Erect Girth                         (21 mentions)
+
+RECOMMENDED PRIMARY MEASUREMENTS FOR APP:
+------------------------------------------------------------
+  • Bone Pressed Erect Length
+  • Mid-Shaft Erect Girth
+  • Erection Quality
+
+RECOMMENDED SECONDARY MEASUREMENTS FOR APP:
+------------------------------------------------------------
+  • Non-Bone Pressed Erect Length
+  • Bone Pressed Flaccid Stretched Length
+  • Base Erect Girth
+  • Flaccid Length
+
+LENGTH MEASUREMENTS BY FREQUENCY:
+------------------------------------------------------------
+  • Bone Pressed Erect Length                (502 mentions)
+  • Non-Bone Pressed Erect Length            (144 mentions)
+  • Bone Pressed Flaccid Stretched Length    (125 mentions)
+
+GIRTH MEASUREMENTS BY FREQUENCY:
+------------------------------------------------------------
+  • Mid-Shaft Erect Girth                    (127 mentions)
+  • Circumference                            (70 mentions)
+  • Erect Girth                              (48 mentions)
+  • Base Erect Girth                         (21 mentions)
+
+COMMON MEASUREMENT FORMATS:
+------------------------------------------------------------
+  1. 3x7
+  2. 3x7 
+  3. 2x20 
+  4. 8x6. 
+  5. 1x10 
+  6. 366x4
+  7. 5x04
+  8. 5x5 
+  9. 6.1x5.0
+  10. 7.4x5.7 
