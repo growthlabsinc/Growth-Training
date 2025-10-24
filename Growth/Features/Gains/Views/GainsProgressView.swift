@@ -302,29 +302,7 @@ struct GainsProgressView: View {
         
         return gainsService.entries.filter { $0.timestamp >= cutoffDate }
     }
-    
-    private var lengthChartData: [ChartDataPoint] {
-        filteredEntries
-            .sorted { $0.timestamp < $1.timestamp } // Sort chronologically
-            .map { entry in
-                ChartDataPoint(
-                    date: entry.timestamp,
-                    value: entry.displayLength(in: gainsService.preferredUnit)
-                )
-            }
-    }
-    
-    private var girthChartData: [ChartDataPoint] {
-        filteredEntries
-            .sorted { $0.timestamp < $1.timestamp } // Sort chronologically
-            .map { entry in
-                ChartDataPoint(
-                    date: entry.timestamp,
-                    value: entry.displayGirth(in: gainsService.preferredUnit)
-                )
-            }
-    }
-    
+
     private var volumeChartData: [ChartDataPoint] {
         filteredEntries
             .sorted { $0.timestamp < $1.timestamp } // Sort chronologically
