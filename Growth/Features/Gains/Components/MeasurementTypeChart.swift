@@ -174,19 +174,38 @@ struct MeasurementTypeChart: View {
                 let _ = print("🟢 [Rendering] Primary LineMark: \(dataPoint.date) = \(dataPoint.value)")
                 LineMark(
                     x: .value("Date", dataPoint.date),
-                    y: .value("Value", dataPoint.value)
+                    y: .value("Value", dataPoint.value),
+                    series: .value("Measurement", selectedType.displayName)
                 )
-                .foregroundStyle(Color("GrowthGreen"))
-                .lineStyle(StrokeStyle(lineWidth: 2))
-                .accessibilityLabel(selectedType.displayName)
+                .foregroundStyle(
+                    LinearGradient(
+                        colors: [Color.green, Color("GrowthGreen"), Color("MintGreen")],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                )
+                .lineStyle(StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
+                .interpolationMethod(.catmullRom)
 
-                PointMark(
-                    x: .value("Date", dataPoint.date),
-                    y: .value("Value", dataPoint.value)
-                )
-                .foregroundStyle(Color("GrowthGreen"))
-                .symbolSize(100)
-                .accessibilityLabel(selectedType.displayName)
+                // Only show point for the most recent data point
+                if dataPoint.date == primaryData.last?.date {
+                    PointMark(
+                        x: .value("Date", dataPoint.date),
+                        y: .value("Value", dataPoint.value)
+                    )
+                    .foregroundStyle(Color("GrowthGreen"))
+                    .symbolSize(150)
+                    .symbol {
+                        Circle()
+                            .fill(Color("GrowthGreen"))
+                            .frame(width: 12, height: 12)
+                            .overlay(
+                                Circle()
+                                    .stroke(Color.white, lineWidth: 3)
+                            )
+                            .shadow(color: Color("GrowthGreen").opacity(0.5), radius: 4, x: 0, y: 2)
+                    }
+                }
             }
 
             // Comparison data if enabled
@@ -196,26 +215,45 @@ struct MeasurementTypeChart: View {
                     let _ = print("🔵 [Rendering] Comparison LineMark: \(dataPoint.date) = \(dataPoint.value)")
                     LineMark(
                         x: .value("Date", dataPoint.date),
-                        y: .value("Value", dataPoint.value)
+                        y: .value("Value", dataPoint.value),
+                        series: .value("Measurement", compType.displayName)
                     )
-                    .foregroundStyle(Color("BrightTeal"))
-                    .lineStyle(StrokeStyle(lineWidth: 2, dash: [5, 3]))
-                    .accessibilityLabel(compType.displayName)
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [Color.cyan, Color.blue, Color.blue.opacity(0.8)],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .lineStyle(StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round, dash: [8, 4]))
+                    .interpolationMethod(.catmullRom)
 
-                    PointMark(
-                        x: .value("Date", dataPoint.date),
-                        y: .value("Value", dataPoint.value)
-                    )
-                    .foregroundStyle(Color("BrightTeal"))
-                    .symbolSize(80)
-                    .symbol(.diamond)
-                    .accessibilityLabel(compType.displayName)
+                    // Only show point for the most recent data point
+                    if dataPoint.date == comparisonData.last?.date {
+                        PointMark(
+                            x: .value("Date", dataPoint.date),
+                            y: .value("Value", dataPoint.value)
+                        )
+                        .foregroundStyle(Color.blue)
+                        .symbolSize(120)
+                        .symbol {
+                            Circle()
+                                .fill(Color.blue)
+                                .frame(width: 10, height: 10)
+                                .overlay(
+                                    Circle()
+                                        .stroke(Color.white, lineWidth: 2.5)
+                                )
+                                .shadow(color: Color.blue.opacity(0.5), radius: 4, x: 0, y: 2)
+                        }
+                    }
                 }
             } else {
                 let _ = print("⚪ [Rendering] Comparison block INACTIVE")
             }
         }
         .frame(height: 250)
+        .chartYScale(domain: yAxisDomain)
         .chartYAxisLabel(getYAxisLabel(), position: .leading)
         .chartXAxis {
             AxisMarks(values: .stride(by: .day, count: getStrideCount())) { _ in
@@ -316,6 +354,32 @@ struct MeasurementTypeChart: View {
         return gainsService.entries.filter { $0.timestamp >= cutoffDate }
     }
 
+    private var yAxisDomain: ClosedRange<Double> {
+        let primaryData = chartData(for: selectedType)
+        var allValues = primaryData.map { $0.value }
+
+        // Include comparison data if enabled
+        if showComparison, let compType = comparisonType {
+            let compData = chartData(for: compType)
+            allValues.append(contentsOf: compData.map { $0.value })
+        }
+
+        guard !allValues.isEmpty else {
+            return 0...10
+        }
+
+        let minValue = allValues.min() ?? 0
+        let maxValue = allValues.max() ?? 10
+        let range = maxValue - minValue
+
+        // Add 30% padding above and below to center the line
+        let padding = range * 0.3
+        let lowerBound = max(0, minValue - padding)
+        let upperBound = maxValue + padding
+
+        return lowerBound...upperBound
+    }
+
     // MARK: - Helper Methods
 
     private func chartData(for type: MeasurementType) -> [ChartDataPoint] {
@@ -323,8 +387,8 @@ struct MeasurementTypeChart: View {
         print("   Total entries: \(gainsService.entries.count)")
         print("   Filtered entries: \(filteredEntries.count)")
 
-        let data = filteredEntries
-            .compactMap { entry in
+        let dataPoints: [ChartDataPoint] = filteredEntries
+            .compactMap { entry -> ChartDataPoint? in
                 let value = entry.displayMeasurement(type, in: gainsService.preferredUnit)
                 if value == nil {
                     print("   ⚠️ Entry at \(entry.timestamp) has no \(type.displayName) measurement")
@@ -336,10 +400,11 @@ struct MeasurementTypeChart: View {
                 }
                 return ChartDataPoint(date: entry.timestamp, value: value)
             }
-            .sorted { $0.date < $1.date }
 
-        print("📊 [chartData] Returning \(data.count) data points for \(type.displayName)")
-        return data
+        let sortedData = dataPoints.sorted { $0.date < $1.date }
+
+        print("📊 [chartData] Returning \(sortedData.count) data points for \(type.displayName)")
+        return sortedData
     }
 
     private func getComparisonTypes() -> [MeasurementType] {

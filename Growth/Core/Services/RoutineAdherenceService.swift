@@ -31,28 +31,20 @@ class RoutineAdherenceService: ObservableObject {
         timeRange: TimeRange,
         userId: String
     ) async throws -> RoutineAdherenceData {
-        Logger.debug("[RoutineAdherenceService] Calculating adherence for routine: \(routine.name), timeRange: \(timeRange.rawValue)")
-        
         // Get date range
         let dateRange = getDateRange(for: timeRange)
-        Logger.debug("[RoutineAdherenceService] Date range: \(dateRange.start) to \(dateRange.end)")
-        
+
         // Fetch routine progress to get the actual start date
         let routineProgress = try await fetchRoutineProgress(userId: userId, routineId: routine.id)
         let routineStartDate = routineProgress?.startDate ?? dateRange.start
-        Logger.debug("[RoutineAdherenceService] Routine start date: \(routineStartDate)")
-        Logger.debug("[RoutineAdherenceService] Routine type: \(routine.schedulingType?.rawValue ?? "sequential")")
-        Logger.debug("[RoutineAdherenceService] Routine schedule count: \(routine.schedule.count)")
-        Logger.debug("[RoutineAdherenceService] Current progress day: \(routineProgress?.currentDayNumber ?? 0)")
-        
+
         // Fetch session logs for the date range
         let sessionLogs = try await fetchSessionLogs(
             userId: userId,
             startDate: dateRange.start,
             endDate: dateRange.end
         )
-        Logger.debug("[RoutineAdherenceService] Found \(sessionLogs.count) session logs")
-        
+
         // Calculate expected sessions
         let expectedSessions = calculateExpectedSessions(
             routine: routine,
@@ -60,8 +52,7 @@ class RoutineAdherenceService: ObservableObject {
             endDate: dateRange.end,
             routineStartDate: routineStartDate
         )
-        Logger.debug("[RoutineAdherenceService] Expected sessions: \(expectedSessions)")
-        
+
         // Match sessions to routine schedule
         let sessionDetails = matchSessionsToSchedule(
             sessions: sessionLogs,
@@ -69,8 +60,7 @@ class RoutineAdherenceService: ObservableObject {
             dateRange: dateRange,
             routineStartDate: routineStartDate
         )
-        Logger.debug("[RoutineAdherenceService] Session details count: \(sessionDetails.count)")
-        
+
         // Calculate completed sessions by counting actual completed methods
         let completedSessions = calculateCompletedMethodCount(
             sessions: sessionLogs,
@@ -78,16 +68,11 @@ class RoutineAdherenceService: ObservableObject {
             dateRange: dateRange,
             routineStartDate: routineStartDate
         )
-        
-        Logger.debug("[RoutineAdherenceService] Completed sessions: \(completedSessions)")
-        Logger.debug("[RoutineAdherenceService] Session details: \(sessionDetails)")
-        
+
         // Calculate adherence percentage
-        let adherencePercentage = expectedSessions > 0 
-            ? Double(completedSessions) / Double(expectedSessions) * 100.0 
+        let adherencePercentage = expectedSessions > 0
+            ? Double(completedSessions) / Double(expectedSessions) * 100.0
             : 0.0
-        
-        Logger.debug("[RoutineAdherenceService] Adherence percentage: \(adherencePercentage)%")
         
         return RoutineAdherenceData(
             adherencePercentage: adherencePercentage,
@@ -126,27 +111,18 @@ class RoutineAdherenceService: ObservableObject {
             .whereField("startTime", isGreaterThanOrEqualTo: Timestamp(date: startDate))
             .whereField("startTime", isLessThanOrEqualTo: Timestamp(date: endOfDay))
             .getDocuments()
-        
-        Logger.debug("[RoutineAdherenceService] Found \(snapshot.documents.count) session documents")
-        
+
         let sessionLogs = snapshot.documents.compactMap { document -> SessionLog? in
-            // Try manual parsing first to debug
-            _ = document.data()
-            Logger.debug("[RoutineAdherenceService] Processing document: \(document.documentID)")
-            
             // Try using the document initializer
             if let sessionLog = SessionLog(document: document) {
-                Logger.debug("[RoutineAdherenceService] Session found - methodId: \(sessionLog.methodId ?? "nil"), date: \(sessionLog.startTime)")
                 return sessionLog
             }
-            
+
             // Fallback to Codable
             if let sessionLog = try? document.data(as: SessionLog.self) {
-                Logger.debug("[RoutineAdherenceService] Session found (Codable) - methodId: \(sessionLog.methodId ?? "nil")")
                 return sessionLog
             }
-            
-            Logger.debug("[RoutineAdherenceService] Failed to parse session log document: \(document.documentID)")
+
             return nil
         }
         
@@ -187,7 +163,6 @@ class RoutineAdherenceService: ObservableObject {
                         let methodCount = daySchedule.methodIds?.count ?? 0
                         if methodCount > 0 {
                             expectedCount += methodCount
-                            Logger.debug("[RoutineAdherenceService] Expected \(methodCount) weekday sessions on \(currentDate) - Day \(dayNumber)")
                         }
                     }
                 }
@@ -211,7 +186,6 @@ class RoutineAdherenceService: ObservableObject {
                     // Before routine was selected - expect 1 session per day for adherence
                     // This allows us to give credit for sessions done on previous routines
                     expectedCount += 1
-                    Logger.debug("[RoutineAdherenceService] Expected 1 session on \(currentDate) (before routine start)")
                 } else {
                     // After routine start - use actual routine schedule
                     let routineDayNumber = (daysSinceStart % routine.duration) + 1
@@ -225,10 +199,7 @@ class RoutineAdherenceService: ObservableObject {
                             let methodCount = daySchedule.methodIds?.count ?? 0
                             if methodCount > 0 {
                                 expectedCount += methodCount
-                                Logger.debug("[RoutineAdherenceService] Expected \(methodCount) sessions on \(currentDate) - Routine Day \(routineDayNumber)")
                             }
-                        } else {
-                            Logger.debug("[RoutineAdherenceService] Rest day on \(currentDate) - Routine Day \(routineDayNumber), not counting as expected")
                         }
                     }
                 }
@@ -364,8 +335,6 @@ class RoutineAdherenceService: ObservableObject {
                                 return false
                             }
                             sessionDetails[startOfDay] = hasSession
-                            
-                            Logger.debug("[RoutineAdherenceService] Weekday \(currentDate), Day \(dayNumber), Has Session: \(hasSession)")
                         }
                     }
                 }
@@ -395,7 +364,6 @@ class RoutineAdherenceService: ObservableObject {
                     if hasSession {
                         // Count this as adherence since user did practice, even if on different routine
                         sessionDetails[startOfDay] = true
-                        Logger.debug("[RoutineAdherenceService] Date: \(currentDate) (before routine start), Has ANY Session: true")
                     }
                 } else {
                     // Date is after routine start - normal calculation
@@ -422,11 +390,7 @@ class RoutineAdherenceService: ObservableObject {
 
                                 // Track if session was completed
                                 sessionDetails[startOfDay] = hasSession
-
-                                Logger.debug("[RoutineAdherenceService] Date: \(currentDate), Routine Day: \(routineDayNumber), Scheduled Methods: \(daySchedule.methodIds ?? []), Has Session: \(hasSession)")
                             }
-                        } else {
-                            Logger.debug("[RoutineAdherenceService] Date: \(currentDate), Routine Day: \(routineDayNumber) is a rest day, skipping")
                         }
                     }
                 }

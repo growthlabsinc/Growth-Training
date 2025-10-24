@@ -203,13 +203,35 @@ struct GainsProgressView: View {
                                     x: .value("Date", dataPoint.date),
                                     y: .value("Volume", dataPoint.value)
                                 )
-                                .foregroundStyle(Color("MintGreen"))
-
-                                PointMark(
-                                    x: .value("Date", dataPoint.date),
-                                    y: .value("Volume", dataPoint.value)
+                                .foregroundStyle(
+                                    LinearGradient(
+                                        colors: [Color.yellow, Color("MintGreen"), Color("GrowthGreen")],
+                                        startPoint: .leading,
+                                        endPoint: .trailing
+                                    )
                                 )
-                                .foregroundStyle(Color("MintGreen"))
+                                .lineStyle(StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
+                                .interpolationMethod(.catmullRom)
+
+                                // Only show point for the most recent data point
+                                if dataPoint.date == volumeChartData.last?.date {
+                                    PointMark(
+                                        x: .value("Date", dataPoint.date),
+                                        y: .value("Volume", dataPoint.value)
+                                    )
+                                    .foregroundStyle(Color("MintGreen"))
+                                    .symbolSize(150)
+                                    .symbol {
+                                        Circle()
+                                            .fill(Color("MintGreen"))
+                                            .frame(width: 12, height: 12)
+                                            .overlay(
+                                                Circle()
+                                                    .stroke(Color.white, lineWidth: 3)
+                                            )
+                                            .shadow(color: Color("MintGreen").opacity(0.5), radius: 4, x: 0, y: 2)
+                                    }
+                                }
                             }
                         }
                         .frame(height: 200)
