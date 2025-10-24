@@ -241,25 +241,25 @@ struct MeasurementTypeChart: View {
 
     private var statisticsView: some View {
         HStack(spacing: 16) {
-            StatCard(
+            MeasurementStatCard(
                 title: "Current",
                 value: formatValue(currentValue(for: selectedType)),
                 color: Color("GrowthGreen")
             )
 
-            StatCard(
+            MeasurementStatCard(
                 title: "Baseline",
                 value: formatValue(baselineValue(for: selectedType)),
                 color: Color("NeutralGray")
             )
 
-            StatCard(
+            MeasurementStatCard(
                 title: "Gain",
                 value: formatGain(gainValue(for: selectedType)),
                 color: Color("BrightTeal")
             )
 
-            StatCard(
+            MeasurementStatCard(
                 title: "% Gain",
                 value: formatPercentage(percentageGain(for: selectedType)),
                 color: Color("MintGreen")
@@ -389,7 +389,7 @@ struct MeasurementTypeChart: View {
 
 // MARK: - Supporting Views
 
-struct StatCard: View {
+struct MeasurementStatCard: View {
     let title: String
     let value: String
     let color: Color
