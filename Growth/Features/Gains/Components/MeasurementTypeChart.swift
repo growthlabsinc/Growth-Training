@@ -13,7 +13,7 @@ import FirebaseAuth
 struct MeasurementTypeChart: View {
     @StateObject private var gainsService = GainsService.shared
     @State private var selectedType: MeasurementType = .bpel
-    @State private var selectedTimeRange: TimeRange = .month
+    @State private var selectedTimeRange: ChartTimeRange = .month
     @State private var showComparison = false
     @State private var comparisonType: MeasurementType? = nil
 
@@ -94,7 +94,7 @@ struct MeasurementTypeChart: View {
 
                 // Time range picker
                 Picker("Time Range", selection: $selectedTimeRange) {
-                    ForEach(TimeRange.allCases, id: \.self) { range in
+                    ForEach(ChartTimeRange.allCases, id: \.self) { range in
                         Text(range.rawValue).tag(range)
                     }
                 }
@@ -411,8 +411,8 @@ struct StatCard: View {
     }
 }
 
-// Time range enum
-enum TimeRange: String, CaseIterable {
+// Time range enum for measurement charts
+enum ChartTimeRange: String, CaseIterable {
     case week = "1W"
     case month = "1M"
     case threeMonths = "3M"
