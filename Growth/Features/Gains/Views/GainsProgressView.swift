@@ -546,7 +546,10 @@ struct RecentEntryRow: View {
 
                 VStack(alignment: .trailing, spacing: 4) {
                     // Delete button
-                    Button(action: onDelete) {
+                    Button(action: {
+                        Logger.debug("Delete button tapped for entry")
+                        onDelete()
+                    }) {
                         Image(systemName: "trash.fill")
                             .font(.system(size: 12))
                             .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.3))

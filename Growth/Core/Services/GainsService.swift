@@ -63,9 +63,11 @@ class GainsService: ObservableObject {
                     self.entries = []
                     return
                 }
-                
+
                 self.entries = documents.compactMap { doc in
-                    try? doc.data(as: GainsEntry.self)
+                    var entry = try? doc.data(as: GainsEntry.self)
+                    entry?.id = doc.documentID
+                    return entry
                 }
                 
                 self.calculateStatistics()
