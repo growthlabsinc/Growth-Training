@@ -12,7 +12,11 @@ import Charts
 struct GainsProgressView: View {
     @StateObject private var gainsService = GainsService.shared
     @State private var selectedTimeRange: TimeRange = .month
-    
+    @State private var entryToDelete: GainsEntry?
+    @State private var showDeleteConfirmation = false
+    @State private var showDeleteError = false
+    @State private var deleteErrorMessage = ""
+
     var body: some View {
         ScrollView {
             VStack(spacing: 24) {
@@ -54,6 +58,21 @@ struct GainsProgressView: View {
             if let userId = Auth.auth().currentUser?.uid {
                 gainsService.startListening(userId: userId)
             }
+        }
+        .alert("Delete Measurement", isPresented: $showDeleteConfirmation, presenting: entryToDelete) { entry in
+            Button("Cancel", role: .cancel) {
+                entryToDelete = nil
+            }
+            Button("Delete", role: .destructive) {
+                performDelete(entry)
+            }
+        } message: { entry in
+            Text("Are you sure you want to delete this measurement from \(entry.timestamp.formatted(date: .abbreviated, time: .omitted))?")
+        }
+        .alert("Error", isPresented: $showDeleteError) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(deleteErrorMessage)
         }
     }
     
@@ -318,13 +337,36 @@ struct GainsProgressView: View {
     // MARK: - Delete Entry
 
     private func deleteEntry(_ entry: GainsEntry) {
-        guard let entryId = entry.id else { return }
+        Logger.debug("Delete button tapped for entry: \(entry.id ?? "no-id")")
+        entryToDelete = entry
+        showDeleteConfirmation = true
+    }
+
+    private func performDelete(_ entry: GainsEntry) {
+        guard let entryId = entry.id else {
+            Logger.error("Cannot delete entry: missing ID")
+            deleteErrorMessage = "Cannot delete this measurement: missing identifier"
+            showDeleteError = true
+            return
+        }
+
+        Logger.debug("Performing delete for entry: \(entryId)")
 
         Task {
             do {
                 try await gainsService.deleteEntry(entryId)
+                Logger.debug("Successfully deleted entry: \(entryId)")
+                // UI will update automatically via the listener
+                await MainActor.run {
+                    entryToDelete = nil
+                }
             } catch {
                 Logger.error("Failed to delete gains entry: \(error.localizedDescription)")
+                await MainActor.run {
+                    deleteErrorMessage = "Failed to delete measurement: \(error.localizedDescription)"
+                    showDeleteError = true
+                    entryToDelete = nil
+                }
             }
         }
     }
@@ -504,7 +546,10 @@ struct RecentEntryRow: View {
 
                 VStack(alignment: .trailing, spacing: 4) {
                     // Delete button
-                    Button(action: onDelete) {
+                    Button(action: {
+                        print("Delete button tapped")
+                        onDelete()
+                    }) {
                         Image(systemName: "trash.fill")
                             .font(.system(size: 12))
                             .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.3))
@@ -512,7 +557,7 @@ struct RecentEntryRow: View {
                             .background(Color(red: 1.0, green: 0.4, blue: 0.3).opacity(0.15))
                             .clipShape(Circle())
                     }
-                    .buttonStyle(PlainButtonStyle())
+                    .buttonStyle(BorderlessButtonStyle())
 
                     Spacer()
 
