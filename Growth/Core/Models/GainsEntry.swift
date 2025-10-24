@@ -196,6 +196,89 @@ struct GainsEntry: Identifiable, Codable, Equatable {
         self.updatedAt = Date()
     }
 
+    // MARK: - Codable Implementation
+
+    enum CodingKeys: String, CodingKey {
+        case userId
+        case timestamp
+        case measurements
+        case erectionQuality
+        case length
+        case girth
+        case notes
+        case sessionId
+        case measurementUnit
+        case createdAt
+        case updatedAt
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        // @DocumentID is handled separately by Firestore - don't decode it here
+        _id = DocumentID(wrappedValue: nil)
+
+        // Decode standard fields
+        userId = try container.decode(String.self, forKey: .userId)
+        timestamp = try container.decode(Date.self, forKey: .timestamp)
+        erectionQuality = try container.decode(Int.self, forKey: .erectionQuality)
+        notes = try container.decodeIfPresent(String.self, forKey: .notes)
+        sessionId = try container.decodeIfPresent(String.self, forKey: .sessionId)
+        measurementUnit = try container.decode(MeasurementUnit.self, forKey: .measurementUnit)
+        createdAt = try container.decode(Date.self, forKey: .createdAt)
+        updatedAt = try container.decode(Date.self, forKey: .updatedAt)
+
+        // Decode legacy fields
+        length = try container.decodeIfPresent(Double.self, forKey: .length)
+        girth = try container.decodeIfPresent(Double.self, forKey: .girth)
+
+        // Decode measurements dictionary - handle both String and MeasurementType keys
+        if let measurementsDict = try? container.decode([String: Double].self, forKey: .measurements) {
+            // Convert String keys to MeasurementType
+            var convertedMeasurements: [MeasurementType: Double] = [:]
+            for (key, value) in measurementsDict {
+                if let measurementType = MeasurementType(rawValue: key) {
+                    convertedMeasurements[measurementType] = value
+                }
+            }
+            measurements = convertedMeasurements
+        } else {
+            // Fallback: if no measurements dictionary, create from legacy fields
+            measurements = [:]
+            if let length = length {
+                measurements[.bpel] = length
+            }
+            if let girth = girth {
+                measurements[.mseg] = girth
+            }
+        }
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+
+        // @DocumentID is handled separately by Firestore - don't encode it here
+        try container.encode(userId, forKey: .userId)
+        try container.encode(timestamp, forKey: .timestamp)
+        try container.encode(erectionQuality, forKey: .erectionQuality)
+        try container.encodeIfPresent(notes, forKey: .notes)
+        try container.encodeIfPresent(sessionId, forKey: .sessionId)
+        try container.encode(measurementUnit, forKey: .measurementUnit)
+        try container.encode(createdAt, forKey: .createdAt)
+        try container.encode(updatedAt, forKey: .updatedAt)
+
+        // Encode legacy fields for backwards compatibility
+        try container.encodeIfPresent(length, forKey: .length)
+        try container.encodeIfPresent(girth, forKey: .girth)
+
+        // Encode measurements dictionary - convert enum keys to strings
+        var measurementsDict: [String: Double] = [:]
+        for (type, value) in measurements {
+            measurementsDict[type.rawValue] = value
+        }
+        try container.encode(measurementsDict, forKey: .measurements)
+    }
+
     // MARK: - Display Methods
 
     /// Get measurement value in preferred unit

@@ -110,11 +110,7 @@ struct MeasurementTypeChart: View {
 
                 Picker("Type", selection: $selectedType) {
                     ForEach(measurementCategory.availableTypes, id: \.self) { type in
-                        HStack {
-                            Image(systemName: type.icon)
-                            Text(type.displayName)
-                        }
-                        .tag(type)
+                        Text(type.displayName).tag(type)
                     }
                 }
                 .pickerStyle(MenuPickerStyle())

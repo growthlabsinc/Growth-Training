@@ -313,44 +313,50 @@ class DebugMockDataService {
                 nil, nil  // Some entries without notes
             ].randomElement() ?? nil
             
-            let entryId = UUID().uuidString
-
-            // Create measurements dictionary with new structure
-            var measurements: [String: Double] = [
-                "bpel": measurement.length,  // Bone-pressed erect length
-                "mseg": measurement.girth     // Mid-shaft erect girth
+            // Create measurements dictionary with proper MeasurementType enum keys
+            var measurements: [MeasurementType: Double] = [
+                .bpel: measurement.length,  // Bone-pressed erect length
+                .mseg: measurement.girth     // Mid-shaft erect girth
             ]
 
             // Add some variation with secondary measurements for realistic data
             if Bool.random() {
                 // Sometimes add NBPEL (about 0.5" less than BPEL on average)
-                measurements["nbpel"] = measurement.length - Double.random(in: 0.3...0.7)
+                measurements[.nbpel] = measurement.length - Double.random(in: 0.3...0.7)
             }
 
             if Bool.random() {
                 // Sometimes add BPFSL (typically similar to or slightly more than BPEL)
-                measurements["bpfsl"] = measurement.length + Double.random(in: -0.1...0.3)
+                measurements[.bpfsl] = measurement.length + Double.random(in: -0.1...0.3)
             }
 
             if Bool.random() {
                 // Sometimes add base girth (typically similar to mid-shaft)
-                measurements["beg"] = measurement.girth + Double.random(in: -0.1...0.2)
+                measurements[.beg] = measurement.girth + Double.random(in: -0.1...0.2)
             }
 
-            let entryData: [String: Any] = [
-                "userId": userId,
-                "timestamp": Timestamp(date: measurement.date),
-                "measurements": measurements,  // New measurements dictionary
-                "erectionQuality": measurement.eq,
-                "notes": notes as Any,
-                "measurementUnit": "imperial",
-                "isMockData": true,
-                "createdAt": Timestamp(date: Date()),
-                "updatedAt": Timestamp(date: Date())
-            ]
-            
-            let docRef = db.collection(gainsCollection).document(entryId)
-            batch.setData(entryData, forDocument: docRef)
+            // Create GainsEntry object and let Firestore.Encoder handle encoding
+            let entry = GainsEntry(
+                userId: userId,
+                timestamp: measurement.date,
+                measurements: measurements,
+                erectionQuality: measurement.eq,
+                notes: notes,
+                measurementUnit: .imperial
+            )
+
+            // Encode using Firestore's encoder
+            guard let entryData = try? Firestore.Encoder().encode(entry) else {
+                Logger.error("[DebugMockData] Failed to encode gains entry")
+                continue
+            }
+
+            // Add mock data flag
+            var mutableData = entryData
+            mutableData["isMockData"] = true
+
+            let docRef = db.collection(gainsCollection).document()
+            batch.setData(mutableData, forDocument: docRef)
             entriesGenerated += 1
         }
         
