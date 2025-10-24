@@ -281,36 +281,46 @@ struct GainsStatistics: Codable {
     
     // Gains from baseline
     var lengthGain: Double? {
-        guard let baseline = baseline, let latest = latest else { return nil }
-        return latest.length - baseline.length
+        guard let baseline = baseline, let latest = latest,
+              let baselineLength = baseline.length,
+              let latestLength = latest.length else { return nil }
+        return latestLength - baselineLength
     }
-    
+
     var girthGain: Double? {
-        guard let baseline = baseline, let latest = latest else { return nil }
-        return latest.girth - baseline.girth
+        guard let baseline = baseline, let latest = latest,
+              let baselineGirth = baseline.girth,
+              let latestGirth = latest.girth else { return nil }
+        return latestGirth - baselineGirth
     }
-    
+
     var volumeGain: Double? {
         guard let baseline = baseline, let latest = latest else { return nil }
         return latest.volume - baseline.volume
     }
-    
+
     var erectionQualityGain: Int? {
         guard let baseline = baseline, let latest = latest else { return nil }
         return latest.erectionQuality - baseline.erectionQuality
     }
-    
+
     // Percentage gains
     var lengthGainPercentage: Double? {
-        guard let baseline = baseline, baseline.length > 0, let gain = lengthGain else { return nil }
-        return (gain / baseline.length) * 100
+        guard let baseline = baseline,
+              let baselineLength = baseline.length,
+              baselineLength > 0,
+              let gain = lengthGain else { return nil }
+        return (gain / baselineLength) * 100
     }
-    
+
     var girthGainPercentage: Double? {
-        guard let baseline = baseline, baseline.girth > 0, let gain = girthGain else { return nil }
-        return (gain / baseline.girth) * 100
+        guard let baseline = baseline,
+              let baselineGirth = baseline.girth,
+              baselineGirth > 0,
+              let gain = girthGain else { return nil }
+        return (gain / baselineGirth) * 100
     }
-    
+
     var volumeGainPercentage: Double? {
         guard let baseline = baseline, baseline.volume > 0, let gain = volumeGain else { return nil }
         return (gain / baseline.volume) * 100

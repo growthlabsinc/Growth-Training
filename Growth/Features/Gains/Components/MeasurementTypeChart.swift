@@ -432,12 +432,6 @@ enum TimeRange: String, CaseIterable {
     }
 }
 
-// Chart data point
-struct ChartDataPoint {
-    let date: Date
-    let value: Double
-}
-
 #Preview {
     ScrollView {
         VStack(spacing: 24) {
