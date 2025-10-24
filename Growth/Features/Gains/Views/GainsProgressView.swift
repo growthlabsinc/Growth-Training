@@ -7,6 +7,7 @@
 
 import SwiftUI
 import FirebaseAuth
+import Charts
 
 struct GainsProgressView: View {
     @StateObject private var gainsService = GainsService.shared
@@ -166,29 +167,68 @@ struct GainsProgressView: View {
             }
 
             // Original Volume Chart (calculated metric)
-            VStack(spacing: 16) {
-                HStack {
-                    Text("Volume Progress")
-                        .font(AppTheme.Typography.gravitySemibold(18))
-                        .foregroundColor(Color("TextColor"))
+            CardView {
+                VStack(spacing: 16) {
+                    HStack {
+                        Text("Volume Progress")
+                            .font(AppTheme.Typography.gravitySemibold(18))
+                            .foregroundColor(Color("TextColor"))
 
-                    Spacer()
+                        Spacer()
 
-                    Picker("Time Range", selection: $selectedTimeRange) {
-                        ForEach(TimeRange.allCases, id: \.self) { range in
-                            Text(range.rawValue).tag(range)
+                        Picker("Time Range", selection: $selectedTimeRange) {
+                            ForEach(TimeRange.allCases, id: \.self) { range in
+                                Text(range.rawValue).tag(range)
+                            }
+                        }
+                        .pickerStyle(MenuPickerStyle())
+                        .tint(Color("MintGreen"))
+                    }
+
+                    if volumeChartData.isEmpty {
+                        VStack(spacing: 12) {
+                            Image(systemName: "chart.bar.xaxis")
+                                .font(.system(size: 48))
+                                .foregroundColor(Color("TextSecondaryColor").opacity(0.3))
+                            Text("No volume data yet")
+                                .font(AppTheme.Typography.gravityBook(14))
+                                .foregroundColor(Color("TextSecondaryColor"))
+                        }
+                        .frame(height: 200)
+                        .frame(maxWidth: .infinity)
+                    } else {
+                        Chart {
+                            ForEach(volumeChartData, id: \.date) { dataPoint in
+                                LineMark(
+                                    x: .value("Date", dataPoint.date),
+                                    y: .value("Volume", dataPoint.value)
+                                )
+                                .foregroundStyle(Color("MintGreen"))
+
+                                PointMark(
+                                    x: .value("Date", dataPoint.date),
+                                    y: .value("Volume", dataPoint.value)
+                                )
+                                .foregroundStyle(Color("MintGreen"))
+                            }
+                        }
+                        .frame(height: 200)
+                        .chartXAxis {
+                            AxisMarks(values: .automatic) { _ in
+                                AxisGridLine()
+                                AxisTick()
+                                AxisValueLabel(format: .dateTime.month().day())
+                            }
+                        }
+                        .chartYAxis {
+                            AxisMarks { value in
+                                AxisGridLine()
+                                AxisTick()
+                                AxisValueLabel()
+                            }
                         }
                     }
-                    .pickerStyle(MenuPickerStyle())
-                    .tint(Color("MintGreen"))
                 }
-
-                TrendChartView(
-                    data: volumeChartData,
-                    title: "Volume Over Time",
-                    color: Color("MintGreen"),
-                    yAxisUnit: "Volume (\(gainsService.preferredUnit.volumeSymbol))"
-                )
             }
         }
     }
