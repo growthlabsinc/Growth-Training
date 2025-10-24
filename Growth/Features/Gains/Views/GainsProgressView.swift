@@ -298,17 +298,33 @@ struct GainsProgressView: View {
     }
     
     // MARK: - Recent Entries View
-    
+
     private var recentEntriesView: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Recent Measurements")
                 .font(AppTheme.Typography.gravitySemibold(18))
                 .foregroundColor(Color("TextColor"))
-            
+
             VStack(spacing: 12) {
                 ForEach(gainsService.entries.prefix(5), id: \.timestamp) { entry in
-                    RecentEntryRow(entry: entry, unit: gainsService.preferredUnit)
+                    RecentEntryRow(entry: entry, unit: gainsService.preferredUnit) {
+                        deleteEntry(entry)
+                    }
                 }
+            }
+        }
+    }
+
+    // MARK: - Delete Entry
+
+    private func deleteEntry(_ entry: GainsEntry) {
+        guard let entryId = entry.id else { return }
+
+        Task {
+            do {
+                try await gainsService.deleteEntry(entryId)
+            } catch {
+                Logger.error("Failed to delete gains entry: \(error.localizedDescription)")
             }
         }
     }
@@ -463,33 +479,47 @@ struct SummaryRow: View {
 struct RecentEntryRow: View {
     let entry: GainsEntry
     let unit: MeasurementUnit
-    
+    let onDelete: () -> Void
+
     var body: some View {
         CardView {
-            HStack {
+            HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(entry.timestamp, style: .date)
                         .font(AppTheme.Typography.gravitySemibold(14))
                         .foregroundColor(Color("TextColor"))
-                    
+
                     HStack(spacing: 12) {
                         Text("\(formatValue(entry.displayLength(in: unit))) × \(formatValue(entry.displayGirth(in: unit)))")
                             .font(AppTheme.Typography.gravityBook(12))
                             .foregroundColor(Color("TextSecondaryColor"))
-                        
+
                         Text("EQ: \(entry.erectionQuality)")
                             .font(AppTheme.Typography.gravityBook(12))
                             .foregroundColor(Color("TextSecondaryColor"))
                     }
                 }
-                
+
                 Spacer()
-                
+
                 VStack(alignment: .trailing, spacing: 4) {
+                    // Delete button
+                    Button(action: onDelete) {
+                        Image(systemName: "trash.fill")
+                            .font(.system(size: 12))
+                            .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.3))
+                            .padding(6)
+                            .background(Color(red: 1.0, green: 0.4, blue: 0.3).opacity(0.15))
+                            .clipShape(Circle())
+                    }
+                    .buttonStyle(PlainButtonStyle())
+
+                    Spacer()
+
                     Text("Volume")
                         .font(AppTheme.Typography.gravityBook(10))
                         .foregroundColor(Color("TextSecondaryColor"))
-                    
+
                     Text(formatVolume(entry.displayVolume(in: unit), unit: unit))
                         .font(AppTheme.Typography.gravitySemibold(14))
                         .foregroundColor(Color("MintGreen"))
