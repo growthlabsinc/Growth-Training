@@ -127,10 +127,6 @@ struct MeasurementTypeChart: View {
                 Toggle("Compare", isOn: $showComparison)
                     .toggleStyle(SwitchToggleStyle(tint: Color("BrightTeal")))
                     .labelsHidden()
-                    .onChange(of: showComparison) { newValue in
-                        print("🔄 [Toggle] showComparison changed to: \(newValue)")
-                        print("   comparisonType is: \(comparisonType?.displayName ?? "nil")")
-                    }
 
                 if showComparison {
                     Picker("Compare with", selection: $comparisonType) {
@@ -141,10 +137,6 @@ struct MeasurementTypeChart: View {
                     }
                     .pickerStyle(MenuPickerStyle())
                     .tint(Color("BrightTeal"))
-                    .onChange(of: comparisonType) { newValue in
-                        print("🔄 [Picker] comparisonType changed to: \(newValue?.displayName ?? "nil")")
-                        print("   showComparison is: \(showComparison)")
-                    }
                 }
             }
         }
@@ -154,24 +146,17 @@ struct MeasurementTypeChart: View {
 
     private var chartView: some View {
         let primaryData = chartData(for: selectedType)
-        let _ = print("📊 [Chart] Primary data for \(selectedType.displayName): \(primaryData.count) points")
-        let _ = primaryData.forEach { print("  📍 \(selectedType.displayName): \($0.date) = \($0.value)") }
 
         let comparisonData: [ChartDataPoint]
         if let compType = comparisonType {
             comparisonData = chartData(for: compType)
-            print("📊 [Chart] Comparison data for \(compType.displayName): \(comparisonData.count) points")
-            comparisonData.forEach { print("  📍 \(compType.displayName): \($0.date) = \($0.value)") }
         } else {
             comparisonData = []
         }
 
-        print("🎛️ [Chart] showComparison: \(showComparison), comparisonType: \(comparisonType?.displayName ?? "nil")")
-
         return Chart {
             // Primary measurement data
             ForEach(primaryData, id: \.date) { dataPoint in
-                let _ = print("🟢 [Rendering] Primary LineMark: \(dataPoint.date) = \(dataPoint.value)")
                 LineMark(
                     x: .value("Date", dataPoint.date),
                     y: .value("Value", dataPoint.value),
@@ -210,9 +195,7 @@ struct MeasurementTypeChart: View {
 
             // Comparison data if enabled
             if showComparison, let compType = comparisonType {
-                let _ = print("🔵 [Rendering] Comparison block ACTIVE for \(compType.displayName)")
                 ForEach(comparisonData, id: \.date) { dataPoint in
-                    let _ = print("🔵 [Rendering] Comparison LineMark: \(dataPoint.date) = \(dataPoint.value)")
                     LineMark(
                         x: .value("Date", dataPoint.date),
                         y: .value("Value", dataPoint.value),
@@ -248,8 +231,6 @@ struct MeasurementTypeChart: View {
                         }
                     }
                 }
-            } else {
-                let _ = print("⚪ [Rendering] Comparison block INACTIVE")
             }
         }
         .frame(height: 250)
@@ -383,50 +364,30 @@ struct MeasurementTypeChart: View {
     // MARK: - Helper Methods
 
     private func chartData(for type: MeasurementType) -> [ChartDataPoint] {
-        print("📥 [chartData] Fetching data for \(type.displayName)")
-        print("   Total entries: \(gainsService.entries.count)")
-        print("   Filtered entries: \(filteredEntries.count)")
-
         let dataPoints: [ChartDataPoint] = filteredEntries
             .compactMap { entry -> ChartDataPoint? in
-                let value = entry.displayMeasurement(type, in: gainsService.preferredUnit)
-                if value == nil {
-                    print("   ⚠️ Entry at \(entry.timestamp) has no \(type.displayName) measurement")
-                } else {
-                    print("   ✅ Entry at \(entry.timestamp) has \(type.displayName) = \(value!)")
-                }
-                guard let value = value else {
+                guard let value = entry.displayMeasurement(type, in: gainsService.preferredUnit) else {
                     return nil
                 }
                 return ChartDataPoint(date: entry.timestamp, value: value)
             }
 
-        let sortedData = dataPoints.sorted { $0.date < $1.date }
-
-        print("📊 [chartData] Returning \(sortedData.count) data points for \(type.displayName)")
-        return sortedData
+        return dataPoints.sorted { $0.date < $1.date }
     }
 
     private func getComparisonTypes() -> [MeasurementType] {
-        let types = measurementCategory.availableTypes.filter { $0 != selectedType }
-        print("🔍 [getComparisonTypes] Available comparison types: \(types.map { $0.displayName })")
-        return types
+        return measurementCategory.availableTypes.filter { $0 != selectedType }
     }
 
     private func updateComparisonType() {
-        print("🔧 [updateComparisonType] Called with selectedType = \(selectedType.displayName)")
         // Auto-select comparison type based on selected type
         if selectedType == .bpel {
             comparisonType = .nbpel
-            print("   Setting comparisonType to NBPEL")
         } else if selectedType == .mseg {
             comparisonType = .beg
-            print("   Setting comparisonType to BEG")
         } else {
             comparisonType = nil
-            print("   Setting comparisonType to nil")
         }
-        print("   Final comparisonType: \(comparisonType?.displayName ?? "nil")")
     }
 
     private func getYAxisLabel() -> String {
