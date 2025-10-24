@@ -145,19 +145,19 @@ struct MeasurementTypeChart: View {
             ForEach(chartData(for: selectedType), id: \.date) { dataPoint in
                 LineMark(
                     x: .value("Date", dataPoint.date),
-                    y: .value("Value", dataPoint.value),
-                    series: .value("Measurement", selectedType.displayName)
+                    y: .value("Value", dataPoint.value)
                 )
                 .foregroundStyle(Color("GrowthGreen"))
                 .lineStyle(StrokeStyle(lineWidth: 2))
+                .accessibilityLabel(selectedType.displayName)
 
                 PointMark(
                     x: .value("Date", dataPoint.date),
-                    y: .value("Value", dataPoint.value),
-                    series: .value("Measurement", selectedType.displayName)
+                    y: .value("Value", dataPoint.value)
                 )
                 .foregroundStyle(Color("GrowthGreen"))
                 .symbolSize(100)
+                .accessibilityLabel(selectedType.displayName)
             }
 
             // Comparison data if enabled
@@ -165,20 +165,20 @@ struct MeasurementTypeChart: View {
                 ForEach(chartData(for: compType), id: \.date) { dataPoint in
                     LineMark(
                         x: .value("Date", dataPoint.date),
-                        y: .value("Value", dataPoint.value),
-                        series: .value("Measurement", compType.displayName)
+                        y: .value("Value", dataPoint.value)
                     )
                     .foregroundStyle(Color("BrightTeal"))
                     .lineStyle(StrokeStyle(lineWidth: 2, dash: [5, 3]))
+                    .accessibilityLabel(compType.displayName)
 
                     PointMark(
                         x: .value("Date", dataPoint.date),
-                        y: .value("Value", dataPoint.value),
-                        series: .value("Measurement", compType.displayName)
+                        y: .value("Value", dataPoint.value)
                     )
                     .foregroundStyle(Color("BrightTeal"))
                     .symbolSize(80)
                     .symbol(.diamond)
+                    .accessibilityLabel(compType.displayName)
                 }
             }
         }
