@@ -145,14 +145,16 @@ struct MeasurementTypeChart: View {
             ForEach(chartData(for: selectedType), id: \.date) { dataPoint in
                 LineMark(
                     x: .value("Date", dataPoint.date),
-                    y: .value(selectedType.displayName, dataPoint.value)
+                    y: .value("Value", dataPoint.value),
+                    series: .value("Measurement", selectedType.displayName)
                 )
                 .foregroundStyle(Color("GrowthGreen"))
                 .lineStyle(StrokeStyle(lineWidth: 2))
 
                 PointMark(
                     x: .value("Date", dataPoint.date),
-                    y: .value(selectedType.displayName, dataPoint.value)
+                    y: .value("Value", dataPoint.value),
+                    series: .value("Measurement", selectedType.displayName)
                 )
                 .foregroundStyle(Color("GrowthGreen"))
                 .symbolSize(100)
@@ -163,14 +165,16 @@ struct MeasurementTypeChart: View {
                 ForEach(chartData(for: compType), id: \.date) { dataPoint in
                     LineMark(
                         x: .value("Date", dataPoint.date),
-                        y: .value(compType.displayName, dataPoint.value)
+                        y: .value("Value", dataPoint.value),
+                        series: .value("Measurement", compType.displayName)
                     )
                     .foregroundStyle(Color("BrightTeal"))
                     .lineStyle(StrokeStyle(lineWidth: 2, dash: [5, 3]))
 
                     PointMark(
                         x: .value("Date", dataPoint.date),
-                        y: .value(compType.displayName, dataPoint.value)
+                        y: .value("Value", dataPoint.value),
+                        series: .value("Measurement", compType.displayName)
                     )
                     .foregroundStyle(Color("BrightTeal"))
                     .symbolSize(80)
