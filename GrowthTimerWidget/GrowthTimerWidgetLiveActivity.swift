@@ -77,7 +77,7 @@ struct GrowthTimerWidgetLiveActivity: Widget {
                             if context.state.pausedAt != nil {
                                 Button(intent: ResumeTimerIntent(
                                     activityId: context.activityID,
-                                    timerType: "main"
+                                    timerType: context.attributes.timerType
                                 )) {
                                     HStack(spacing: 4) {
                                         Image(systemName: "play.fill")
@@ -95,7 +95,7 @@ struct GrowthTimerWidgetLiveActivity: Widget {
                             } else {
                                 Button(intent: PauseTimerIntent(
                                     activityId: context.activityID,
-                                    timerType: "main"
+                                    timerType: context.attributes.timerType
                                 )) {
                                     HStack(spacing: 4) {
                                         Image(systemName: "pause.fill")
@@ -115,7 +115,7 @@ struct GrowthTimerWidgetLiveActivity: Widget {
                             // Stop button with intent that opens app
                             Button(intent: StopTimerAndOpenAppIntent(
                                 activityId: context.activityID,
-                                timerType: "main"
+                                timerType: context.attributes.timerType
                             )) {
                                 HStack(spacing: 4) {
                                     Image(systemName: "stop.fill")
@@ -312,7 +312,7 @@ struct TimerLockScreenView: View {
                     if context.state.pausedAt != nil {
                         Button(intent: ResumeTimerIntent(
                             activityId: context.activityID,
-                            timerType: "main"
+                            timerType: context.attributes.timerType
                         )) {
                             HStack {
                                 Image(systemName: "play.fill")
@@ -328,7 +328,7 @@ struct TimerLockScreenView: View {
                     } else {
                         Button(intent: PauseTimerIntent(
                             activityId: context.activityID,
-                            timerType: "main"
+                            timerType: context.attributes.timerType
                         )) {
                             HStack {
                                 Image(systemName: "pause.fill")
@@ -346,7 +346,7 @@ struct TimerLockScreenView: View {
                     // Stop button with intent that opens app
                     Button(intent: StopTimerAndOpenAppIntent(
                         activityId: context.activityID,
-                        timerType: "main"
+                        timerType: context.attributes.timerType
                     )) {
                         HStack {
                             Image(systemName: "stop.fill")

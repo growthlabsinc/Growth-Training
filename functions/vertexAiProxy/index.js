@@ -3,7 +3,6 @@ const { SecretManagerServiceClient } = require('@google-cloud/secret-manager');
 const { VertexAI } = require('@google-cloud/vertexai');
 const admin = require('firebase-admin');
 const { filterResponse } = require('./responseFilter');
-const { selectBestTemplate } = require('./templateSelector');
 const { processTemplate, enhanceTemplateWithDynamicContent } = require('./templateProcessor');
 
 // Initialize Firebase Admin if not already initialized
@@ -259,15 +258,18 @@ const generateAIResponse = async (data, context) => {
       riskLevel: data.riskLevel
     };
 
-    // Check if a template should be used for this query
-    const templateSelection = selectBestTemplate(query, userContext);
+    // Import the safety override check
+    const { checkSafetyOverride } = require('./templateSelector');
 
-    if (templateSelection && templateSelection.confidence !== 'very_low') {
-      console.log(`📝 Template selected: ${templateSelection.templateId} (confidence: ${templateSelection.confidence})`);
+    // ONLY check for safety override emergencies (not general templates)
+    const safetyOverride = checkSafetyOverride(query, userContext);
 
-      // Process the template
+    if (safetyOverride && safetyOverride.override === true) {
+      console.log(`🚨 SAFETY OVERRIDE: ${safetyOverride.templateId} (${safetyOverride.reason})`);
+
+      // Process the safety template
       const processedTemplate = processTemplate(
-        templateSelection.templateId,
+        safetyOverride.templateId,
         data.templateVariables || {},
         userContext
       );
@@ -279,19 +281,20 @@ const generateAIResponse = async (data, context) => {
         // Apply response filtering for safety
         const filteredResponse = await filterResponse(enhanced.text, userContext);
 
-        // Return the template-based response
+        // Return the safety template response
         return {
           text: filteredResponse.text,
           sources: null,
           wasFiltered: filteredResponse.wasFiltered || false,
           filterReasons: filteredResponse.filterReasons || [],
-          templateUsed: templateSelection.templateId,
-          templateConfidence: templateSelection.confidence
+          templateUsed: safetyOverride.templateId,
+          templateConfidence: safetyOverride.confidence,
+          safetyOverride: true
         };
       }
     }
 
-    console.log('📚 No suitable template found, using AI generation');
+    console.log('🤖 Using Vertex AI with knowledge base search');
 
     // Search knowledge base for relevant content
     const knowledgeSources = await searchKnowledgeBase(query);
@@ -304,8 +307,8 @@ const generateAIResponse = async (data, context) => {
     // Initialize Vertex AI
     const model = initializeVertexAI(apiKey);
 
-    // Generate system prompt (with template context if relevant)
-    const systemPrompt = generateSystemPrompt(knowledgeSources, templateSelection);
+    // Generate system prompt with knowledge base content
+    const systemPrompt = generateSystemPrompt(knowledgeSources);
     
     // Format conversation for Gemini (passing in the system prompt)
     const formattedConversation = formatConversation(conversationHistory, query, systemPrompt);
@@ -362,26 +365,93 @@ const generateAIResponse = async (data, context) => {
       filterReasons: filteredResponse.filterReasons || []
     };
   } catch (error) {
-    console.error(`Error generating AI response: ${error}`);
-    
-    // Format the error correctly for callable functions
-    let code = 'internal';
-    let message = 'An unexpected error occurred';
-    
-    if (error.message.includes('API key')) {
-      code = 'unauthenticated';
-      message = 'Authentication failed';
-    } else if (error.message.includes('rate limit')) {
-      code = 'resource-exhausted';
-      message = 'Rate limit exceeded. Please try again later.';
-    } else if (error.message.includes('Missing or invalid')) {
-      code = 'invalid-argument';
-      message = error.message;
+    console.error(`❌ Error generating AI response: ${error}`);
+    console.error(`Stack trace: ${error.stack}`);
+
+    // Try to use fallback template if Vertex AI fails
+    try {
+      console.log('⚠️ Vertex AI failed, attempting to use fallback template');
+
+      const { query, conversationHistory } = data;
+      const userContext = {
+        userId: data.userId || 'anonymous',
+        userName: data.userName,
+        userExperienceLevel: data.userExperienceLevel || 'beginner',
+        sessionType: data.sessionType,
+        conversationHistory: conversationHistory,
+        previousTemplateId: data.previousTemplateId,
+        primaryGoal: data.primaryGoal,
+        progressData: data.progressData,
+        riskLevel: data.riskLevel
+      };
+
+      // Try to use a template as fallback
+      const { selectBestTemplate } = require('./templateSelector');
+      const fallbackTemplate = selectBestTemplate(query, userContext);
+
+      if (fallbackTemplate) {
+        console.log(`📝 Using fallback template: ${fallbackTemplate.templateId}`);
+
+        const processedTemplate = processTemplate(
+          fallbackTemplate.templateId,
+          data.templateVariables || {},
+          userContext
+        );
+
+        if (processedTemplate) {
+          const enhanced = enhanceTemplateWithDynamicContent(processedTemplate, userContext);
+          const filteredResponse = await filterResponse(enhanced.text, userContext);
+
+          // Return fallback template response
+          return {
+            text: filteredResponse.text,
+            sources: null,
+            wasFiltered: filteredResponse.wasFiltered || false,
+            filterReasons: filteredResponse.filterReasons || [],
+            templateUsed: fallbackTemplate.templateId,
+            templateConfidence: fallbackTemplate.confidence,
+            fallbackUsed: true,
+            originalError: 'Vertex AI error - fallback template used'
+          };
+        }
+      }
+
+      // If template fallback also fails, use simple fallback knowledge
+      console.log('⚠️ Template fallback failed, using basic fallback response');
+      const { getFallbackResponse } = require('./fallbackKnowledge');
+      const fallbackText = getFallbackResponse(query);
+
+      return {
+        text: fallbackText,
+        sources: null,
+        wasFiltered: false,
+        filterReasons: [],
+        fallbackUsed: true,
+        originalError: 'Vertex AI and template fallback failed'
+      };
+
+    } catch (fallbackError) {
+      console.error(`❌ Fallback also failed: ${fallbackError}`);
+
+      // Format the error correctly for callable functions
+      let code = 'internal';
+      let message = 'An unexpected error occurred';
+
+      if (error.message.includes('API key')) {
+        code = 'unauthenticated';
+        message = 'Authentication failed';
+      } else if (error.message.includes('rate limit')) {
+        code = 'resource-exhausted';
+        message = 'Rate limit exceeded. Please try again later.';
+      } else if (error.message.includes('Missing or invalid')) {
+        code = 'invalid-argument';
+        message = error.message;
+      }
+
+      throw new HttpsError(code, message, {
+        originalError: error.message
+      });
     }
-    
-    throw new HttpsError(code, message, { 
-      originalError: error.message 
-    });
   }
 };
 

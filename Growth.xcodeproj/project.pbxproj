@@ -91,6 +91,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				AppIntents/StopTimerAndOpenAppIntent.swift,
+				Assets.xcassets,
 				Core/Models/FeatureAccess.swift,
 				Core/Models/PaywallContext.swift,
 				Core/Models/SubscriptionTier.swift,
@@ -130,11 +131,6 @@
 		7F45FC742DCD768E00B4BEC9 /* GrowthTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = GrowthTests;
-			sourceTree = "<group>";
-		};
-		7F45FC7E2DCD768E00B4BEC9 /* GrowthUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = GrowthUITests;
 			sourceTree = "<group>";
 		};
 		7FE4D78A2E01CE830006D2EA /* GrowthTimerWidget */ = {
@@ -202,7 +198,6 @@
 				7F2CB2F82DD55281005EF716 /* Fonts */,
 				7F45FC612DCD768A00B4BEC9 /* Growth */,
 				7F45FC742DCD768E00B4BEC9 /* GrowthTests */,
-				7F45FC7E2DCD768E00B4BEC9 /* GrowthUITests */,
 				7FE4D78A2E01CE830006D2EA /* GrowthTimerWidget */,
 				7FE4D7852E01CE820006D2EA /* Frameworks */,
 				7F45FC602DCD768A00B4BEC9 /* Products */,
@@ -525,7 +520,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 62T6J77P6R;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 62T6J77P6R;
 				ENABLE_PREVIEWS = YES;
@@ -567,7 +562,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 62T6J77P6R;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 62T6J77P6R;
 				ENABLE_PREVIEWS = YES;
@@ -605,11 +600,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = BackgroundColor;
 				CODE_SIGN_ENTITLEMENTS = GrowthTimerWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 62T6J77P6R;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Growth/Resources/Plist/Widget/Info.plist;
@@ -640,12 +635,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = BackgroundColor;
 				CODE_SIGN_ENTITLEMENTS = GrowthTimerWidget.Production.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 62T6J77P6R;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Growth/Resources/Plist/Widget/Info.plist;

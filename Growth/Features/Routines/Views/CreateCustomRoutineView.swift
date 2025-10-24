@@ -1030,7 +1030,7 @@ struct LegacyMethodSelectionView: View {
                     Image(systemName: "magnifyingglass")
                         .foregroundColor(AppTheme.Colors.textSecondary)
                     
-                    TextField("Search methods...", text: $searchText)
+                    TextField("Search exercises...", text: $searchText)
                         .font(AppTheme.Typography.bodyFont())
                     
                     if !searchText.isEmpty {

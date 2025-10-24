@@ -124,11 +124,36 @@ async function filterResponse(response, userContext = {}) {
     blocked: false
   };
 
-  // Run through all filter categories
-  const keywordFilterResult = detectUnsafeKeywords(response);
+  // Check if response is legitimate educational content (should bypass aggressive filtering)
+  const isLegitimateEducational = isLegitimateEducationalContent(response);
+
+  // If legitimate educational content, use minimal filtering
+  if (isLegitimateEducational) {
+    console.log('✅ Detected legitimate educational content - bypassing aggressive filters');
+
+    // Only check for truly dangerous content (ignore safety warnings)
+    const dangerousContentResult = detectDangerousContent(response);
+
+    if (!dangerousContentResult.detected) {
+      // Content is safe educational material - return with minimal filtering
+      return {
+        text: response,
+        wasFiltered: false,
+        filterReasons: [],
+        riskScore: 0,
+        blocked: false
+      };
+    }
+
+    // Only filter if actually dangerous
+    filterResults.riskScore = 50; // Lower score for educational content
+  }
+
+  // Run through all filter categories (for non-educational or flagged educational content)
+  const keywordFilterResult = isLegitimateEducational ? { detected: false } : detectUnsafeKeywords(response);
   const medicalClaimResult = detectMedicalClaims(response);
-  const riskAssessmentResult = assessInjuryRisk(response, userContext);
-  const parameterCheckResult = checkExcessiveParameters(response);
+  const riskAssessmentResult = isLegitimateEducational ? { detected: false } : assessInjuryRisk(response, userContext);
+  const parameterCheckResult = isLegitimateEducational ? { detected: false } : checkExcessiveParameters(response);
 
   // Aggregate results
   const allResults = [
@@ -1151,6 +1176,116 @@ function trackLoggingFailure(error, userContext) {
   // In production, this could send to an external monitoring service
 }
 
+/**
+ * Check if response is legitimate educational content that should bypass aggressive filtering
+ */
+function isLegitimateEducationalContent(response) {
+  const educationalIndicators = [
+    // Safety instruction patterns
+    /\bstop\s+(if|when|immediately)\s+(you\s+)?(feel|experience|notice)\s+(pain|discomfort|numbness)/gi,
+    /\balways\s+(start|begin)\s+(with|conservatively|gradually)/gi,
+    /\bconsult\s+(a\s+)?(healthcare|medical)\s+(provider|professional|doctor)/gi,
+    /\bmedical\s+disclaimer/gi,
+
+    // Technique instruction patterns
+    /\bstep-by-step\s+(technique|instructions|guide)/gi,
+    /\bwhat\s+you'?ll\s+need/gi,
+    /\bproper\s+(technique|form|execution)/gi,
+    /\bsafety\s+(rules|guidelines|principles)/gi,
+
+    // Knowledge base structure patterns
+    /\b(beginner|intermediate|advanced)\s+(routine|technique|exercise)/gi,
+    /\bwarm[-\s]?up\s+(is\s+)?(critical|important|essential)/gi,
+    /\berection\s+(level|quality)/gi,
+
+    // Educational disclaimers
+    /\bfor\s+educational\s+purposes\s+only/gi,
+    /\bnot\s+(intended|meant)\s+to\s+(diagnose|treat|cure)/gi,
+    /\binherent\s+risks?/gi
+  ];
+
+  // Safety warning phrases that indicate educational content (not dangerous content)
+  const safetyPhrases = [
+    'stop immediately if',
+    'stop if you feel',
+    'stop if you experience',
+    'consult a healthcare',
+    'consult a medical',
+    'medical disclaimer',
+    'not medical advice',
+    'educational purposes only',
+    'take rest days',
+    'allow adequate recovery',
+    'listen to your body',
+    'start conservatively',
+    'progress gradually'
+  ];
+
+  // Check if response contains multiple educational indicators
+  let educationalScore = 0;
+
+  educationalIndicators.forEach(pattern => {
+    if (pattern.test(response)) {
+      educationalScore += 2;
+    }
+  });
+
+  safetyPhrases.forEach(phrase => {
+    if (response.toLowerCase().includes(phrase)) {
+      educationalScore += 1;
+    }
+  });
+
+  // Content is educational if it has 3+ educational indicators
+  return educationalScore >= 3;
+}
+
+/**
+ * Detect truly dangerous content (not just safety warnings)
+ */
+function detectDangerousContent(response) {
+  const result = {
+    detected: false,
+    reasons: []
+  };
+
+  // Truly dangerous patterns (not safety warnings)
+  const dangerousPatterns = [
+    /ignore\s+(the\s+)?(pain|discomfort|warning)/gi,
+    /push\s+through\s+(the\s+)?(pain|injury)/gi,
+    /no\s+rest\s+(days|needed|required)/gi,
+    /train\s+through\s+(pain|injury)/gi,
+    /pain\s+is\s+(normal|expected|good)/gi,
+    /more\s+pain\s+means\s+more\s+gains/gi,
+    /skip\s+the\s+warm[-\s]?up/gi,
+    /warm[-\s]?up\s+is\s+(optional|unnecessary)/gi
+  ];
+
+  // Dangerous medical claims
+  const dangerousMedicalClaims = [
+    /guaranteed\s+to\s+cure/gi,
+    /will\s+cure\s+(your\s+)?ED/gi,
+    /replace\s+(your\s+)?medication/gi,
+    /don'?t\s+need\s+(a\s+)?doctor/gi
+  ];
+
+  dangerousPatterns.forEach(pattern => {
+    if (pattern.test(response)) {
+      result.detected = true;
+      result.reasons.push(`Dangerous instruction: ${pattern}`);
+    }
+  });
+
+  dangerousMedicalClaims.forEach(pattern => {
+    if (pattern.test(response)) {
+      result.detected = true;
+      result.reasons.push(`Dangerous medical claim: ${pattern}`);
+    }
+  });
+
+  return result;
+}
+
 module.exports = {
   filterResponse,
   detectUnsafeKeywords,
@@ -1158,6 +1293,8 @@ module.exports = {
   assessInjuryRisk,
   checkExcessiveParameters,
   calculateRiskScore,
+  isLegitimateEducationalContent,
+  detectDangerousContent,
   SAFETY_GUARDRAILS,
   FILTER_CATEGORIES
 };

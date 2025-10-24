@@ -1247,7 +1247,7 @@ struct PremiumMethodSelectionView: View {
                 Image(systemName: "magnifyingglass")
                     .foregroundColor(AppTheme.Colors.text.opacity(0.4))
                 
-                TextField("Search methods", text: $searchText)
+                TextField("Search exercises", text: $searchText)
                     .font(AppTheme.Typography.bodyFont())
                     .foregroundColor(AppTheme.Colors.text)
             }
@@ -1261,7 +1261,7 @@ struct PremiumMethodSelectionView: View {
             // Selected methods count
             if !selectedMethods.isEmpty {
                 HStack {
-                    Text("\(selectedMethods.count) methods selected")
+                    Text("\(selectedMethods.count) exercises selected")
                         .font(AppTheme.Typography.captionFont())
                         .foregroundColor(AppTheme.Colors.text.opacity(0.7))
                     
@@ -1305,7 +1305,7 @@ struct PremiumMethodSelectionView: View {
                     }
                     
                     if filteredMethods.count > 20 {
-                        Text("\(filteredMethods.count - 20) more methods available. Use search to find specific methods.")
+                        Text("\(filteredMethods.count - 20) more exercises available. Use search to find specific exercises.")
                             .font(AppTheme.Typography.captionFont())
                             .foregroundColor(AppTheme.Colors.text.opacity(0.6))
                             .padding()

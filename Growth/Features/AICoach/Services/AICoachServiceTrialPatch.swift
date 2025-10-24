@@ -151,7 +151,7 @@ private struct TrialAwareEntitlementProvider: EntitlementProvider {
     var hasPremium: Bool {
         // Since we're in an async context and can't access @MainActor properties synchronously,
         // we check UserDefaults directly which is what the entitlement manager uses
-        let userDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthmethod") ?? UserDefaults.standard
+        let userDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthtraining") ?? UserDefaults.standard
         return userDefaults.bool(forKey: "hasPremium") || userDefaults.bool(forKey: "hasLifetime")
     }
 }

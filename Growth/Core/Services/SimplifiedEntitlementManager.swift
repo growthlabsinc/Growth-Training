@@ -80,9 +80,9 @@ private struct EntitlementManagerBridge: EntitlementProvider {
     private let userDefaults: UserDefaults
     
     init() {
-        self.userDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthmethod") ?? UserDefaults.standard
+        self.userDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthtraining") ?? UserDefaults.standard
     }
-    
+
     public var hasPremium: Bool {
         return userDefaults.bool(forKey: "hasPremium")
     }

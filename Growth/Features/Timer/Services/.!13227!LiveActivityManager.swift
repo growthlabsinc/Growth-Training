@@ -47,12 +47,13 @@ class LiveActivityManager: ObservableObject {
     }
     
     /// Start a new Live Activity - must be called from foreground
-    func startActivity(methodId: String, protocolName: String, duration: TimeInterval = 1800, sessionType: SessionType = .countdown) {
+    func startActivity(methodId: String, protocolName: String, duration: TimeInterval = 1800, sessionType: SessionType = .countdown, timerType: String = "main") {
         Logger.info("🚀 LiveActivityManager.startActivity called:", logger: AppLoggers.liveActivity)
         Logger.debug("methodId: \(methodId)", logger: AppLoggers.liveActivity)
         Logger.debug("protocolName: \(protocolName)", logger: AppLoggers.liveActivity)
         Logger.debug("duration: \(duration)", logger: AppLoggers.liveActivity)
         Logger.debug("sessionType: \(sessionType)", logger: AppLoggers.liveActivity)
+        Logger.debug("timerType: \(timerType)", logger: AppLoggers.liveActivity)
         Logger.debug("Thread: \(Thread.current)", logger: AppLoggers.liveActivity)
         Logger.debug("areActivitiesEnabled: \(areActivitiesEnabled)", logger: AppLoggers.liveActivity)
         
@@ -97,7 +98,7 @@ class LiveActivityManager: ObservableObject {
                 // Create attributes and initial state - based on research pattern
                 let attributes = TimerActivityAttributes(
                     methodId: methodId,
-                    timerType: "main"
+                    timerType: timerType
                 )
                 
                 Logger.debug("🏗️ Creating initial ContentState...", logger: AppLoggers.liveActivity)
@@ -141,7 +142,7 @@ class LiveActivityManager: ObservableObject {
                 self.currentActivity = activity
                 
                 // Store initial state in shared UserDefaults for widget synchronization
-                let appGroupIdentifier = "group.com.growthlabs.growthmethod"
+                let appGroupIdentifier = "group.com.growthlabs.growthtraining"
                 if let sharedDefaults = UserDefaults(suiteName: appGroupIdentifier) {
                     sharedDefaults.set(initialState.startedAt, forKey: "timerStartedAt")
                     sharedDefaults.set(false, forKey: "timerIsPaused")
@@ -205,9 +206,9 @@ class LiveActivityManager: ObservableObject {
         }
         
         // Pause the actual timer in the main app
-        let appGroupState = AppGroupConstants.getTimerState()
-        let timerType = appGroupState.sessionType == "quick" ? "quick" : "main"
-        
+        // Use the timer type from the activity attributes
+        let timerType = activity.attributes.timerType
+
         Logger.info("📱 Pausing \(timerType) timer in main app", logger: AppLoggers.liveActivity)
         if timerType == "quick" {
             QuickPracticeTimerService.shared.pause()
@@ -243,9 +244,9 @@ class LiveActivityManager: ObservableObject {
         }
         
         // Resume the actual timer in the main app
-        let appGroupState = AppGroupConstants.getTimerState()
-        let timerType = appGroupState.sessionType == "quick" ? "quick" : "main"
-        
+        // Use the timer type from the activity attributes
+        let timerType = activity.attributes.timerType
+
         Logger.info("📱 Resuming \(timerType) timer in main app", logger: AppLoggers.liveActivity)
         if timerType == "quick" {
             QuickPracticeTimerService.shared.resume()
@@ -461,10 +462,9 @@ class LiveActivityManager: ObservableObject {
             return
         }
         
-        // Get timer type before stopping
-        let appGroupState = AppGroupConstants.getTimerState()
-        let timerType = appGroupState.sessionType == "quick" ? "quick" : "main"
-        
+        // Get timer type from the activity attributes before stopping
+        let timerType = currentActivity?.attributes.timerType ?? "main"
+
         // Stop the actual timer in the main app
         Logger.info("📱 Stopping \(timerType) timer in main app", logger: AppLoggers.liveActivity)
         if timerType == "quick" {
@@ -642,7 +642,7 @@ class LiveActivityManager: ObservableObject {
             // Skip if already processing an action
             guard !self.isProcessingAction else { return }
             
-            let appGroupIdentifier = "group.com.growthlabs.growthmethod"
+            let appGroupIdentifier = "group.com.growthlabs.growthtraining"
             guard let sharedDefaults = UserDefaults(suiteName: appGroupIdentifier) else { return }
             
             // Check if there's a pending action
@@ -759,7 +759,7 @@ class LiveActivityManager: ObservableObject {
         Logger.info("🚀 Handling push update request", logger: AppLoggers.liveActivity)
         
         // Read the action from shared UserDefaults
-        let appGroupIdentifier = "group.com.growthlabs.growthmethod"
+        let appGroupIdentifier = "group.com.growthlabs.growthtraining"
         guard let sharedDefaults = UserDefaults(suiteName: appGroupIdentifier),
               let actionRawValue = sharedDefaults.string(forKey: "lastTimerAction"),
               let activityId = sharedDefaults.string(forKey: "lastActivityId") else {
@@ -957,7 +957,7 @@ class LiveActivityManager: ObservableObject {
             Logger.warning("⚠️ Push token not in memory, checking UserDefaults", logger: AppLoggers.liveActivity)
             
             // Try to get from UserDefaults first (faster)
-            let appGroupIdentifier = "group.com.growthlabs.growthmethod"
+            let appGroupIdentifier = "group.com.growthlabs.growthtraining"
             if let sharedDefaults = UserDefaults(suiteName: appGroupIdentifier),
                let storedToken = sharedDefaults.string(forKey: "liveActivityPushToken_\(activity.id)") {
                 tokenToUse = storedToken
@@ -1073,7 +1073,7 @@ class LiveActivityManager: ObservableObject {
                 )
                 
                 // Store token in UserDefaults as backup
-                let appGroupIdentifier = "group.com.growthlabs.growthmethod"
+                let appGroupIdentifier = "group.com.growthlabs.growthtraining"
                 if let sharedDefaults = UserDefaults(suiteName: appGroupIdentifier) {
                     sharedDefaults.set(tokenString, forKey: "liveActivityPushToken_\(activity.id)")
                     sharedDefaults.synchronize()
@@ -1108,7 +1108,7 @@ class LiveActivityManager: ObservableObject {
         Logger.info("📱 Frequent pushes enabled via Info.plist configuration", logger: AppLoggers.liveActivity)
         
         // Store in UserDefaults for quick access
-        let appGroupIdentifier = "group.com.growthlabs.growthmethod"
+        let appGroupIdentifier = "group.com.growthlabs.growthtraining"
         if let sharedDefaults = UserDefaults(suiteName: appGroupIdentifier) {
             sharedDefaults.set(self.frequentPushesEnabled, forKey: "frequentPushesEnabled")
             sharedDefaults.synchronize()
@@ -1128,7 +1128,7 @@ class LiveActivityManager: ObservableObject {
         Logger.info("📱 Frequent pushes assumed enabled for activity", logger: AppLoggers.liveActivity)
         
         // Store in UserDefaults for consistency
-        let appGroupIdentifier = "group.com.growthlabs.growthmethod"
+        let appGroupIdentifier = "group.com.growthlabs.growthtraining"
         if let sharedDefaults = UserDefaults(suiteName: appGroupIdentifier) {
             sharedDefaults.set(true, forKey: "frequentPushesEnabled")
             sharedDefaults.synchronize()
@@ -1265,8 +1265,8 @@ class LiveActivityManager: ObservableObject {
         // Use our simplified startActivity method based on research
         // Default to countdown
         let timerSessionType: SessionType = .countdown
-        print("📱 Delegating to startActivity with sessionType: \(timerSessionType)")
-        startActivity(methodId: methodId, protocolName: protocolName, duration: duration, sessionType: timerSessionType)
+        print("📱 Delegating to startActivity with sessionType: \(timerSessionType), timerType: \(timerType)")
+        startActivity(methodId: methodId, protocolName: protocolName, duration: duration, sessionType: timerSessionType, timerType: timerType)
     }
     
     /// Compatibility method for TimerService integration

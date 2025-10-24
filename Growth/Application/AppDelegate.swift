@@ -47,7 +47,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         _ = TimerIntentObserver.shared
         
         // Clean up any stale pending timer completion data on app launch
-        if let sharedDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthmethod") {
+        if let sharedDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthtraining") {
             if let completionData = sharedDefaults.dictionary(forKey: "pendingTimerCompletion"),
                let timestamp = completionData["timestamp"] as? TimeInterval {
                 let dataAge = Date().timeIntervalSince1970 - timestamp

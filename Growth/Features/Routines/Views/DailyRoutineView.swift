@@ -50,6 +50,10 @@ struct DailyRoutineView: View {
     // Free tier limitation alert
     @State private var showFreeTierAlert = false
 
+    // Trial limit alert
+    @State private var showTrialLimitAlert = false
+    @State private var trialLimitMessage = ""
+
     init(schedule: DaySchedule, routinesViewModel: RoutinesViewModel, isEmbedded: Bool = false, onExit: (() -> Void)? = nil) {
         self.schedule = schedule
         self.routinesViewModel = routinesViewModel
@@ -163,6 +167,16 @@ struct DailyRoutineView: View {
                     DispatchQueue.main.async {
                         handleTimerCompletion()
                     }
+                }
+            }
+            .onReceive(NotificationCenter.default.publisher(for: Notification.Name("showTrialLimitAlert"))) { notification in
+                // Only handle if NOT embedded (when embedded, parent PracticeTabView handles it)
+                guard !isEmbedded else { return }
+
+                // Handle trial limit alert from TimerService
+                if let message = notification.userInfo?["message"] as? String {
+                    trialLimitMessage = message
+                    showTrialLimitAlert = true
                 }
             }
             .onChangeCompat(of: scenePhase) { _ in
@@ -369,6 +383,22 @@ struct DailyRoutineView: View {
             }
         } message: {
             Text("You've completed your daily practice session. Upgrade to Premium for unlimited daily sessions and access to all features.")
+        }
+        .alert("Trial Expired", isPresented: $showTrialLimitAlert) {
+            Button("OK", role: .cancel) { }
+            Button("Upgrade to Premium", role: .none) {
+                // Navigate to subscription view
+                if !isEmbedded {
+                    dismiss()
+                }
+                // Post notification to switch to subscription tab
+                NotificationCenter.default.post(
+                    name: Notification.Name("switchToSubscriptionTab"),
+                    object: nil
+                )
+            }
+        } message: {
+            Text(trialLimitMessage)
         }
     }
     

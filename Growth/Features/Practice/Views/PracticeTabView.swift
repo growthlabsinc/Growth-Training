@@ -32,6 +32,10 @@ struct PracticeTabView: View {
     // Free tier limitation alert
     @State private var showFreeTierAlert = false
     @StateObject private var entitlementManager = SimplifiedEntitlementManager()
+
+    // Trial limit alert
+    @State private var showTrialLimitAlert = false
+    @State private var trialLimitMessage = ""
     
     init(routinesViewModel: RoutinesViewModel, startGuided: Binding<Bool> = .constant(false), showCompletion: Binding<Bool> = .constant(false)) {
         self.routinesViewModel = routinesViewModel
@@ -105,6 +109,18 @@ struct PracticeTabView: View {
             } message: {
                 Text("You've completed your daily practice session. Upgrade to Premium for unlimited daily sessions and access to all features.")
             }
+            .alert("Trial Expired", isPresented: $showTrialLimitAlert) {
+                Button("OK", role: .cancel) { }
+                Button("Upgrade to Premium", role: .none) {
+                    // Post notification to switch to subscription tab
+                    NotificationCenter.default.post(
+                        name: Notification.Name("switchToSubscriptionTab"),
+                        object: nil
+                    )
+                }
+            } message: {
+                Text(trialLimitMessage)
+            }
             .modifier(EventHandlers(
                 viewModel: viewModel,
                 routinesViewModel: routinesViewModel,
@@ -115,6 +131,8 @@ struct PracticeTabView: View {
                 cachedProgressValue: $cachedProgressValue,
                 startGuided: $startGuided,
                 showCompletion: $showCompletion,
+                showTrialLimitAlert: $showTrialLimitAlert,
+                trialLimitMessage: $trialLimitMessage,
                 checkForPendingTimerCompletion: checkForPendingTimerCompletion,
                 updateProgressCache: updateProgressCache,
                 areAllMethodsCompletedToday: areAllMethodsCompletedToday
@@ -610,7 +628,7 @@ struct PracticeTabView: View {
         }
         
         // Check if there's pending timer completion data from Live Activity
-        let sharedDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthmethod")
+        let sharedDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthtraining")
         if let completionData = sharedDefaults?.dictionary(forKey: "pendingTimerCompletion"),
            let elapsedTime = completionData["elapsedTime"] as? TimeInterval,
            let timestamp = completionData["timestamp"] as? TimeInterval {
@@ -811,7 +829,7 @@ struct PracticeTabView: View {
             Logger.debug("🎯 PracticeTabView: showCompletion triggered from Live Activity navigation")
             
             // Immediately check and capture the pending data
-            let sharedDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthmethod")
+            let sharedDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthtraining")
             if let completionData = sharedDefaults?.dictionary(forKey: "pendingTimerCompletion"),
                let elapsedTime = completionData["elapsedTime"] as? TimeInterval,
                let timestamp = completionData["timestamp"] as? TimeInterval {
@@ -957,7 +975,7 @@ private struct CompletionSheetContent: View {
 
 private struct EventHandlers: ViewModifier {
     let viewModel: PracticeTabViewModel
-    let routinesViewModel: RoutinesViewModel  
+    let routinesViewModel: RoutinesViewModel
     let mainTimerService: TimerService
     @Binding var showCompletionSheet: Bool
     @Binding var pendingCompletionData: (elapsedTime: TimeInterval, methodName: String)?
@@ -965,6 +983,8 @@ private struct EventHandlers: ViewModifier {
     @Binding var cachedProgressValue: Double
     @Binding var startGuided: Bool
     @Binding var showCompletion: Bool
+    @Binding var showTrialLimitAlert: Bool
+    @Binding var trialLimitMessage: String
     let checkForPendingTimerCompletion: () -> Void
     let updateProgressCache: () -> Void
     let areAllMethodsCompletedToday: () -> Bool
@@ -1008,6 +1028,13 @@ private struct EventHandlers: ViewModifier {
                 updateProgressCache()
                 if areAllMethodsCompletedToday() || viewModel.isDailyRoutineComplete() {
                     cachedProgressValue = 1.0
+                }
+            }
+            .onReceive(NotificationCenter.default.publisher(for: Notification.Name("showTrialLimitAlert"))) { notification in
+                // Handle trial limit alert from TimerService
+                if let message = notification.userInfo?["message"] as? String {
+                    trialLimitMessage = message
+                    showTrialLimitAlert = true
                 }
             }
             .onReceive(mainTimerService.$timerState) { _ in
@@ -1095,7 +1122,7 @@ private struct EventHandlers: ViewModifier {
         if newValue {
             Logger.debug("🎯 PracticeTabView: showCompletion triggered from Live Activity navigation")
             
-            let sharedDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthmethod")
+            let sharedDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthtraining")
             if let completionData = sharedDefaults?.dictionary(forKey: "pendingTimerCompletion"),
                let elapsedTime = completionData["elapsedTime"] as? TimeInterval,
                let timestamp = completionData["timestamp"] as? TimeInterval {

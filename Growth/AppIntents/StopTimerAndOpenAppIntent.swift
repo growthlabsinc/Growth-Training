@@ -56,7 +56,7 @@ public struct StopTimerAndOpenAppIntent: LiveActivityIntent {
     
     @MainActor
     private func stopTimer() async {
-        let appGroupIdentifier = "group.com.growthlabs.growthmethod"
+        let appGroupIdentifier = "group.com.growthlabs.growthtraining"
         guard let sharedDefaults = UserDefaults(suiteName: appGroupIdentifier) else {
             logger.error("Failed to access app group UserDefaults")
             return

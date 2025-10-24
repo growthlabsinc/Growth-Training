@@ -1049,7 +1049,7 @@ class TimerService: ObservableObject {
                                     "methodName": methodName,
                                     "timestamp": Date().timeIntervalSince1970
                                 ]
-                                if let sharedDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthmethod") {
+                                if let sharedDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthtraining") {
                                     sharedDefaults.set(completionData, forKey: "pendingTimerCompletion")
                                     sharedDefaults.synchronize()
                                 }
@@ -1257,7 +1257,7 @@ class TimerService: ObservableObject {
         Logger.info("🔔 [LIVE_ACTIVITY_BUTTON] TimerService: Darwin notification received at \(Date())", logger: AppLoggers.liveActivity)
         
         // Check shared defaults for the action
-        guard let sharedDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthmethod") else {
+        guard let sharedDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthtraining") else {
             Logger.error("❌ [LIVE_ACTIVITY_BUTTON] Failed to access shared defaults", logger: AppLoggers.liveActivity)
             print("❌ [LIVE_ACTIVITY_BUTTON] Failed to access shared defaults")
             return
@@ -1411,7 +1411,7 @@ class TimerService: ObservableObject {
             }
             
             // Clear the action - access UserDefaults directly to avoid Sendable issues
-            if let sharedDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthmethod") {
+            if let sharedDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthtraining") {
                 Logger.debug("🧹 [LIVE_ACTIVITY_BUTTON] Clearing action from shared defaults", logger: AppLoggers.liveActivity)
                 sharedDefaults.removeObject(forKey: "lastTimerAction")
                 sharedDefaults.removeObject(forKey: "lastActionTime")
@@ -1690,7 +1690,7 @@ class TimerService: ObservableObject {
     }
     
     private func processWidgetAction() {
-        let appGroupIdentifier = "group.com.growthlabs.growthmethod"
+        let appGroupIdentifier = "group.com.growthlabs.growthtraining"
         guard let sharedDefaults = UserDefaults(suiteName: appGroupIdentifier) else {
             Logger.error("Failed to access app group UserDefaults", logger: AppLoggers.timer)
             return
@@ -1739,7 +1739,7 @@ class TimerService: ObservableObject {
                         "methodName": methodName,
                         "timestamp": Date().timeIntervalSince1970
                     ]
-                    if let sharedDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthmethod") {
+                    if let sharedDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthtraining") {
                         sharedDefaults.set(completionData, forKey: "pendingTimerCompletion")
                         sharedDefaults.synchronize()
                     }

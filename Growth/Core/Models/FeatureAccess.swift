@@ -188,9 +188,9 @@ extension FeatureAccess {
         // For property wrappers that can't receive dependency injection,
         // we need to check entitlements through a different mechanism
         // This could use UserDefaults directly or a shared singleton
-        let userDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthmethod") ?? UserDefaults.standard
+        let userDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthtraining") ?? UserDefaults.standard
         let hasPremium = userDefaults.bool(forKey: "hasPremium")
-        
+
         return hasPremium ? .granted : .denied(reason: .noSubscription)
     }
 }

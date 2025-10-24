@@ -26,6 +26,13 @@ exports.updateUsageStats = trialManagement.updateUsageStats;
 exports.extendTrial = trialManagement.extendTrial;
 exports.getTrialAnalytics = trialManagement.getTrialAnalytics;
 
+// Subscription Lifecycle Management Functions
+// NOTE: Commented out due to deployment timeout issues with v2 functions
+// The functionality is available via manual script: scripts/manage-subscription-routines.js
+// const subscriptionLifecycle = require('./subscriptionLifecycle');
+// exports.handleSubscriptionStatusChange = subscriptionLifecycle.handleSubscriptionStatusChange;
+// exports.dailyRoutineStatusCheck = subscriptionLifecycle.dailyRoutineStatusCheck;
+
 // AI Coach function - requires authenticated users only
 exports.generateAIResponse = onCall(
   {

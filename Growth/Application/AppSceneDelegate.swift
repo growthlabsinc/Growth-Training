@@ -44,7 +44,7 @@ class AppSceneDelegate: NSObject, UIWindowSceneDelegate {
         TimerIntentObserver.shared.checkPendingActions()
         
         // CRITICAL: Check for widget timer actions FIRST (from StopTimerAndOpenAppIntent)
-        let appGroupIdentifier = "group.com.growthlabs.growthmethod"
+        let appGroupIdentifier = "group.com.growthlabs.growthtraining"
         if let sharedDefaults = UserDefaults(suiteName: appGroupIdentifier),
            let widgetAction = sharedDefaults.string(forKey: "widgetTimerAction"),
            let actionTime = sharedDefaults.object(forKey: "widgetActionTime") as? Date,

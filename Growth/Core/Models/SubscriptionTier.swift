@@ -78,11 +78,11 @@ public enum SubscriptionTier: String, CaseIterable, Codable {
     public static func from(productId: String) -> SubscriptionTier {
         // Map product IDs to tiers based on the subscription specification
         switch productId {
-        case "com.growthlabs.growthmethod.subscription.premium.weekly",
-             "com.growthlabs.growthmethod.subscription.premium.quarterly",
-             "com.growthlabs.growthmethod.subscription.premium.yearly":
+        case "com.growthlabs.growthtraining.subscription.premium.weekly",
+             "com.growthlabs.growthtraining.subscription.premium.quarterly",
+             "com.growthlabs.growthtraining.subscription.premium.yearly":
             return .premium
-            
+
         default:
             return .none
         }
@@ -126,7 +126,7 @@ public enum SubscriptionDuration: String, CaseIterable, Codable {
     
     /// Product ID for App Store Connect
     public var productId: String {
-        return "com.growthlabs.growthmethod.subscription.premium.\(rawValue)"
+        return "com.growthlabs.growthtraining.subscription.premium.\(rawValue)"
     }
 }
 

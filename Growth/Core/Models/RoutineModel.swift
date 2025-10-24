@@ -86,7 +86,6 @@ public struct Routine: Identifiable, Codable {
     public var ratingCount: Int = 0
     public var tags: [String] = []
     public var version: Int = 1
-    public var isEnabled: Bool = true // Whether routine is accessible (disabled when subscription expires)
     
     // Legacy properties for compatibility
     public var createdAt: Date { createdDate }
@@ -163,7 +162,6 @@ public struct Routine: Identifiable, Codable {
         self.ratingCount = try container.decodeIfPresent(Int.self, forKey: .ratingCount) ?? 0
         self.tags = try container.decodeIfPresent([String].self, forKey: .tags) ?? []
         self.version = try container.decodeIfPresent(Int.self, forKey: .version) ?? 1
-        self.isEnabled = try container.decodeIfPresent(Bool.self, forKey: .isEnabled) ?? true
     }
     
     // Custom encoder
@@ -194,7 +192,6 @@ public struct Routine: Identifiable, Codable {
         try container.encode(tags, forKey: .tags)
         try container.encode(version, forKey: .version)
         try container.encodeIfPresent(schedulingType, forKey: .schedulingType)
-        try container.encode(isEnabled, forKey: .isEnabled)
     }
     
     private enum CodingKeys: String, CodingKey {
@@ -226,7 +223,6 @@ public struct Routine: Identifiable, Codable {
         case tags
         case version
         case schedulingType
-        case isEnabled
     }
     
     // Backward compatible initializer

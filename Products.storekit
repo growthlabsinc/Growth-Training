@@ -98,7 +98,7 @@
               "locale" : "en_US"
             }
           ],
-          "productID" : "com.growthlabs.growthmethod.subscription.premium.quarterly",
+          "productID" : "com.growthlabs.growthtraining.subscription.premium.quarterly",
           "recurringSubscriptionPeriod" : "P3M",
           "referenceName" : "Growth Pro 3-Months",
           "subscriptionGroupID" : "21735365",
@@ -126,7 +126,7 @@
               "locale" : "en_US"
             }
           ],
-          "productID" : "com.growthlabs.growthmethod.subscription.premium.weekly",
+          "productID" : "com.growthlabs.growthtraining.subscription.premium.weekly",
           "recurringSubscriptionPeriod" : "P1W",
           "referenceName" : "Growth Pro Weekly",
           "subscriptionGroupID" : "21735365",
@@ -154,7 +154,7 @@
               "locale" : "en_US"
             }
           ],
-          "productID" : "com.growthlabs.growthmethod.subscription.premium.yearly",
+          "productID" : "com.growthlabs.growthtraining.subscription.premium.yearly",
           "recurringSubscriptionPeriod" : "P1Y",
           "referenceName" : "Growth Pro Yearly",
           "subscriptionGroupID" : "21735365",

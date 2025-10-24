@@ -406,7 +406,7 @@ struct TrialDebugView: View {
         userId = Auth.auth().currentUser?.uid ?? "Anonymous"
 
         // Load trial dates
-        let userDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthmethod") ?? UserDefaults.standard
+        let userDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthtraining") ?? UserDefaults.standard
         if let timestamp = userDefaults.object(forKey: "firstLaunchTimestamp") as? TimeInterval {
             trialStartDate = Date(timeIntervalSince1970: timestamp)
             trialEndDate = trialStartDate?.addingTimeInterval(3 * 24 * 60 * 60) // 3 days
@@ -421,7 +421,7 @@ struct TrialDebugView: View {
         isLoading = true
         Task {
             // Enable trials in UserDefaults
-            let userDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthmethod") ?? UserDefaults.standard
+            let userDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthtraining") ?? UserDefaults.standard
             userDefaults.set(true, forKey: "com.growthlabs.trial.debug.forceEnabled")
             userDefaults.synchronize()
 
@@ -440,7 +440,7 @@ struct TrialDebugView: View {
         isLoading = true
         Task {
             // Disable trials in UserDefaults
-            let userDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthmethod") ?? UserDefaults.standard
+            let userDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthtraining") ?? UserDefaults.standard
             userDefaults.set(false, forKey: "com.growthlabs.trial.debug.forceEnabled")
             userDefaults.synchronize()
 
@@ -459,7 +459,7 @@ struct TrialDebugView: View {
         isLoading = true
         Task {
             // Set first launch timestamp to now
-            let userDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthmethod") ?? UserDefaults.standard
+            let userDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthtraining") ?? UserDefaults.standard
             userDefaults.set(Date().timeIntervalSince1970, forKey: "firstLaunchTimestamp")
             userDefaults.set(false, forKey: "hasPremium")
             userDefaults.synchronize()
@@ -479,7 +479,7 @@ struct TrialDebugView: View {
         isLoading = true
         Task {
             // Set first launch timestamp to 4 days ago
-            let userDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthmethod") ?? UserDefaults.standard
+            let userDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthtraining") ?? UserDefaults.standard
             let fourDaysAgo = Date().addingTimeInterval(-4 * 24 * 60 * 60)
             userDefaults.set(fourDaysAgo.timeIntervalSince1970, forKey: "firstLaunchTimestamp")
             userDefaults.synchronize()
@@ -499,7 +499,7 @@ struct TrialDebugView: View {
         isLoading = true
         Task {
             // Move first launch timestamp back by 3 days
-            let userDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthmethod") ?? UserDefaults.standard
+            let userDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthtraining") ?? UserDefaults.standard
             if let currentTimestamp = userDefaults.object(forKey: "firstLaunchTimestamp") as? TimeInterval {
                 let extendedDate = Date(timeIntervalSince1970: currentTimestamp).addingTimeInterval(-3 * 24 * 60 * 60)
                 userDefaults.set(extendedDate.timeIntervalSince1970, forKey: "firstLaunchTimestamp")
@@ -538,7 +538,7 @@ struct TrialDebugView: View {
         isLoading = true
         Task {
             // Reset usage counters
-            let userDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthmethod") ?? UserDefaults.standard
+            let userDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthtraining") ?? UserDefaults.standard
             userDefaults.set(0, forKey: "dailyAICoachUsage")
             userDefaults.set(0, forKey: "dailyGuidedSessionUsage")
             userDefaults.set(0, forKey: "dailyQuickTimerUsage")
@@ -562,7 +562,7 @@ struct TrialDebugView: View {
         isLoading = true
         Task {
             // Max out usage counters
-            let userDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthmethod") ?? UserDefaults.standard
+            let userDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthtraining") ?? UserDefaults.standard
             userDefaults.set(RemoteConfigManager.shared.aiCoachDailyLimit, forKey: "dailyAICoachUsage")
             userDefaults.set(RemoteConfigManager.shared.guidedSessionsDailyLimit, forKey: "dailyGuidedSessionUsage")
             userDefaults.set(5, forKey: "dailyQuickTimerUsage") // 5 minutes
@@ -630,7 +630,7 @@ struct TrialDebugView: View {
     private func timeTravel(_ days: Int) {
         isLoading = true
         Task {
-            let userDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthmethod") ?? UserDefaults.standard
+            let userDefaults = UserDefaults(suiteName: "group.com.growthlabs.growthtraining") ?? UserDefaults.standard
 
             // Adjust first launch timestamp
             if let timestamp = userDefaults.object(forKey: "firstLaunchTimestamp") as? TimeInterval {

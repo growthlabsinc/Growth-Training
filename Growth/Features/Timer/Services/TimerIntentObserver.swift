@@ -16,7 +16,7 @@ class TimerIntentObserver {
     
     private var cancellables = Set<AnyCancellable>()
     private var observationTimer: Timer?
-    private let appGroupIdentifier = "group.com.growthlabs.growthmethod"
+    private let appGroupIdentifier = "group.com.growthlabs.growthtraining"
     private var lastActionTime: Date?
     private var lastProcessedActionId: String?
     
