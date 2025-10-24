@@ -12,12 +12,18 @@ import FirebaseAuth
 
 struct MeasurementTypeChart: View {
     @StateObject private var gainsService = GainsService.shared
-    @State private var selectedType: MeasurementType = .bpel
+    @State private var selectedType: MeasurementType
     @State private var selectedTimeRange: ChartTimeRange = .month
     @State private var showComparison = false
     @State private var comparisonType: MeasurementType? = nil
 
     let measurementCategory: MeasurementCategory
+
+    init(measurementCategory: MeasurementCategory) {
+        self.measurementCategory = measurementCategory
+        // Initialize selectedType with the appropriate default for the category
+        _selectedType = State(initialValue: measurementCategory.defaultType)
+    }
 
     enum MeasurementCategory {
         case length
@@ -76,7 +82,6 @@ struct MeasurementTypeChart: View {
             }
         }
         .onAppear {
-            selectedType = measurementCategory.defaultType
             updateComparisonType()
         }
     }
