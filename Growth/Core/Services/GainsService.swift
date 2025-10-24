@@ -87,20 +87,19 @@ class GainsService: ObservableObject {
     /// Update an existing entry
     func updateEntry(_ entry: GainsEntry) async throws {
         guard let id = entry.id else { return }
-        
-        // Create a new entry with updated timestamp
+
+        // Create a new entry with updated timestamp using the new initializer
         let updatedEntry = GainsEntry(
             id: entry.id,
             userId: entry.userId,
             timestamp: entry.timestamp,
-            length: entry.length,
-            girth: entry.girth,
+            measurements: entry.measurements,
             erectionQuality: entry.erectionQuality,
             notes: entry.notes,
             sessionId: entry.sessionId,
             measurementUnit: entry.measurementUnit
         )
-        
+
         let data = try Firestore.Encoder().encode(updatedEntry)
         try await db.collection(collection).document(id).setData(data)
     }
@@ -157,19 +156,28 @@ class GainsService: ObservableObject {
         let sortedEntries = entries.sorted { $0.timestamp < $1.timestamp }
         let baseline = sortedEntries.first
         let latest = sortedEntries.last
-        
-        // Find best measurements
-        let bestLength = sortedEntries.max { $0.length < $1.length }
-        let bestGirth = sortedEntries.max { $0.girth < $1.girth }
+
+        // Find best measurements (using optional comparison with nil coalescing)
+        let bestLength = sortedEntries.max { ($0.length ?? 0) < ($1.length ?? 0) }
+        let bestGirth = sortedEntries.max { ($0.girth ?? 0) < ($1.girth ?? 0) }
         let bestEQ = sortedEntries.max { $0.erectionQuality < $1.erectionQuality }
-        
-        // Create a "best" entry combining all best measurements
+
+        // Create a "best" entry combining all best measurements using new initializer
         let best = bestLength.map { length in
-            GainsEntry(
+            var measurements: [MeasurementType: Double] = [:]
+            if let bpel = length.length {
+                measurements[.bpel] = bpel
+            }
+            if let mseg = bestGirth?.girth {
+                measurements[.mseg] = mseg
+            } else if let lengthGirth = length.girth {
+                measurements[.mseg] = lengthGirth
+            }
+
+            return GainsEntry(
                 userId: length.userId,
                 timestamp: length.timestamp,
-                length: length.length,
-                girth: bestGirth?.girth ?? length.girth,
+                measurements: measurements,
                 erectionQuality: bestEQ?.erectionQuality ?? length.erectionQuality,
                 measurementUnit: length.measurementUnit
             )
@@ -195,14 +203,14 @@ class GainsService: ObservableObject {
     
     private func calculateAverages(for entries: [GainsEntry], days: Int) -> GainsAverages? {
         guard !entries.isEmpty else { return nil }
-        
-        let totalLength = entries.reduce(0) { $0 + $1.length }
-        let totalGirth = entries.reduce(0) { $0 + $1.girth }
-        let totalVolume = entries.reduce(0) { $0 + $1.volume }
-        let totalEQ = entries.reduce(0) { $0 + Double($1.erectionQuality) }
-        
+
+        let totalLength = entries.reduce(0.0) { $0 + ($1.length ?? 0) }
+        let totalGirth = entries.reduce(0.0) { $0 + ($1.girth ?? 0) }
+        let totalVolume = entries.reduce(0.0) { $0 + $1.volume }
+        let totalEQ = entries.reduce(0.0) { $0 + Double($1.erectionQuality) }
+
         let count = Double(entries.count)
-        
+
         return GainsAverages(
             length: totalLength / count,
             girth: totalGirth / count,
