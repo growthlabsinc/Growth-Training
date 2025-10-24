@@ -288,8 +288,8 @@ struct ExportDataView: View {
         return entries.map { entry in
             [
                 "date": ISO8601DateFormatter().string(from: entry.timestamp),
-                "length": entry.length ?? 0,
-                "girth": entry.girth ?? 0,
+                "length": entry.length ?? 0.0,
+                "girth": entry.girth ?? 0.0,
                 "erectionQuality": entry.erectionQuality,
                 "volume": entry.volume,
                 "measurementUnit": entry.measurementUnit.rawValue,
