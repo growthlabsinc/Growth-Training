@@ -141,36 +141,40 @@ struct MeasurementTypeChart: View {
 
     private var chartView: some View {
         Chart {
-            // Primary measurement data - use unique series identifier
+            // Primary measurement data
             ForEach(chartData(for: selectedType), id: \.date) { dataPoint in
                 LineMark(
                     x: .value("Date", dataPoint.date),
-                    y: .value(selectedType.rawValue, dataPoint.value)
+                    y: .value("Value", dataPoint.value),
+                    series: .value("Measurement", selectedType.displayName)
                 )
                 .foregroundStyle(Color("GrowthGreen"))
                 .lineStyle(StrokeStyle(lineWidth: 2))
 
                 PointMark(
                     x: .value("Date", dataPoint.date),
-                    y: .value(selectedType.rawValue, dataPoint.value)
+                    y: .value("Value", dataPoint.value),
+                    series: .value("Measurement", selectedType.displayName)
                 )
                 .foregroundStyle(Color("GrowthGreen"))
                 .symbolSize(100)
             }
 
-            // Comparison data if enabled - use different series identifier
+            // Comparison data if enabled
             if showComparison, let compType = comparisonType {
                 ForEach(chartData(for: compType), id: \.date) { dataPoint in
                     LineMark(
                         x: .value("Date", dataPoint.date),
-                        y: .value(compType.rawValue, dataPoint.value)
+                        y: .value("Value", dataPoint.value),
+                        series: .value("Measurement", compType.displayName)
                     )
                     .foregroundStyle(Color("BrightTeal"))
                     .lineStyle(StrokeStyle(lineWidth: 2, dash: [5, 3]))
 
                     PointMark(
                         x: .value("Date", dataPoint.date),
-                        y: .value(compType.rawValue, dataPoint.value)
+                        y: .value("Value", dataPoint.value),
+                        series: .value("Measurement", compType.displayName)
                     )
                     .foregroundStyle(Color("BrightTeal"))
                     .symbolSize(80)

@@ -284,7 +284,7 @@ struct GainsProgressView: View {
                 .foregroundColor(Color("TextColor"))
             
             VStack(spacing: 12) {
-                ForEach(gainsService.entries.prefix(5)) { entry in
+                ForEach(gainsService.entries.prefix(5), id: \.timestamp) { entry in
                     RecentEntryRow(entry: entry, unit: gainsService.preferredUnit)
                 }
             }
