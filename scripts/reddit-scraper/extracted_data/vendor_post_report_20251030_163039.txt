@@ -1,0 +1,124 @@
+================================================================================
+VENDOR POST ANALYSIS REPORT
+r/TheScienceOfPE
+Generated: 2025-10-30 16:30:39
+================================================================================
+
+SUMMARY
+--------------------------------------------------------------------------------
+Total posts scanned: 232
+Vendor posts found: 232
+High engagement posts: 145
+
+
+TOP PERFORMING VENDOR POSTS
+--------------------------------------------------------------------------------
+
+1. Training Volume is the King of Girth Gains - Doing (Bro-)Science With Community Data!
+   Score: 273 | Comments: 157 | Ratio: 100%
+   Author: u/karlwikman | Date: 2025-01-15
+   URL: https://reddit.com/r/TheScienceOfPE/comments/1i26l7o/training_volume_is_the_king_of_girth_gains_doing/
+
+2. 250 members already! Get your 'OG' flair, this week only! Leave a comment on this post and a mod will apply it.
+   Score: 38 | Comments: 351 | Ratio: 100%
+   Author: u/Tea_Leaves_was_here | Date: 2024-12-31
+   URL: https://reddit.com/r/TheScienceOfPE/comments/1hqqe6g/250_members_already_get_your_og_flair_this_week/
+
+3. Karl’s Introduction to Pumping - Part 1 - How it Works, Key Safety Measures, Static Pumping Routines, Equipment, etc
+   Score: 156 | Comments: 74 | Ratio: 99%
+   Author: u/karlwikman | Date: 2025-01-26
+   URL: https://reddit.com/r/TheScienceOfPE/comments/1ialmit/karls_introduction_to_pumping_part_1_how_it_works/
+
+4. Basics of Penis Enlargement for Beginner's: A Guide by Goldmember
+   Score: 177 | Comments: 64 | Ratio: 100%
+   Author: u/goldmember_37 | Date: 2025-01-06
+   URL: https://reddit.com/r/TheScienceOfPE/comments/1hv8ic8/basics_of_penis_enlargement_for_beginners_a_guide/
+
+5. Karl's Two Girth Routines - A 2025 Update
+   Score: 94 | Comments: 108 | Ratio: 100%
+   Author: u/karlwikman | Date: 2025-01-11
+   URL: https://reddit.com/r/TheScienceOfPE/comments/1hz5gt3/karls_two_girth_routines_a_2025_update/
+
+
+RECOMMENDATIONS FOR GROWTH TRAINING POST
+--------------------------------------------------------------------------------
+
+[Title]
+  • Keep title around 75 characters
+    Reasoning: Matches successful vendor posts
+
+[Body Structure]
+  • Use bullet points to list features/benefits
+    Reasoning: Improves readability and scan-ability
+
+[Body Structure]
+  • Use **bold text** to emphasize key points
+    Reasoning: Helps readers quickly identify important information
+
+[Body Structure]
+  • Structure post with 48 clear sections/paragraphs
+    Reasoning: Matches successful vendor posts
+
+[Engagement]
+  • Respond to ALL comments quickly and professionally
+    Reasoning: Builds trust and shows you care about community feedback
+
+[Engagement]
+  • Ask for feedback explicitly in your post
+    Reasoning: Encourages comments and community participation
+
+[Community Guidelines]
+  • Acknowledge moderator approval from u/karlwikman
+    Reasoning: Shows respect for community rules and transparency
+
+[Community Guidelines]
+  • Focus on how app helps PE journey, not just features
+    Reasoning: Community values practical benefits over technical specs
+
+[Value Proposition]
+  • Offer something free or valuable (trial, guide, etc.)
+    Reasoning: Reduces barrier to entry and builds goodwill
+
+[Transparency]
+  • Be upfront about being the developer
+    Reasoning: Honesty builds trust in this community
+
+[Timing]
+  • Post on weekdays (Tuesday-Thursday) between 9am-2pm EST
+    Reasoning: Higher Reddit activity during these times
+
+
+EXAMPLE POST STRUCTURE
+--------------------------------------------------------------------------------
+
+Title Options:
+  1. [New App] Growth Training - PE Progress Tracking & Routine Management (Free Beta)
+  2. I built Growth Training - A PE App for Tracking Progress & Managing Routines [Mod Approved]
+  3. Introducing Growth Training: Free PE Tracking App for r/TheScienceofPE Community
+
+Body Structure:
+  Introduction: Hey everyone! With mod u/karlwikman's permission, I wanted to share an app I've been building for the PE community...
+
+  ## What is Growth Training?
+  Brief description focusing on benefits, not features
+
+  ## Key Features
+  Bullet point list of main features
+
+  ## Why I Built This
+  Personal story/motivation - connects with community
+
+  ## Community Feedback Wanted
+  Specific questions to encourage engagement
+
+  ## Getting Started
+  Clear call-to-action with links
+
+  Outro: Thanks for reading! Happy to answer any questions.
+
+Tone Guidelines:
+  • Humble and genuine
+  • Focus on community benefit
+  • Ask for feedback
+  • Be responsive in comments
+  • Show you understand PE principles
