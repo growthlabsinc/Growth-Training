@@ -47,7 +47,31 @@ struct SessionLog: Identifiable, Codable, Equatable {
     
     /// Optional exercise variation identifier/name the user performed
     var variation: String?
-    
+
+    // MARK: - Pre/Post Measurements (Story 10.1 - GrowthTrack Integration)
+
+    /// Pre-session measurements (BPEL, BPFSL, MSEG) for yield tracking
+    /// Aligns with GrowthTrack research standards for session measurement tracking
+    var preMeasurements: [MeasurementType: Double]?
+
+    /// Post-session measurements (BPEL, BPFSL, MSEG) for yield tracking
+    /// Aligns with GrowthTrack research standards for session measurement tracking
+    var postMeasurements: [MeasurementType: Double]?
+
+    /// Computed yield percentages showing temporary gains from session
+    /// Formula: ((post - pre) / pre) * 100 for each measurement type
+    /// Returns nil if measurements are missing or pre-value is zero
+    var yieldPercentages: [MeasurementType: Double]? {
+        guard let pre = preMeasurements, let post = postMeasurements else { return nil }
+        var yields: [MeasurementType: Double] = [:]
+        for (type, preValue) in pre {
+            if let postValue = post[type], preValue > 0 {
+                yields[type] = ((postValue - preValue) / preValue) * 100
+            }
+        }
+        return yields.isEmpty ? nil : yields
+    }
+
     // MARK: - Coding Keys
     
     enum CodingKeys: String, CodingKey {
@@ -63,12 +87,15 @@ struct SessionLog: Identifiable, Codable, Equatable {
         case moodAfter
         case intensity
         case variation
+        case preMeasurements
+        case postMeasurements
+        // Note: yieldPercentages is computed and not stored in Firestore
     }
     
     // MARK: - Initializers
     
     /// Standard initializer
-    init(id: String, userId: String, duration: Int, startTime: Date, endTime: Date, userNotes: String? = nil, methodId: String? = nil, sessionIndex: Int? = nil, moodBefore: Mood = .neutral, moodAfter: Mood = .neutral, intensity: Int? = nil, variation: String? = nil) {
+    init(id: String, userId: String, duration: Int, startTime: Date, endTime: Date, userNotes: String? = nil, methodId: String? = nil, sessionIndex: Int? = nil, moodBefore: Mood = .neutral, moodAfter: Mood = .neutral, intensity: Int? = nil, variation: String? = nil, preMeasurements: [MeasurementType: Double]? = nil, postMeasurements: [MeasurementType: Double]? = nil) {
         self.id = id
         self.userId = userId
         self.duration = duration
@@ -81,6 +108,8 @@ struct SessionLog: Identifiable, Codable, Equatable {
         self.moodAfter = moodAfter
         self.intensity = intensity
         self.variation = variation
+        self.preMeasurements = preMeasurements
+        self.postMeasurements = postMeasurements
     }
     
     // MARK: - Firestore Conversion
@@ -112,6 +141,31 @@ struct SessionLog: Identifiable, Codable, Equatable {
         // Enhanced fields
         self.intensity = document.data()["intensity"] as? Int
         self.variation = document.data()["variation"] as? String
+
+        // Pre/Post measurements decoding (Story 10.1)
+        if let preMeasurementsDict = document.data()["preMeasurements"] as? [String: Double] {
+            var convertedPre: [MeasurementType: Double] = [:]
+            for (key, value) in preMeasurementsDict {
+                if let measurementType = MeasurementType(rawValue: key) {
+                    convertedPre[measurementType] = value
+                }
+            }
+            self.preMeasurements = convertedPre.isEmpty ? nil : convertedPre
+        } else {
+            self.preMeasurements = nil
+        }
+
+        if let postMeasurementsDict = document.data()["postMeasurements"] as? [String: Double] {
+            var convertedPost: [MeasurementType: Double] = [:]
+            for (key, value) in postMeasurementsDict {
+                if let measurementType = MeasurementType(rawValue: key) {
+                    convertedPost[measurementType] = value
+                }
+            }
+            self.postMeasurements = convertedPost.isEmpty ? nil : convertedPost
+        } else {
+            self.postMeasurements = nil
+        }
     }
     
     /// Initialize from generic Firestore DocumentSnapshot (can be from getDocument)
@@ -141,6 +195,31 @@ struct SessionLog: Identifiable, Codable, Equatable {
         // Enhanced fields
         self.intensity = data["intensity"] as? Int
         self.variation = data["variation"] as? String
+
+        // Pre/Post measurements decoding (Story 10.1)
+        if let preMeasurementsDict = data["preMeasurements"] as? [String: Double] {
+            var convertedPre: [MeasurementType: Double] = [:]
+            for (key, value) in preMeasurementsDict {
+                if let measurementType = MeasurementType(rawValue: key) {
+                    convertedPre[measurementType] = value
+                }
+            }
+            self.preMeasurements = convertedPre.isEmpty ? nil : convertedPre
+        } else {
+            self.preMeasurements = nil
+        }
+
+        if let postMeasurementsDict = data["postMeasurements"] as? [String: Double] {
+            var convertedPost: [MeasurementType: Double] = [:]
+            for (key, value) in postMeasurementsDict {
+                if let measurementType = MeasurementType(rawValue: key) {
+                    convertedPost[measurementType] = value
+                }
+            }
+            self.postMeasurements = convertedPost.isEmpty ? nil : convertedPost
+        } else {
+            self.postMeasurements = nil
+        }
     }
     
     /// Convert to Firestore data
@@ -173,7 +252,27 @@ struct SessionLog: Identifiable, Codable, Equatable {
         if let variation = variation, !variation.isEmpty {
             data["variation"] = variation
         }
-        
+
+        // Pre/Post measurements encoding (Story 10.1)
+        // Convert enum keys to string keys for Firestore storage
+        if let preMeasurements = preMeasurements {
+            var preMeasurementsDict: [String: Double] = [:]
+            for (type, value) in preMeasurements {
+                preMeasurementsDict[type.rawValue] = value
+            }
+            data["preMeasurements"] = preMeasurementsDict
+        }
+
+        if let postMeasurements = postMeasurements {
+            var postMeasurementsDict: [String: Double] = [:]
+            for (type, value) in postMeasurements {
+                postMeasurementsDict[type.rawValue] = value
+            }
+            data["postMeasurements"] = postMeasurementsDict
+        }
+
+        // Note: yieldPercentages is NOT stored in Firestore (computed client-side only)
+
         return data
     }
     
