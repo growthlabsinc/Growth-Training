@@ -11,6 +11,7 @@ import Foundation
 import SwiftUI
 import FirebaseAuth
 import FirebaseFunctions
+import FirebaseAnalytics
 import Security
 import Combine
 
@@ -808,6 +809,82 @@ extension Notification.Name {
 
 // MARK: - Subscription Tier Extension
 // Trial is handled as a special case, not as a separate SubscriptionTier
+
+// MARK: - Offer Code Support (Story 9.3)
+extension SimplifiedEntitlementManagerWithTrial {
+
+    /// Computed property to retrieve last offer code redemption details
+    var lastOfferCodeRedemption: (offerID: String, timestamp: Date)? {
+        guard let offerID = Self.userDefaults.string(forKey: "com.growthlabs.lastOfferCodeRedeemed"),
+              let timestampDouble = Self.userDefaults.object(forKey: "com.growthlabs.lastOfferCodeTimestamp") as? Double else {
+            return nil
+        }
+        return (offerID, Date(timeIntervalSince1970: timestampDouble))
+    }
+
+    /// Store offer code redemption details in App Group UserDefaults
+    func storeOfferCodeRedemption(offerID: String, timestamp: Date) {
+        Self.userDefaults.set(offerID, forKey: "com.growthlabs.lastOfferCodeRedeemed")
+        Self.userDefaults.set(timestamp.timeIntervalSince1970, forKey: "com.growthlabs.lastOfferCodeTimestamp")
+
+        // Store user ID if authenticated
+        if let userId = Auth.auth().currentUser?.uid {
+            Self.userDefaults.set(userId, forKey: "com.growthlabs.lastOfferCodeUserId")
+        }
+
+        print("💾 Stored offer code redemption: \(offerID) at \(timestamp)")
+    }
+
+    /// Handle offer code transaction from SimplifiedPurchaseManager
+    func handleOfferCodeTransaction(offerID: String, productID: String) async {
+        let timestamp = Date()
+
+        print("✅ Offer code \(offerID) granted premium access")
+
+        // Store offer code redemption locally
+        storeOfferCodeRedemption(offerID: offerID, timestamp: timestamp)
+
+        // Sync to Firebase (offline resilient)
+        await syncOfferCodeToFirebase(offerID: offerID, productID: productID, timestamp: timestamp)
+
+        // Track analytics event
+        trackOfferCodeAttribution(offerID: offerID, productID: productID, timestamp: timestamp)
+    }
+
+    /// Sync offer code redemption to Firebase
+    private func syncOfferCodeToFirebase(offerID: String, productID: String, timestamp: Date) async {
+        guard let userId = Auth.auth().currentUser?.uid else {
+            print("⚠️ Cannot sync offer code - user not authenticated")
+            return
+        }
+
+        let callable = functions.httpsCallable("logOfferCodeRedemption")
+        do {
+            _ = try await callable.call([
+                "offerCodeRef": offerID,
+                "timestamp": timestamp.timeIntervalSince1970,
+                "platform": "iOS",
+                "subscriptionProductId": productID
+            ])
+            print("✅ Offer code synced to Firebase")
+        } catch {
+            print("⚠️ Failed to sync offer code to Firebase: \(error.localizedDescription)")
+            // Don't block user - offline resilience
+        }
+    }
+
+    /// Track offer code attribution analytics event
+    private func trackOfferCodeAttribution(offerID: String, productID: String, timestamp: Date) {
+        Analytics.logEvent("offer_code_attributed_subscription", parameters: [
+            "offer_code_ref": offerID,
+            "user_id": Auth.auth().currentUser?.uid ?? "unknown",
+            "timestamp": timestamp.timeIntervalSince1970,
+            "platform": "iOS",
+            "subscription_product_id": productID
+        ])
+        print("📊 Analytics: offer_code_attributed_subscription - \(offerID)")
+    }
+}
 
 // MARK: - Keychain Helper Methods
 private extension SimplifiedEntitlementManagerWithTrial {

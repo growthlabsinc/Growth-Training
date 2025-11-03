@@ -201,11 +201,36 @@ class SimplifiedPurchaseManager: NSObject, ObservableObject {
     // MARK: - Transaction Listener
     private func observeTransactionUpdates() -> Task<Void, Never> {
         Task(priority: .background) { [unowned self] in
-            for await _ in Transaction.updates {
+            for await verificationResult in Transaction.updates {
                 print("📱 Transaction update received")
+
+                // Check for offer code redemption
+                if case .verified(let transaction) = verificationResult {
+                    if let offerID = transaction.offerID {
+                        print("🎟️ Offer code redemption detected: \(offerID)")
+
+                        // Store offer code info for Firebase sync
+                        await self.handleOfferCodeTransaction(
+                            offerID: offerID,
+                            transaction: transaction
+                        )
+                    }
+                }
+
                 // Update entitlements whenever transactions change
                 await self.updatePurchasedProducts()
             }
+        }
+    }
+
+    // MARK: - Offer Code Handling
+    private func handleOfferCodeTransaction(offerID: String, transaction: Transaction) async {
+        // Delegate to entitlement manager if it's SimplifiedEntitlementManagerWithTrial
+        if let entitlementWithTrial = entitlementManager as? SimplifiedEntitlementManagerWithTrial {
+            await entitlementWithTrial.handleOfferCodeTransaction(
+                offerID: offerID,
+                productID: transaction.productID
+            )
         }
     }
     

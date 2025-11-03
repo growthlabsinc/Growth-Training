@@ -7,6 +7,8 @@
 
 import SwiftUI
 import StoreKit
+import FirebaseAnalytics
+import FirebaseAuth
 
 // Import the models that contain SubscriptionDuration and SubscriptionProductIDs
 // These are defined in the Core/Models directory
@@ -21,6 +23,7 @@ public struct StoreKit2PaywallView: View {
     @State private var errorMessage = ""
     @State private var showingTerms = false
     @State private var showingPrivacy = false
+    @State private var showingOfferCodeRedemption = false
     
     public var body: some View {
         GeometryReader { geometry in
@@ -116,6 +119,25 @@ public struct StoreKit2PaywallView: View {
                             Button("Done") { showingPrivacy = false }
                         }
                     }
+            }
+        }
+        .offerCodeRedemption(isPresented: $showingOfferCodeRedemption) { result in
+            switch result {
+            case .success:
+                Analytics.logEvent("offer_code_redemption_completed", parameters: [
+                    "timestamp": Date().timeIntervalSince1970,
+                    "user_id": Auth.auth().currentUser?.uid ?? "anonymous",
+                    "screen": "subscription_paywall"
+                ])
+                print("✅ Offer code redeemed successfully")
+            case .failure(let error):
+                Analytics.logEvent("offer_code_redemption_failed", parameters: [
+                    "timestamp": Date().timeIntervalSince1970,
+                    "user_id": Auth.auth().currentUser?.uid ?? "anonymous",
+                    "error_description": error.localizedDescription,
+                    "screen": "subscription_paywall"
+                ])
+                print("❌ Offer code redemption failed: \(error.localizedDescription)")
             }
         }
         .task {
@@ -301,7 +323,7 @@ public struct StoreKit2PaywallView: View {
     private var footerSection: some View {
         VStack(spacing: 8) {
             Button(action: {
-                Task { 
+                Task {
                     do {
                         try await purchaseManager.restorePurchases()
                     } catch {
@@ -313,11 +335,11 @@ public struct StoreKit2PaywallView: View {
                     .font(.custom("Inter-Medium", size: 14))
                     .foregroundColor(.white.opacity(0.7))
             }
-            
+
             Text("By continuing, you agree to our")
                 .font(.custom("Inter-Regular", size: 12))
                 .foregroundColor(.white.opacity(0.5))
-            
+
             HStack(spacing: 8) {
                 Button("Terms of Service") { showingTerms = true }
                 Text("•").foregroundColor(.white.opacity(0.5))
@@ -325,6 +347,23 @@ public struct StoreKit2PaywallView: View {
             }
             .font(.custom("Inter-Regular", size: 12))
             .foregroundColor(.blue.opacity(0.9))
+
+            // Offer Code Redemption Button
+            Button(action: {
+                showingOfferCodeRedemption = true
+                Analytics.logEvent("offer_code_redemption_button_tapped", parameters: [
+                    "timestamp": Date().timeIntervalSince1970,
+                    "user_id": Auth.auth().currentUser?.uid ?? "anonymous",
+                    "screen": "subscription_paywall"
+                ])
+            }) {
+                Text("Redeem Offer Code")
+                    .font(.custom("Inter-Regular", size: 13))
+                    .foregroundColor(.white.opacity(0.6))
+            }
+            .padding(.top, 4)
+            .accessibilityLabel("Redeem Offer Code")
+            .accessibilityHint("Tap to enter a promotional code")
         }
     }
     

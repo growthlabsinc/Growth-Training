@@ -5,6 +5,7 @@
 
 const { onDocumentUpdated } = require('firebase-functions/v2/firestore');
 const { onSchedule } = require('firebase-functions/v2/scheduler');
+const { onCall, HttpsError } = require('firebase-functions/v2/https');
 const admin = require('firebase-admin');
 
 /**
@@ -202,3 +203,55 @@ async function enableUserSharedRoutines(userId) {
         console.log(`No disabled routines to re-enable for user ${userId}`);
     }
 }
+
+/**
+ * Log offer code redemption for marketing attribution (Story 9.3)
+ * Tracks which offer codes drive subscriptions for influencer ROI tracking
+ */
+exports.logOfferCodeRedemption = onCall(
+    {
+        region: 'us-central1',
+        maxInstances: 100
+    },
+    async (request) => {
+        // Verify authentication
+        if (!request.auth) {
+            throw new HttpsError('unauthenticated', 'User must be authenticated');
+        }
+
+        const { offerCodeRef, timestamp, platform, subscriptionProductId } = request.data;
+        const userId = request.auth.uid;
+
+        console.log(`📊 Logging offer code redemption: ${offerCodeRef} for user ${userId}`);
+
+        try {
+            const db = admin.firestore();
+
+            // Store in Firestore collection
+            await db.collection('offer_code_redemptions')
+                .doc(userId)
+                .collection('redemptions')
+                .doc(timestamp.toString())
+                .set({
+                    offerCodeRef,
+                    userId,
+                    timestamp,
+                    platform,
+                    subscriptionProductId,
+                    createdAt: admin.firestore.FieldValue.serverTimestamp()
+                });
+
+            console.log(`✅ Offer code redemption logged to Firestore`);
+
+            // Log analytics event (server-side confirmation)
+            // Note: Firebase Admin SDK doesn't have direct analytics logging
+            // This would typically be done via Firebase Analytics REST API or client-side
+            // For now, we rely on client-side analytics tracking
+
+            return { success: true };
+        } catch (error) {
+            console.error(`Error logging offer code redemption: ${error}`);
+            throw new HttpsError('internal', 'Failed to log offer code redemption');
+        }
+    }
+);

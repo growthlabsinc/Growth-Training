@@ -33,6 +33,10 @@ exports.getTrialAnalytics = trialManagement.getTrialAnalytics;
 // exports.handleSubscriptionStatusChange = subscriptionLifecycle.handleSubscriptionStatusChange;
 // exports.dailyRoutineStatusCheck = subscriptionLifecycle.dailyRoutineStatusCheck;
 
+// Offer Code Redemption Tracking (Story 9.3)
+const subscriptionLifecycle = require('./subscriptionLifecycle');
+exports.logOfferCodeRedemption = subscriptionLifecycle.logOfferCodeRedemption;
+
 // AI Coach function - requires authenticated users only
 exports.generateAIResponse = onCall(
   {
