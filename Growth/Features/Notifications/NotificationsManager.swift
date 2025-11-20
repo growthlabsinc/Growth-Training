@@ -74,13 +74,29 @@ class NotificationsManager: NSObject {
     func updateDeviceToken(_ deviceToken: Data) {
         let tokenString = deviceToken.map { String(format: "%02.2hhx", $0) }.joined()
         Logger.debug("Device token: \(tokenString)")
-        
+
         // Store the token in Firebase Messaging
         Messaging.messaging().apnsToken = deviceToken
-        
-        // Also save to Firestore if a user is logged in
+
+        // Get the FCM token for additional tracking
+        let fcmToken = Messaging.messaging().fcmToken
+
+        // Use the new DeviceTokenManager for better token management
         if let currentUser = Auth.auth().currentUser {
-            storeTokenInFirestore(userId: currentUser.uid, token: tokenString)
+            DeviceTokenManager.shared.storeDeviceToken(
+                userId: currentUser.uid,
+                token: tokenString,
+                fcmToken: fcmToken
+            ) { error in
+                if let error = error {
+                    Logger.error("Error storing device token: \(error)")
+                } else {
+                    // Also clean up stale tokens periodically
+                    DeviceTokenManager.shared.cleanupStaleTokens(userId: currentUser.uid) { _ in
+                        // Silent cleanup
+                    }
+                }
+            }
         }
     }
     
@@ -396,10 +412,21 @@ extension NotificationsManager: MessagingDelegate {
     
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
         Logger.debug("Firebase registration token: \(fcmToken ?? "nil")")
-        
-        // Store this token in Firestore
+
+        // Use DeviceTokenManager for FCM token storage with deduplication
         if let token = fcmToken, let userId = Auth.auth().currentUser?.uid {
-            storeTokenInFirestore(userId: userId, token: token)
+            // Get the current APNs token if available
+            let apnsToken = Messaging.messaging().apnsToken?.map { String(format: "%02.2hhx", $0) }.joined() ?? ""
+
+            DeviceTokenManager.shared.storeDeviceToken(
+                userId: userId,
+                token: apnsToken,
+                fcmToken: token
+            ) { error in
+                if let error = error {
+                    Logger.error("Error storing FCM token: \(error)")
+                }
+            }
         }
     }
 } 

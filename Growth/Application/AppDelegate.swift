@@ -98,12 +98,30 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
     // This function is called when a new FCM token is generated
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
         Logger.debug("Firebase registration token: \(String(describing: fcmToken))")
-        
-        // Forward to NotificationsManager
+
+        // Use the improved token management with deduplication
         if let token = fcmToken, let userId = Auth.auth().currentUser?.uid {
-            NotificationsManager.shared.storeTokenInFirestore(userId: userId, token: token)
+            // Get the current APNs token if available
+            let apnsToken = messaging.apnsToken?.map { String(format: "%02.2hhx", $0) }.joined() ?? ""
+
+            DeviceTokenManager.shared.storeDeviceToken(
+                userId: userId,
+                token: apnsToken,
+                fcmToken: token
+            ) { error in
+                if let error = error {
+                    Logger.error("Error storing FCM token: \(error)")
+                } else {
+                    Logger.info("✅ FCM token stored with deduplication")
+
+                    // Periodically clean up stale tokens
+                    DeviceTokenManager.shared.cleanupStaleTokens(userId: userId) { _ in
+                        // Silent cleanup
+                    }
+                }
+            }
         }
-        
+
         // If you want to use the FCM token for custom notifications, you can save it here
         let dataDict: [String: String] = ["token": fcmToken ?? ""]
         NotificationCenter.default.post(
