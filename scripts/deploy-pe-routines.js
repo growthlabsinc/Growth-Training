@@ -145,7 +145,7 @@ const ROUTINE_BEGINNER_BALANCED = {
     createDaySchedule(2, "Rest Day", true, [], "Recovery day. Allow tissues to adapt."),
 
     createDaySchedule(3, "Girth Day", false, [
-      createMethodSchedule("stage1_modified_jelq", 20, 0),
+      createMethodSchedule("stage1_manual_clamping", 15, 0),
       createMethodSchedule("stage1_milking_eq", 10, 1)
     ], "Girth-focused session. Monitor EQ and adjust intensity as needed."),
 
@@ -153,7 +153,7 @@ const ROUTINE_BEGINNER_BALANCED = {
 
     createDaySchedule(5, "Combined Session", false, [
       createMethodSchedule("stage1_basic_manual_stretch", 15, 0),
-      createMethodSchedule("stage1_modified_jelq", 15, 1),
+      createMethodSchedule("stage1_manual_clamping", 15, 1),
       createMethodSchedule("stage1_timed_squash", 10, 2)
     ], "Light combined work. Keep intensity moderate - this is conditioning."),
 
@@ -187,9 +187,9 @@ const ROUTINE_INTERMEDIATE_SHOCK_LOADING = {
   stages: [1, 2],
   schedule: [
     createDaySchedule(1, "Heavy Shock Loading", false, [
-      createMethodSchedule("stage1_modified_jelq", 10, 0),
+      createMethodSchedule("stage1_manual_clamping", 10, 0),
       createMethodSchedule("stage2_shock_loading", 30, 1)
-    ], "Brief girth work followed by length protocol. This is an intense session."),
+    ], "Brief manual clamping followed by length protocol. This is an intense session."),
 
     createDaySchedule(2, "Active Recovery", false, [
       createMethodSchedule("stage1_basic_manual_stretch", 15, 0),
@@ -206,9 +206,9 @@ const ROUTINE_INTERMEDIATE_SHOCK_LOADING = {
     ], "Gentle stretching only. Check EQ and recovery status."),
 
     createDaySchedule(5, "Heavy Shock Loading", false, [
-      createMethodSchedule("stage1_modified_jelq", 10, 0),
+      createMethodSchedule("stage1_manual_clamping", 10, 0),
       createMethodSchedule("stage2_shopping_bag_hanger", 30, 1)
-    ], "Jelq shock before hanging. Use appropriate weight for experience level."),
+    ], "Manual clamping shock before hanging. Use appropriate weight for experience level."),
 
     createDaySchedule(6, "Active Recovery", false, [
       createMethodSchedule("stage1_heat_application", 10, 0),
@@ -303,7 +303,7 @@ const ROUTINE_ADVANCED_RIP = {
       createMethodSchedule("stage1_heat_application", 10, 0),
       createMethodSchedule("stage3_rapid_interval_pumping", 30, 1),
       createMethodSchedule("stage1_timed_squash", 10, 2)
-    ], "RIP session with squash jelq for EQ maintenance. Watch for dark spots."),
+    ], "RIP session with timed squash for EQ maintenance. Watch for dark spots."),
 
     createDaySchedule(4, "Active Recovery", false, [
       createMethodSchedule("stage1_milking_eq", 15, 0)

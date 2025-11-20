@@ -110,48 +110,95 @@ IMPORTANT: Never grip directly on the glans. Always use an OK-grip behind the co
     updatedAt: admin.firestore.FieldValue.serverTimestamp()
   },
   {
-    id: "stage1_modified_jelq",
+    id: "stage1_manual_clamping",
     stage: 1,
     classification: "Beginner",
-    title: "Modified Jelq",
-    description: "Girth-focused exercise using rhythmic compression to promote tissue expansion and blood flow",
-    instructionsText: `1. Achieve 60-80% erection level (NOT fully erect)
-2. Apply generous water-based lubricant
-3. Form OK-grip at base with one hand
-4. Slowly slide grip from base to glans over 2-3 seconds
-5. Just before reaching glans, start new stroke with other hand
-6. Alternate hands, maintaining consistent rhythm
-7. Perform 200-300 strokes per session
-8. Increase count gradually over weeks
+    title: "Manual Clamping",
+    description: "Girth-focused exercise using manual pressure to temporarily restrict blood flow and promote expansion",
+    instructionsText: `1. Achieve 70-90% erection level
+2. Form OK-grip at the base with one hand
+3. Apply moderate pressure to restrict outflow (NOT completely cut off)
+4. Hold for 30-60 seconds while maintaining grip pressure
+5. Release completely and massage for 30 seconds
+6. Repeat for 5-10 cycles per session
+7. Focus on consistent pressure, not maximum force
+8. Total session: 10-15 minutes including rest periods
 
-CRITICAL: Never perform on 100% erection - this can cause injury.`,
+CRITICAL: This is manual clamping - use your hand, not a device. Never hold longer than 60 seconds.`,
     categories: ["girth", "conditioning"],
-    equipmentNeeded: ["lube"],
-    estimatedDurationMinutes: 20,
+    equipmentNeeded: [],
+    estimatedDurationMinutes: 15,
     safetyNotes: createSafetyNotes(
       [
         "Blood clotting disorders or taking blood thinners",
         "Cardiovascular disease or high blood pressure",
-        "Skin conditions or allergies to lubricants",
-        "Active infection or inflammation"
+        "History of priapism or blood vessel issues",
+        "Active infection or inflammation",
+        "Diabetes or circulatory problems"
       ],
       [
-        "NEVER perform on 100% erection - stay at 60-80% maximum",
-        "Use generous water-based lubricant to prevent friction",
-        "Start with 100-150 strokes and increase gradually",
-        "Maintain moderate grip pressure - not too tight",
-        "Take rest days between sessions for tissue recovery",
-        "Stop if you see dark spots or bruising"
+        "NEVER hold for more than 60 seconds at a time",
+        "Use moderate pressure - not maximum force",
+        "Release immediately if you feel pain or see dark discoloration",
+        "Take adequate rest between holds for blood flow recovery",
+        "Stop if you see purple/black spots (burst capillaries)",
+        "This is manual clamping with your hand - no devices needed"
       ]
     ),
     isFeatured: true,
     benefits: [
-      "Promotes girth expansion through controlled blood flow",
-      "Improves tissue conditioning and resilience",
-      "Enhances vascular health and circulation",
-      "Can improve erection quality when done correctly"
+      "Promotes girth expansion through controlled blood restriction",
+      "Builds vascular capacity over time",
+      "Can enhance erection hardness when done correctly",
+      "Lower risk than device clamping when done properly"
     ],
-    relatedMethods: ["stage1_milking_eq", "stage2_static_pumping"],
+    relatedMethods: ["stage1_milking_eq", "stage2_static_pumping", "stage3_soft_clamping"],
+    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    updatedAt: admin.firestore.FieldValue.serverTimestamp()
+  },
+  {
+    id: "stage2_manual_clamping_intermediate",
+    stage: 2,
+    classification: "Intermediate",
+    title: "Intermediate Manual Clamping",
+    description: "Enhanced manual clamping technique with longer holds for experienced practitioners",
+    instructionsText: `1. Warm up with 5 minutes of heat application
+2. Achieve 80-90% erection level
+3. Form tight OK-grip at the base
+4. Apply firm pressure to restrict blood flow (not painful)
+5. Hold for 2-3 minutes maximum
+6. Release completely and massage thoroughly for 1 minute
+7. Repeat for 3-4 cycles maximum
+8. Total session: 15-20 minutes
+
+TECHNIQUE: Longer holds than beginner protocol. Requires good body awareness and experience.`,
+    categories: ["girth"],
+    equipmentNeeded: [],
+    estimatedDurationMinutes: 20,
+    safetyNotes: createSafetyNotes(
+      [
+        "All contraindications from beginner manual clamping",
+        "Beginners - use basic manual clamping first",
+        "Recent cardiovascular issues",
+        "Severe erectile dysfunction"
+      ],
+      [
+        "This is INTERMEDIATE technique - requires manual clamping experience",
+        "NEVER exceed 3 minutes per hold",
+        "Watch for any purple/black discoloration",
+        "Release immediately if numbness occurs",
+        "Limit to 2-3 sessions per week maximum",
+        "Have several weeks of basic manual clamping experience first"
+      ]
+    ),
+    isFeatured: false,
+    benefits: [
+      "More aggressive expansion than basic manual clamping",
+      "Builds significant vascular capacity",
+      "Time-efficient for intermediate users",
+      "Good preparation for device clamping if desired"
+    ],
+    relatedMethods: ["stage1_manual_clamping", "stage3_soft_clamping"],
     createdAt: admin.firestore.FieldValue.serverTimestamp(),
     updatedAt: admin.firestore.FieldValue.serverTimestamp()
   },
@@ -294,7 +341,7 @@ PURPOSE: This is about circulation and blood flow, not tissue expansion. Keep pr
       "Good for rest days or as warm-up/cooldown",
       "Promotes tissue health without stress"
     ],
-    relatedMethods: ["stage1_heat_application", "stage1_modified_jelq"],
+    relatedMethods: ["stage1_heat_application", "stage1_manual_clamping"],
     createdAt: admin.firestore.FieldValue.serverTimestamp(),
     updatedAt: admin.firestore.FieldValue.serverTimestamp()
   }
@@ -713,7 +760,7 @@ const ADVANCED_METHODS = [
     description: "Pre-fatigue technique using brief girth work before length exercises to enhance results",
     instructionsText: `1. Warm up with 5 minutes of heat
 2. PHASE 1 - Girth Pre-Fatigue (5 minutes):
-   - Perform 50-100 light jelqs OR
+   - Perform 3-5 sets of manual clamping (30 seconds each) OR
    - 5 minutes of light pumping (3-5 inHg)
 3. Rest for 2-3 minutes with massage
 4. PHASE 2 - Length Work (20-25 minutes):
@@ -748,7 +795,7 @@ THEORY: Brief girth work creates temporary expansion that may enhance length exe
       "Addresses multiple goals in one session",
       "Used successfully by intermediate/advanced practitioners"
     ],
-    relatedMethods: ["stage1_modified_jelq", "stage2_static_pumping"],
+    relatedMethods: ["stage1_manual_clamping", "stage2_static_pumping"],
     createdAt: admin.firestore.FieldValue.serverTimestamp(),
     updatedAt: admin.firestore.FieldValue.serverTimestamp()
   },
