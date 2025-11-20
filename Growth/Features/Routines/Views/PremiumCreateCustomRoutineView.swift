@@ -43,7 +43,7 @@ struct PremiumCreateCustomRoutineView: View {
             case .naming: return "Name Your Journey"
             case .difficulty: return "Choose Your Level"
             case .duration: return "Set Your Timeline"
-            case .methods: return "Select Methods"
+            case .methods: return "Select Exercises"
             case .schedule: return "Customize Schedule"
             case .review: return "Review & Create"
             }
@@ -1229,7 +1229,7 @@ struct PremiumMethodSelectionView: View {
     var body: some View {
         VStack(spacing: 24) {
             VStack(spacing: 8) {
-                Text("Choose your methods")
+                Text("Choose your exercises")
                     .font(AppTheme.Typography.title3Font())
                     .foregroundColor(AppTheme.Colors.text)
                     .multilineTextAlignment(.center)
@@ -1874,7 +1874,7 @@ struct ScheduleCustomizationView: View {
                     .font(AppTheme.Typography.title2Font())
                     .foregroundColor(AppTheme.Colors.text)
                 
-                Text("Adjust methods and duration for each day")
+                Text("Adjust exercises and duration for each day")
                     .font(AppTheme.Typography.bodyFont())
                     .foregroundColor(AppTheme.Colors.text.opacity(0.7))
                     .multilineTextAlignment(.center)
@@ -1969,7 +1969,7 @@ struct DayScheduleEditCard: View {
                             HStack(spacing: 4) {
                                 Image(systemName: "list.bullet")
                                     .font(AppTheme.Typography.captionFont())
-                                Text("\(daySchedule.methods.count) methods")
+                                Text("\(daySchedule.methods.count) exercises")
                                     .font(AppTheme.Typography.captionFont())
                             }
                             .foregroundColor(Color("GrowthGreen"))
@@ -1986,7 +1986,7 @@ struct DayScheduleEditCard: View {
                             .foregroundColor(AppTheme.Colors.textSecondary)
                         }
                     } else {
-                        Text("Tap to add methods")
+                        Text("Tap to add exercises")
                             .font(AppTheme.Typography.captionFont())
                             .foregroundColor(AppTheme.Colors.textSecondary)
                             .italic()
@@ -2055,7 +2055,7 @@ struct ReviewStepView: View {
                 
                 SummaryCard(title: "Scheduling", value: schedulingType.displayName, icon: schedulingType == .sequential ? "arrow.right.circle" : "calendar.circle")
                 
-                SummaryCard(title: "Methods", value: "\(methods.count) selected", icon: "list.bullet")
+                SummaryCard(title: "Exercises", value: "\(methods.count) selected", icon: "list.bullet")
                 
                 // Schedule summary
                 if !daySchedules.isEmpty {
@@ -2144,7 +2144,7 @@ struct ReviewStepView: View {
             // Methods preview
             if !methods.isEmpty {
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Selected Methods")
+                    Text("Selected Exercises")
                         .font(AppTheme.Typography.captionFont())
                         .foregroundColor(AppTheme.Colors.text.opacity(0.7))
                     
@@ -2276,7 +2276,7 @@ extension RoutineDifficulty {
     var description: String {
         switch self {
         case .beginner: return "New to growth training"
-        case .intermediate: return "Some experience with methods"
+        case .intermediate: return "Some experience with exercises"
         case .advanced: return "Experienced practitioner"
         }
     }
@@ -2310,7 +2310,7 @@ class MethodsLoader: ObservableObject {
                     case .success(let methods):
                         self.methods = methods.sorted { $0.stage < $1.stage }
                     case .failure(let error):
-                        Logger.error("Error loading methods: \(error)")
+                        Logger.error("Error loading exercises: \(error)")
                         self.methods = []
                     }
                 }

@@ -463,7 +463,7 @@ struct CreateCustomRoutineView: View {
                 } label: {
                     HStack(spacing: 4) {
                         Image(systemName: "plus.circle.fill")
-                        Text("Manage Methods")
+                        Text("Manage Exercises")
                     }
                     .font(AppTheme.Typography.captionFont())
                     .foregroundColor(Color("GrowthGreen"))
@@ -608,9 +608,9 @@ struct CreateCustomRoutineView: View {
         let dayCount = daySchedules.count
         
         if selectedSchedulingType == .weekday {
-            return "Weekly routine with \(methodCount) methods across \(dayCount) weekdays"
+            return "Weekly routine with \(methodCount) exercises across \(dayCount) weekdays"
         } else {
-            return "\(dayCount)-day sequential routine with \(methodCount) methods"
+            return "\(dayCount)-day sequential routine with \(methodCount) exercises"
         }
     }
     
@@ -867,7 +867,7 @@ struct EmptyMethodsCard: View {
                     .font(.system(size: 40))
                     .foregroundColor(Color("GrowthGreen"))
                 
-                Text("Add methods to your routine")
+                Text("Add exercises to your routine")
                     .font(AppTheme.Typography.bodyFont())
                     .foregroundColor(AppTheme.Colors.textSecondary)
             }
@@ -965,7 +965,7 @@ struct DayScheduleCard: View {
                             HStack(spacing: 4) {
                                 Image(systemName: "list.bullet")
                                     .font(AppTheme.Typography.captionFont())
-                                Text("\(daySchedule.methods.count) methods")
+                                Text("\(daySchedule.methods.count) exercises")
                                     .font(AppTheme.Typography.captionFont())
                             }
                             .foregroundColor(Color("GrowthGreen"))
@@ -990,7 +990,7 @@ struct DayScheduleCard: View {
                         }
                         .foregroundColor(Color.purple)
                     } else {
-                        Text("Tap to add methods")
+                        Text("Tap to add exercises")
                             .font(AppTheme.Typography.captionFont())
                             .foregroundColor(AppTheme.Colors.textSecondary)
                             .italic()
@@ -1074,7 +1074,7 @@ struct LegacyMethodSelectionView: View {
                     .listStyle(PlainListStyle())
                 }
             }
-            .navigationTitle("Select Methods")
+            .navigationTitle("Select Exercises")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
@@ -1189,17 +1189,17 @@ struct EditDayScheduleView: View {
                 }
                 
                 if !isRestDay {
-                    Section("Methods for this Day") {
+                    Section("Exercises for this Day") {
                         if availableMethods.isEmpty {
                             // No methods have been selected for the routine yet
                             VStack(spacing: 12) {
                                 Image(systemName: "exclamationmark.circle")
                                     .font(.system(size: 40))
                                     .foregroundColor(.orange)
-                                Text("No methods available")
+                                Text("No exercises available")
                                     .font(AppTheme.Typography.bodyFont())
                                     .foregroundColor(AppTheme.Colors.text)
-                                Text("Please go back and select methods for your routine first using the 'Manage Methods' button")
+                                Text("Please go back and select exercises for your routine first using the 'Manage Exercises' button")
                                     .font(AppTheme.Typography.captionFont())
                                     .foregroundColor(AppTheme.Colors.textSecondary)
                                     .multilineTextAlignment(.center)
@@ -1232,7 +1232,7 @@ struct EditDayScheduleView: View {
                                 HStack {
                                     Image(systemName: "plus.circle.fill")
                                         .foregroundColor(Color("GrowthGreen"))
-                                    Text("Add methods to this day")
+                                    Text("Add exercises to this day")
                                         .foregroundColor(AppTheme.Colors.textSecondary)
                                 }
                             }
@@ -1301,7 +1301,7 @@ struct EditDayScheduleView: View {
                                 HStack {
                                     Image(systemName: "plus.circle.fill")
                                         .foregroundColor(Color("GrowthGreen"))
-                                    Text("Add another method")
+                                    Text("Add another exercise")
                                 }
                             }
                         }
