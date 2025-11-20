@@ -8,6 +8,7 @@
 import Foundation
 import Combine
 import FirebaseAuth
+import os
 
 @MainActor
 class SessionCompletionViewModel: ObservableObject {
@@ -19,7 +20,14 @@ class SessionCompletionViewModel: ObservableObject {
     @Published var notes: String = ""
     @Published var isSaving: Bool = false
     @Published var saveComplete: Bool = false
-    
+
+    // Story 8.4 & 10.2: Pre-session capture
+    @Published var preMood: Mood?
+    @Published var preMeasurements: [MeasurementType: Double]?
+
+    // Post-session measurements for yield tracking
+    @Published var postMeasurements: [MeasurementType: Double]?
+
     // Store the actual elapsed time in seconds for the completion view
     private var actualElapsedTimeInSeconds: TimeInterval = 0
     
@@ -84,23 +92,46 @@ class SessionCompletionViewModel: ObservableObject {
         // Store session metadata for later use
         // This method is called when a session starts to prepare for completion
     }
-    
+
+    // MARK: - Story 8.4 & 10.2: Pre-session Capture
+
+    func setPreSessionMood(_ mood: Mood?) {
+        preMood = mood
+    }
+
+    func setPreSessionMeasurements(_ measurements: [MeasurementType: Double]?) {
+        preMeasurements = measurements
+    }
+
+    func setPostSessionMeasurements(_ measurements: [MeasurementType: Double]?) {
+        postMeasurements = measurements
+    }
+
     func completeSession(
         methodId: String?,
         duration: TimeInterval,
         startTime: Date,
         variation: String? = nil,
-        stage: Int? = nil
+        stage: Int? = nil,
+        preMeasurements: [MeasurementType: Double]? = nil  // Story 10.2
     ) {
+        Logger.debug("📊 SessionCompletionViewModel.completeSession called")
+        Logger.debug("  - methodId: \(methodId ?? "nil")")
+        Logger.debug("  - duration: \(duration)")
+        Logger.debug("  - showCompletionPrompt before: \(showCompletionPrompt)")
+
         guard let userId = Auth.auth().currentUser?.uid else {
             errorMessage = "User not authenticated"
+            Logger.error("❌ Error: User not authenticated")
             return
         }
-        
+
         // Store the actual elapsed time in seconds
         self.actualElapsedTimeInSeconds = duration
-        
+
         // Create session log
+        // Use parameter preMeasurements if provided, otherwise use stored self.preMeasurements
+        let measurementsToUse = preMeasurements ?? self.preMeasurements
         let log = SessionLog(
             id: UUID().uuidString,
             userId: userId,
@@ -110,84 +141,122 @@ class SessionCompletionViewModel: ObservableObject {
             userNotes: notes.isEmpty ? nil : notes,
             methodId: methodId,
             intensity: perceivedDifficulty,
-            variation: variation
+            variation: variation,
+            preMeasurements: measurementsToUse,  // Story 10.2
+            postMeasurements: self.postMeasurements  // Include post-session measurements
         )
-        
+
         self.sessionLog = log
         showCompletionPrompt = true
+        Logger.debug("  - showCompletionPrompt after: \(showCompletionPrompt)")
+        Logger.debug("  - sessionLog created: \(log.id)")
     }
     
     func saveSession() {
-        guard let sessionLog = sessionLog else { return }
-        
+        guard var sessionLog = sessionLog else {
+            Logger.warning("⚠️ saveSession - no sessionLog, returning")
+            return
+        }
+
+        // Update sessionLog with latest postMeasurements if available
+        if let postMeasurements = self.postMeasurements {
+            sessionLog.postMeasurements = postMeasurements
+        }
+
+        Logger.debug("💾 saveSession called")
+        Logger.debug("  - sessionLog id: \(sessionLog.id)")
+        Logger.debug("  - preMeasurements: \(String(describing: sessionLog.preMeasurements))")
+        Logger.debug("  - postMeasurements: \(String(describing: sessionLog.postMeasurements))")
+        Logger.debug("  - showCompletionPrompt before save: \(showCompletionPrompt)")
+
         isSaving = true
         errorMessage = nil
-        
+
         // Save session log
         sessionService.saveSessionLog(sessionLog) { [weak self] error in
+            Logger.debug("💾 saveSessionLog callback")
+
             if let error = error {
+                Logger.error("❌ Error saving session: \(error.localizedDescription)")
                 self?.errorMessage = error.localizedDescription
                 self?.isSaving = false
                 return
             }
-            
+
+            Logger.debug("✅ Session saved successfully")
+
             // Post session logged notification
             // Include sessionType to differentiate between routine and quick practice sessions
             var notificationInfo: [String: Any] = [:]
-            
+
             // Determine session type based on whether methodId exists
             // Sessions with methodId are routine sessions, without are quick practice
             let sessionType: SessionType = sessionLog.methodId != nil ? .multiMethod : .quickPractice
             notificationInfo["sessionType"] = sessionType.rawValue
-            
-            
+
+
             // Post notification on main thread for immediate UI updates
             DispatchQueue.main.async {
                 NotificationCenter.default.post(
-                    name: .sessionLogged, 
+                    name: .sessionLogged,
                     object: sessionLog,
                     userInfo: notificationInfo
                 )
             }
-            
+
             // Update routine progress if this was a routine method
             if let methodId = sessionLog.methodId,
                let userId = Auth.auth().currentUser?.uid {
                 self?.updateRoutineProgressIfNeeded(userId: userId, methodId: methodId)
             }
-            
+
             // Update progression if method ID exists
             if let methodId = sessionLog.methodId {
+                Logger.debug("🔄 Updating progression for methodId: \(methodId)")
                 self?.updateProgression(methodId: methodId, sessionLog: sessionLog)
             } else {
+                Logger.debug("ℹ️ No methodId, marking save complete")
                 self?.isSaving = false
                 self?.saveComplete = true
-                self?.showCompletionPrompt = false
+                // REMOVED: Don't dismiss the completion prompt here
+                // self?.showCompletionPrompt = false
+                Logger.debug("📋 showCompletionPrompt NOT changed (keeping sheet visible)")
             }
         }
     }
     
     private func updateProgression(methodId: String, sessionLog: SessionLog) {
-        guard Auth.auth().currentUser?.uid != nil else { return }
-        
+        guard Auth.auth().currentUser?.uid != nil else {
+            Logger.warning("⚠️ updateProgression - no authenticated user")
+            return
+        }
+
+        Logger.debug("🔄 updateProgression called for methodId: \(methodId)")
+
         // First fetch the growth method
         TrainingProtocolService.shared.fetchMethod(withId: methodId) { [weak self] result in
             switch result {
             case .success(let method):
+                Logger.debug("✅ Method fetched successfully: \(method.title)")
                 // Get current progression snapshot
                 self?.progressionService.evaluateReadiness(for: method) { snapshot in
                     // Progress the user based on session completion
                     self?.progressionService.progressUser(for: method, latestSnapshot: snapshot) { success, error in
                         self?.isSaving = false
                         if success {
+                            Logger.debug("✅ Progression updated successfully")
                             self?.saveComplete = true
-                            self?.showCompletionPrompt = false
+                            // REMOVED: Don't dismiss the completion prompt here
+                            // self?.showCompletionPrompt = false
+                            Logger.debug("📋 showCompletionPrompt NOT changed (keeping sheet visible)")
                         } else {
+                            Logger.error("❌ Failed to update progression: \(error?.localizedDescription ?? "Unknown error")")
                             self?.errorMessage = error?.localizedDescription ?? "Failed to update progression"
                         }
                     }
                 }
             case .failure(let error):
+                Logger.error("❌ Failed to fetch method: \(error.localizedDescription)")
                 self?.isSaving = false
                 self?.errorMessage = error.localizedDescription
             }

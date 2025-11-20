@@ -13,7 +13,8 @@ struct SessionCompletionPromptView: View {
     let onLog: () -> Void
     let onDismiss: () -> Void
     let onPartialLog: (() -> Void)?
-    
+    var sessionCompletionViewModel: SessionCompletionViewModel? = nil
+
     @Environment(\.dismiss) private var dismiss
     @State private var showGainsInput = false
     
@@ -75,119 +76,134 @@ struct SessionCompletionPromptView: View {
     
     // MARK: - Body
     var body: some View {
-        VStack(spacing: AppTheme.Layout.spacingL) {
-            // Header Icon
-            Image(systemName: iconName)
-                .font(.system(size: 60))
-                .foregroundColor(iconColor)
-                .padding(.top, AppTheme.Layout.spacingXL)
-            
-            // Summary Text
-            Text(sessionProgress.generateSummary())
-                .font(AppTheme.Typography.gravityBoldFont(18))
-                .foregroundColor(AppTheme.Colors.text)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, AppTheme.Layout.spacingL)
-            
-            // Detailed Summary (if applicable)
-            if sessionProgress.sessionType == .multiMethod && !sessionProgress.methodDetails.isEmpty {
-                methodDetailsList
+        ScrollView {
+            VStack(spacing: AppTheme.Layout.spacingL) {
+                // Header Icon
+                Image(systemName: iconName)
+                    .font(.system(size: 60))
+                    .foregroundColor(iconColor)
+                    .padding(.top, AppTheme.Layout.spacingXL)
+
+                // Summary Text
+                Text(sessionProgress.generateSummary())
+                    .font(AppTheme.Typography.gravityBoldFont(18))
+                    .foregroundColor(AppTheme.Colors.text)
+                    .multilineTextAlignment(.center)
                     .padding(.horizontal, AppTheme.Layout.spacingL)
-            }
-            
-            // Time Summary
-            if sessionProgress.totalElapsedTime > 0 && sessionProgress.sessionType != .restDay {
-                timeSummary
-            }
-            
-            Spacer()
-            
-            // Gains Tracking Card (for non-rest day sessions)
-            if sessionProgress.sessionType != .restDay && !showGainsInput {
-                Button(action: {
-                    showGainsInput = true
-                }) {
-                    HStack {
-                        Image(systemName: "ruler")
-                            .font(.system(size: 20))
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Track Your Measurements")
-                                .font(AppTheme.Typography.gravitySemibold(14))
-                            Text("Record measurements after your session")
-                                .font(AppTheme.Typography.gravityBook(11))
-                                .foregroundColor(Color("TextSecondaryColor"))
+
+                // Detailed Summary (if applicable)
+                if sessionProgress.sessionType == .multiMethod && !sessionProgress.methodDetails.isEmpty {
+                    methodDetailsList
+                        .padding(.horizontal, AppTheme.Layout.spacingL)
+                }
+
+                // Time Summary
+                if sessionProgress.totalElapsedTime > 0 && sessionProgress.sessionType != .restDay {
+                    timeSummary
+                }
+
+                // Post-Session Measurements (for non-rest day sessions)
+                if sessionProgress.sessionType != .restDay, let viewModel = sessionCompletionViewModel {
+                    PostSessionMeasurementView(viewModel: viewModel)
+                        .padding(.horizontal, AppTheme.Layout.spacingL)
+                        .padding(.top, AppTheme.Layout.spacingM)
+                } else if sessionProgress.sessionType != .restDay && sessionCompletionViewModel == nil {
+                    // Fallback to gains card if no session completion view model
+                    if !showGainsInput {
+                        Button(action: {
+                            withAnimation {
+                                showGainsInput = true
+                            }
+                        }) {
+                            HStack {
+                                Image(systemName: "ruler")
+                                    .font(.system(size: 20))
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("Track Your Measurements")
+                                        .font(AppTheme.Typography.gravitySemibold(14))
+                                    Text("Record measurements after your session")
+                                        .font(AppTheme.Typography.gravityBook(11))
+                                        .foregroundColor(Color("TextSecondaryColor"))
+                                }
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .font(.system(size: 14))
+                            }
+                            .padding()
+                            .background(Color("MintGreen").opacity(0.1))
+                            .cornerRadius(12)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .stroke(Color("MintGreen"), lineWidth: 1)
+                            )
                         }
-                        Spacer()
-                        Image(systemName: "chevron.right")
-                            .font(.system(size: 14))
+                        .padding(.horizontal, AppTheme.Layout.spacingL)
+                        .padding(.top, AppTheme.Layout.spacingM)
                     }
-                    .padding()
-                    .background(Color("MintGreen").opacity(0.1))
-                    .cornerRadius(12)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12)
-                            .stroke(Color("MintGreen"), lineWidth: 1)
-                    )
+
+                    // Show gains input card if requested (fallback)
+                    if showGainsInput {
+                        EnhancedGainsInputCard(sessionId: sessionProgress.sessionId) { _ in
+                            withAnimation {
+                                showGainsInput = false
+                            }
+                        }
+                        .padding(.horizontal, AppTheme.Layout.spacingL)
+                        .transition(.opacity.combined(with: .move(edge: .bottom)))
+                    }
                 }
-                .padding(.horizontal, AppTheme.Layout.spacingL)
-            }
-            
-            // Show gains input card if requested
-            if showGainsInput {
-                EnhancedGainsInputCard(sessionId: sessionProgress.sessionId) { _ in
-                    showGainsInput = false
-                }
-                .padding(.horizontal, AppTheme.Layout.spacingL)
-            }
-            
-            // Action Buttons
-            VStack(spacing: AppTheme.Layout.spacingM) {
-                // Primary Action
-                Button(action: {
-                    onLog()
-                    dismiss()
-                }) {
-                    Text(primaryButtonTitle)
-                        .font(AppTheme.Typography.gravityBoldFont(16))
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, AppTheme.Layout.spacingM)
-                        .background(AppTheme.Colors.primary)
-                        .cornerRadius(AppTheme.Layout.cornerRadiusL)
-                }
-                
-                // Partial Log Option
-                if showPartialOption, let onPartialLog = onPartialLog {
+
+                // Action Buttons
+                VStack(spacing: AppTheme.Layout.spacingM) {
+                    // Primary Action
                     Button(action: {
-                        onPartialLog()
+                        onLog()
                         dismiss()
                     }) {
-                        Text("Log Partial Progress")
-                            .font(AppTheme.Typography.gravityBook(16))
-                            .foregroundColor(AppTheme.Colors.primary)
+                        Text(primaryButtonTitle)
+                            .font(AppTheme.Typography.gravityBoldFont(16))
+                            .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, AppTheme.Layout.spacingM)
-                            .background(AppTheme.Colors.primary.opacity(0.1))
+                            .background(AppTheme.Colors.primary)
                             .cornerRadius(AppTheme.Layout.cornerRadiusL)
                     }
-                }
-                
-                // Dismiss Option
-                if sessionProgress.sessionType != .restDay {
-                    Button(action: {
-                        onDismiss()
-                        dismiss()
-                    }) {
-                        Text("Exit Without Logging")
-                            .font(AppTheme.Typography.gravityBook(14))
-                            .foregroundColor(AppTheme.Colors.textSecondary)
+
+                    // Partial Log Option
+                    if showPartialOption, let onPartialLog = onPartialLog {
+                        Button(action: {
+                            onPartialLog()
+                            dismiss()
+                        }) {
+                            Text("Log Partial Progress")
+                                .font(AppTheme.Typography.gravityBook(16))
+                                .foregroundColor(AppTheme.Colors.primary)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, AppTheme.Layout.spacingM)
+                                .background(AppTheme.Colors.primary.opacity(0.1))
+                                .cornerRadius(AppTheme.Layout.cornerRadiusL)
+                        }
+                    }
+
+                    // Dismiss Option
+                    if sessionProgress.sessionType != .restDay {
+                        Button(action: {
+                            onDismiss()
+                            dismiss()
+                        }) {
+                            Text("Exit Without Logging")
+                                .font(AppTheme.Typography.gravityBook(14))
+                                .foregroundColor(AppTheme.Colors.textSecondary)
+                        }
                     }
                 }
+                .padding(.horizontal, AppTheme.Layout.spacingL)
+                .padding(.top, AppTheme.Layout.spacingM)
+                .padding(.bottom, AppTheme.Layout.spacingXL)
             }
-            .padding(.horizontal, AppTheme.Layout.spacingL)
-            .padding(.bottom, AppTheme.Layout.spacingXL)
         }
         .background(AppTheme.Colors.background)
+        .scrollDismissesKeyboard(.interactively)
     }
     
     // MARK: - Subviews

@@ -106,7 +106,8 @@ struct TimerView: View {
                         NotificationCenter.default.post(name: .sessionDismissedWithoutLogging, object: nil)
                         dismiss()
                     },
-                    onPartialLog: nil
+                    onPartialLog: nil,
+                    sessionCompletionViewModel: completionViewModel
                 )
                 // Make the sheet persistent when triggered from Live Activity
                 .interactiveDismissDisabled(viewModel.wasStoppedFromLiveActivity)
@@ -121,13 +122,22 @@ struct TimerView: View {
                               preMoodBefore: viewModel.moodBefore)
             }
         }
-        // Story 8.4: Pre-Session Mood Check-in
-        .sheet(isPresented: $viewModel.showPreSessionMoodSheet) {
-            MoodCheckInView(onSelect: { mood in
-                viewModel.setPreSessionMood(mood)
-            }, onSkip: {
-                viewModel.setPreSessionMood(nil)
-            })
+        // Story 10.2: Pre-Session Measurement Capture
+        .sheet(isPresented: $viewModel.showPreSessionMeasurementSheet, onDismiss: {
+            // After measurement sheet dismisses, start the timer
+            if let pending = viewModel.pendingTimerStart {
+                viewModel.actuallyStartTimer(
+                    trainingProtocol: pending.protocol,
+                    duration: pending.duration
+                )
+            }
+        }) {
+            PreSessionMeasurementInputView(preMeasurements: Binding(
+                get: { viewModel.preMeasurements },
+                set: { measurements in
+                    viewModel.setPreSessionMeasurements(measurements)
+                }
+            ))
         }
     }
 }
@@ -394,7 +404,8 @@ struct TimerViewContent: View {
                     methodId: method.id,
                     duration: viewModel.lastCapturedElapsedTime,
                     startTime: viewModel.lastCapturedStartTime,
-                    variation: method.title
+                    variation: method.title,
+                    preMeasurements: viewModel.preMeasurements  // Story 10.2
                 )
             }
         }
@@ -477,7 +488,8 @@ struct TimerViewContent: View {
                         methodId: method.id,
                         duration: capturedElapsedTime,
                         startTime: Date().addingTimeInterval(-capturedElapsedTime),
-                        variation: method.title
+                        variation: method.title,
+                        preMeasurements: viewModel.preMeasurements  // Story 10.2
                     )
                 }
                 
