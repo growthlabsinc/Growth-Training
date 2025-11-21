@@ -42,13 +42,23 @@ struct DetailedProgressStatsView: View {
     }
     
     private var timeRangeSelector: some View {
-        Picker("Time Range", selection: $selectedTimeRange) {
-            ForEach(TimeRange.allCases) { range in
-                Text(range.displayName).tag(range)
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                ForEach(TimeRange.allCases) { range in
+                    TimeRangePillButton(
+                        title: range.displayName,
+                        isSelected: selectedTimeRange == range,
+                        action: {
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                selectedTimeRange = range
+                            }
+                        }
+                    )
+                }
             }
+            .padding(.horizontal)
         }
-        .pickerStyle(SegmentedPickerStyle())
-        .padding(.horizontal)
+        .frame(height: 36)
     }
     
     private var keyMetricsSection: some View {
@@ -628,7 +638,7 @@ private struct EmptyMethodStatsView: View {
             Image(systemName: "chart.pie")
                 .font(.system(size: 50))
                 .foregroundColor(Color.gray.opacity(0.3))
-            
+
             Text("No practice data yet")
                 .font(AppTheme.Typography.headlineFont())
                 .foregroundColor(Color("TextSecondaryColor"))
@@ -638,6 +648,32 @@ private struct EmptyMethodStatsView: View {
         .background(Color("BackgroundColor"))
         .cornerRadius(16)
         .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
+    }
+}
+
+// Time range pill button
+private struct TimeRangePillButton: View {
+    let title: String
+    let isSelected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Text(title)
+                .font(.system(size: 14, weight: isSelected ? .semibold : .medium))
+                .foregroundColor(isSelected ? Color("BackgroundColor") : Color("TextSecondaryColor"))
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+                .background(
+                    RoundedRectangle(cornerRadius: 18)
+                        .fill(isSelected ? Color("GrowthGreen") : Color("NeutralGray").opacity(0.15))
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 18)
+                        .stroke(isSelected ? Color.clear : Color("NeutralGray").opacity(0.2), lineWidth: 1)
+                )
+        }
+        .buttonStyle(PlainButtonStyle())
     }
 }
 
