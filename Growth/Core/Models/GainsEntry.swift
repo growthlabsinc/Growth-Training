@@ -290,6 +290,8 @@ struct GainsEntry: Identifiable, Codable, Equatable {
             return valueInches
         case .metric:
             return valueInches * 2.54 // inches to cm
+        case .millimeters:
+            return valueInches * 25.4 // inches to mm
         }
     }
 
