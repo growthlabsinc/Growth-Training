@@ -19,10 +19,13 @@ struct EnhancedGainsInputCard: View {
     // Selected measurement types to track
     @State private var selectedMeasurements: Set<MeasurementType> = Set(MeasurementType.primaryMeasurements)
 
-    // Input values for each measurement type
+    // Input values for each measurement type (stored in current display unit)
     @State private var measurementValues: [MeasurementType: Double] = [:]
     @State private var erectionQuality: Int = 7
     @State private var notes: String = ""
+
+    // Track previous unit to detect changes
+    @State private var previousUnit: MeasurementUnit?
 
     // Last entry for pre-filling
     @State private var lastEntry: GainsEntry?
@@ -66,6 +69,7 @@ struct EnhancedGainsInputCard: View {
             }
         }
         .onAppear {
+            previousUnit = gainsService.preferredUnit
             loadLastEntry()
             initializeDefaultValues()
         }
@@ -201,6 +205,10 @@ struct EnhancedGainsInputCard: View {
                 }
                 .pickerStyle(SegmentedPickerStyle())
                 .frame(width: 200)
+                .onChange(of: gainsService.preferredUnit) { newUnit in
+                    convertMeasurementValues(from: previousUnit ?? .imperial, to: newUnit)
+                    previousUnit = newUnit
+                }
             }
 
             // Input fields for selected measurements
@@ -325,12 +333,27 @@ struct EnhancedGainsInputCard: View {
     // MARK: - Helper Methods
 
     private func initializeDefaultValues() {
-        // Initialize with reasonable defaults for primary measurements
+        // Initialize with middle of range in current unit
         if measurementValues[.bpel] == nil {
-            measurementValues[.bpel] = 5.5
+            measurementValues[.bpel] = middleOfRange(for: lengthRange, unit: gainsService.preferredUnit)
         }
         if measurementValues[.mseg] == nil {
-            measurementValues[.mseg] = 4.5
+            measurementValues[.mseg] = middleOfRange(for: girthRange, unit: gainsService.preferredUnit)
+        }
+    }
+
+    private func middleOfRange(for range: ClosedRange<Double>, unit: MeasurementUnit) -> Double {
+        let middle = (range.lowerBound + range.upperBound) / 2.0
+        return MeasurementValidator.fromInches(middle, to: unit)
+    }
+
+    private func convertMeasurementValues(from oldUnit: MeasurementUnit, to newUnit: MeasurementUnit) {
+        // Convert all current measurement values from old unit to new unit
+        for (type, value) in measurementValues {
+            // Convert to inches first (universal format)
+            let inches = MeasurementValidator.toInches(value, from: oldUnit)
+            // Then convert to new unit
+            measurementValues[type] = MeasurementValidator.fromInches(inches, to: newUnit)
         }
     }
 
@@ -361,9 +384,10 @@ struct EnhancedGainsInputCard: View {
             selectedMeasurements.remove(type)
         } else {
             selectedMeasurements.insert(type)
-            // Initialize with default value if not present
+            // Initialize with middle of range value if not present
             if measurementValues[type] == nil {
-                measurementValues[type] = type.isLength ? 5.0 : 4.0
+                let range = type.isLength ? lengthRange : girthRange
+                measurementValues[type] = middleOfRange(for: range, unit: gainsService.preferredUnit)
             }
         }
     }
@@ -384,7 +408,14 @@ struct EnhancedGainsInputCard: View {
 
     private func binding(for type: MeasurementType) -> Binding<Double> {
         Binding(
-            get: { measurementValues[type] ?? (type.isLength ? 5.0 : 4.0) },
+            get: {
+                if let value = measurementValues[type] {
+                    return value
+                }
+                // Return middle of range for default
+                let range = type.isLength ? lengthRange : girthRange
+                return middleOfRange(for: range, unit: gainsService.preferredUnit)
+            },
             set: { measurementValues[type] = $0 }
         )
     }
@@ -392,11 +423,11 @@ struct EnhancedGainsInputCard: View {
     private func saveMeasurement() {
         guard let userId = Auth.auth().currentUser?.uid else { return }
 
-        // Convert measurements to inches if needed
+        // Convert measurements to inches for storage
         var measurementsInInches: [MeasurementType: Double] = [:]
         for type in selectedMeasurements {
             if let value = measurementValues[type] {
-                let inches = gainsService.preferredUnit == .metric ? value / 2.54 : value
+                let inches = MeasurementValidator.toInches(value, from: gainsService.preferredUnit)
                 measurementsInInches[type] = inches
             }
         }
@@ -507,7 +538,7 @@ struct MeasurementInputRow: View {
             Slider(
                 value: $value,
                 in: convertedRange(),
-                step: unit == .imperial ? 0.1 : (unit == .metric ? 0.5 : 1.0)
+                step: MeasurementFormatter.stepIncrement(for: unit)
             )
             .tint(Color("GrowthGreen"))
         }

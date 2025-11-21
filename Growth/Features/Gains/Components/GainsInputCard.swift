@@ -14,12 +14,15 @@ struct GainsInputCard: View {
     @State private var showingSuccessAlert = false
     @State private var isSaving = false
     
-    // Input values
-    @State private var length: Double = 5.0
-    @State private var girth: Double = 4.0
+    // Input values (stored in current display unit)
+    @State private var length: Double = 6.5 // Middle of 1-12 range
+    @State private var girth: Double = 4.5 // Middle of 1-8 range
     @State private var erectionQuality: Int = 7
     @State private var notes: String = ""
-    
+
+    // Track previous unit to detect changes
+    @State private var previousUnit: MeasurementUnit?
+
     // Last entry for pre-filling
     @State private var lastEntry: GainsEntry?
     
@@ -51,6 +54,8 @@ struct GainsInputCard: View {
             }
         }
         .onAppear {
+            previousUnit = gainsService.preferredUnit
+            initializeDefaultValues()
             loadLastEntry()
         }
         .alert("Measurement Saved!", isPresented: $showingSuccessAlert) {
@@ -105,9 +110,9 @@ struct GainsInputCard: View {
                 Text("Unit System")
                     .font(AppTheme.Typography.gravitySemibold(14))
                     .foregroundColor(Color("TextColor"))
-                
+
                 Spacer()
-                
+
                 Picker("Unit", selection: $gainsService.preferredUnit) {
                     ForEach(MeasurementUnit.allCases, id: \.self) { unit in
                         Text(unit.displayName).tag(unit)
@@ -115,6 +120,10 @@ struct GainsInputCard: View {
                 }
                 .pickerStyle(SegmentedPickerStyle())
                 .frame(width: 200)
+                .onChange(of: gainsService.preferredUnit) { newUnit in
+                    convertMeasurementValues(from: previousUnit ?? .imperial, to: newUnit)
+                    previousUnit = newUnit
+                }
             }
             
             // Length input
@@ -134,7 +143,7 @@ struct GainsInputCard: View {
                 Slider(
                     value: $length,
                     in: convertedRange(lengthRange, isLength: true),
-                    step: gainsService.preferredUnit == .imperial ? 0.1 : 0.5
+                    step: MeasurementFormatter.stepIncrement(for: gainsService.preferredUnit)
                 )
                 .tint(Color("GrowthGreen"))
             }
@@ -156,7 +165,7 @@ struct GainsInputCard: View {
                 Slider(
                     value: $girth,
                     in: convertedRange(girthRange, isLength: false),
-                    step: gainsService.preferredUnit == .imperial ? 0.1 : 0.5
+                    step: MeasurementFormatter.stepIncrement(for: gainsService.preferredUnit)
                 )
                 .tint(Color("GrowthGreen"))
             }
@@ -269,10 +278,10 @@ struct GainsInputCard: View {
     
     private func saveMeasurement() {
         guard let userId = Auth.auth().currentUser?.uid else { return }
-        
-        // Convert to inches if needed
-        let lengthInches = gainsService.preferredUnit == .metric ? length / 2.54 : length
-        let girthInches = gainsService.preferredUnit == .metric ? girth / 2.54 : girth
+
+        // Convert to inches for storage
+        let lengthInches = MeasurementValidator.toInches(length, from: gainsService.preferredUnit)
+        let girthInches = MeasurementValidator.toInches(girth, from: gainsService.preferredUnit)
         
         // Validate
         let validation = GainsService.validateMeasurements(
@@ -353,6 +362,24 @@ struct GainsInputCard: View {
         default:
             return Color("NeutralGray")
         }
+    }
+
+    private func initializeDefaultValues() {
+        // Initialize with middle of range in current unit if not already set from lastEntry
+        if lastEntry == nil {
+            let lengthMiddle = (lengthRange.lowerBound + lengthRange.upperBound) / 2.0
+            let girthMiddle = (girthRange.lowerBound + girthRange.upperBound) / 2.0
+            length = MeasurementValidator.fromInches(lengthMiddle, to: gainsService.preferredUnit)
+            girth = MeasurementValidator.fromInches(girthMiddle, to: gainsService.preferredUnit)
+        }
+    }
+
+    private func convertMeasurementValues(from oldUnit: MeasurementUnit, to newUnit: MeasurementUnit) {
+        // Convert length and girth from old unit to new unit
+        let lengthInches = MeasurementValidator.toInches(length, from: oldUnit)
+        let girthInches = MeasurementValidator.toInches(girth, from: oldUnit)
+        length = MeasurementValidator.fromInches(lengthInches, to: newUnit)
+        girth = MeasurementValidator.fromInches(girthInches, to: newUnit)
     }
 }
 
