@@ -126,11 +126,11 @@ struct MeasurementFormatter {
         let hardLimitsInInches: (min: Double, max: Double)
 
         switch type {
-        case .bpel:
+        case .bpel, .nbpel, .bpfsl, .nbpfsl, .fl, .bpfl:
+            // Length measurements
             hardLimitsInInches = (min: 3.0, max: 11.0)
-        case .bpfsl:
-            hardLimitsInInches = (min: 3.0, max: 11.0)
-        case .mseg:
+        case .mseg, .beg, .heg, .eg, .msfg, .bfg, .fg:
+            // Girth measurements
             hardLimitsInInches = (min: 3.0, max: 8.0)
         }
 
@@ -151,9 +151,11 @@ struct MeasurementFormatter {
         let suggestedInInches: [Double]
 
         switch type {
-        case .bpel, .bpfsl:
+        case .bpel, .nbpel, .bpfsl, .nbpfsl, .fl, .bpfl:
+            // Length measurements
             suggestedInInches = [4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.5, 8.0]
-        case .mseg:
+        case .mseg, .beg, .heg, .eg, .msfg, .bfg, .fg:
+            // Girth measurements
             suggestedInInches = [4.0, 4.5, 5.0, 5.5, 6.0]
         }
 
@@ -172,12 +174,20 @@ struct MeasurementFormatter {
         let typical: Double
 
         switch type {
-        case .bpel:
-            typical = 5.5  // Typical BPEL in inches
-        case .bpfsl:
-            typical = 5.7  // Typical BPFSL in inches
-        case .mseg:
-            typical = 4.5  // Typical MSEG in inches
+        case .bpel, .nbpel:
+            typical = 5.5  // Typical erect length in inches
+        case .bpfsl, .nbpfsl:
+            typical = 5.7  // Typical stretched length in inches
+        case .fl, .bpfl:
+            typical = 3.5  // Typical flaccid length in inches
+        case .mseg, .eg:
+            typical = 4.5  // Typical mid-shaft girth in inches
+        case .beg:
+            typical = 4.8  // Typical base girth in inches
+        case .heg:
+            typical = 4.3  // Typical head girth in inches
+        case .msfg, .bfg, .fg:
+            typical = 3.5  // Typical flaccid girth in inches
         }
 
         let converted = MeasurementValidator.fromInches(typical, to: unit)
