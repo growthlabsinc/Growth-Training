@@ -202,20 +202,20 @@ struct PreSessionMeasurementInputView: View {
             // Text Field
             HStack {
                 TextField(
-                    gainsService.preferredUnit == .imperial ? "e.g., 6.5" : "e.g., 16.5",
+                    MeasurementFormatter.placeholder(for: measurementType, unit: gainsService.preferredUnit),
                     text: value,
                     onEditingChanged: { _ in },
                     onCommit: {
                         validateMeasurement(type: measurementType, value: value.wrappedValue)
                     }
                 )
-                .keyboardType(.decimalPad)
+                .keyboardType(MeasurementFormatter.keyboardType(for: gainsService.preferredUnit))
                 .textFieldStyle(.roundedBorder)
 
-                Text(gainsService.preferredUnit == .imperial ? "in" : "cm")
+                Text(gainsService.preferredUnit.lengthSymbol)
                     .font(.caption)
                     .foregroundColor(.secondary)
-                    .frame(width: 24)
+                    .frame(width: 30)
             }
 
             // Validation Error Message

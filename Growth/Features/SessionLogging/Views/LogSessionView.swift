@@ -7,6 +7,18 @@ struct LogSessionView: View {
     @EnvironmentObject var navigationContext: NavigationContext
     @EnvironmentObject var smartNavigationService: SmartNavigationService
     @StateObject private var viewModel: LogSessionViewModel
+    @ObservedObject private var gainsService = GainsService.shared
+
+    // Story 10.2: Measurement input state
+    @State private var showMeasurementInputs = false
+    @State private var bpelValue: String = ""
+    @State private var bpfslValue: String = ""
+    @State private var msegValue: String = ""
+    @State private var bpelValidation: MeasurementValidationResult = .valid
+    @State private var bpfslValidation: MeasurementValidationResult = .valid
+    @State private var msegValidation: MeasurementValidationResult = .valid
+    @State private var showingSoftLimitAlert = false
+    @State private var softLimitMessage: String = ""
     
     // Initializer for logging a new session for a specific method
     init(method: TrainingProtocol) {
@@ -59,7 +71,11 @@ struct LogSessionView: View {
                         // Mood Check-in Card
                         moodCheckInCard
                             .padding(.horizontal)
-                        
+
+                        // Story 10.2: Pre-Session Measurements Card (Optional)
+                        measurementsCard
+                            .padding(.horizontal)
+
                         // Session Feedback Card
                         sessionFeedbackCard
                             .padding(.horizontal)
@@ -366,9 +382,171 @@ struct LogSessionView: View {
             }
         }
     }
-    
+
+    // MARK: - Story 10.2: Measurements Card (Optional)
+
+    private var measurementsCard: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            // Header with expand/collapse button
+            Button(action: {
+                withAnimation(.spring()) {
+                    showMeasurementInputs.toggle()
+                }
+            }) {
+                HStack {
+                    Image(systemName: "ruler")
+                        .foregroundColor(Color("GrowthGreen"))
+                    Text("Pre-Session Measurements (Optional)")
+                        .font(AppTheme.Typography.gravitySemibold(18))
+                        .foregroundColor(.primary)
+
+                    Spacer()
+
+                    Image(systemName: showMeasurementInputs ? "chevron.up" : "chevron.down")
+                        .foregroundColor(.secondary)
+                        .font(.system(size: 14, weight: .semibold))
+                }
+            }
+            .buttonStyle(PlainButtonStyle())
+
+            if showMeasurementInputs {
+                VStack(alignment: .leading, spacing: 20) {
+                    // Info text
+                    Text("Track your baseline to measure temporary gains (yield) from this session.")
+                        .font(AppTheme.Typography.calloutFont())
+                        .foregroundColor(.secondary)
+                        .padding(.top, 4)
+
+                    // Unit display
+                    HStack {
+                        Text("Unit")
+                            .font(AppTheme.Typography.bodyFont())
+                            .foregroundColor(.secondary)
+                        Spacer()
+                        Text(gainsService.preferredUnit.displayName)
+                            .font(AppTheme.Typography.bodyFont())
+                            .foregroundColor(.primary)
+                    }
+
+                    Divider()
+
+                    // BPEL Input
+                    measurementField(
+                        label: "BPEL",
+                        fullName: "Bone Pressed Erect Length",
+                        value: $bpelValue,
+                        validation: bpelValidation,
+                        measurementType: .bpel
+                    )
+
+                    Divider()
+
+                    // BPFSL Input
+                    measurementField(
+                        label: "BPFSL",
+                        fullName: "Bone Pressed Flaccid Stretched Length",
+                        value: $bpfslValue,
+                        validation: bpfslValidation,
+                        measurementType: .bpfsl
+                    )
+
+                    Divider()
+
+                    // MSEG Input
+                    measurementField(
+                        label: "MSEG",
+                        fullName: "Mid-Shaft Erect Girth",
+                        value: $msegValue,
+                        validation: msegValidation,
+                        measurementType: .mseg
+                    )
+
+                    // Clear measurements button
+                    if !bpelValue.isEmpty || !bpfslValue.isEmpty || !msegValue.isEmpty {
+                        Button(action: clearMeasurements) {
+                            HStack {
+                                Image(systemName: "xmark.circle")
+                                Text("Clear All Measurements")
+                                    .font(AppTheme.Typography.bodyFont())
+                            }
+                            .foregroundColor(.red)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 8)
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                    }
+                }
+                .transition(.opacity.combined(with: .move(edge: .top)))
+            }
+        }
+        .padding(20)
+        .background(Color(.secondarySystemGroupedBackground))
+        .cornerRadius(12)
+        .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 2)
+        .alert("Confirm Measurement", isPresented: $showingSoftLimitAlert) {
+            Button("Cancel", role: .cancel) { }
+            Button("Continue") {
+                updateViewModelMeasurements()
+            }
+        } message: {
+            Text(softLimitMessage)
+        }
+    }
+
+    // MARK: - Measurement Field Component (Story 10.2)
+
+    private func measurementField(
+        label: String,
+        fullName: String,
+        value: Binding<String>,
+        validation: MeasurementValidationResult,
+        measurementType: MeasurementType
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            // Label
+            VStack(alignment: .leading, spacing: 2) {
+                Text(label)
+                    .font(AppTheme.Typography.bodyFont())
+                    .fontWeight(.semibold)
+                Text(fullName)
+                    .font(AppTheme.Typography.captionFont())
+                    .foregroundColor(.secondary)
+            }
+
+            // Text Field
+            HStack {
+                TextField(
+                    MeasurementFormatter.placeholder(for: measurementType, unit: gainsService.preferredUnit),
+                    text: value
+                )
+                .keyboardType(MeasurementFormatter.keyboardType(for: gainsService.preferredUnit))
+                .font(AppTheme.Typography.bodyFont())
+                .padding(12)
+                .background(Color(.tertiarySystemGroupedBackground))
+                .cornerRadius(8)
+                .onChange(of: value.wrappedValue) { newValue in
+                    validateMeasurement(type: measurementType, value: newValue)
+                }
+
+                Text(gainsService.preferredUnit.lengthSymbol)
+                    .font(AppTheme.Typography.calloutFont())
+                    .foregroundColor(.secondary)
+                    .frame(width: 32)
+            }
+
+            // Validation Error Message
+            if validation.isHardError {
+                if case .hardLimitError(let message) = validation {
+                    Text(message)
+                        .font(AppTheme.Typography.captionFont())
+                        .foregroundColor(.red)
+                }
+            }
+        }
+    }
+
     // MARK: - Session Feedback Card
-    
+
     private var sessionFeedbackCard: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
@@ -480,8 +658,131 @@ struct LogSessionView: View {
         .disabled(!viewModel.formIsValid || viewModel.isSaving)
     }
     
+    // MARK: - Measurement Helper Methods (Story 10.2)
+
+    private func validateMeasurement(type: MeasurementType, value: String) {
+        guard !value.isEmpty, let numericValue = Double(value) else {
+            // Reset validation if value is empty or invalid
+            switch type {
+            case .bpel: bpelValidation = .valid
+            case .bpfsl: bpfslValidation = .valid
+            case .mseg: msegValidation = .valid
+            default: break
+            }
+            return
+        }
+
+        // Validate using MeasurementValidator
+        let result = MeasurementValidator.validate(value: numericValue, type: type, unit: gainsService.preferredUnit)
+
+        // Update validation state
+        switch type {
+        case .bpel: bpelValidation = result
+        case .bpfsl: bpfslValidation = result
+        case .mseg: msegValidation = result
+        default: break
+        }
+
+        // Automatically update viewModel if no hard errors
+        updateViewModelMeasurementsIfValid()
+    }
+
+    private func updateViewModelMeasurementsIfValid() {
+        // Check for hard errors
+        let hasHardErrors = bpelValidation.isHardError || bpfslValidation.isHardError || msegValidation.isHardError
+        guard !hasHardErrors else {
+            // Don't update if there are hard errors
+            viewModel.preMeasurements = nil
+            return
+        }
+
+        // Check for soft limit warnings
+        var softLimitWarnings: [String] = []
+        var measurements: [MeasurementType: Double] = [:]
+
+        // Collect and validate BPEL
+        if let bpel = Double(bpelValue), !bpelValue.isEmpty {
+            let result = MeasurementValidator.validate(value: bpel, type: .bpel, unit: measurementUnit)
+            if result.isSoftWarning {
+                if case .softLimitWarning(let message) = result {
+                    softLimitWarnings.append("BPEL: \(message)")
+                }
+            }
+            let valueInInches = MeasurementValidator.toInches(bpel, from: gainsService.preferredUnit)
+            measurements[.bpel] = valueInInches
+        }
+
+        // Collect and validate BPFSL
+        if let bpfsl = Double(bpfslValue), !bpfslValue.isEmpty {
+            let result = MeasurementValidator.validate(value: bpfsl, type: .bpfsl, unit: measurementUnit)
+            if result.isSoftWarning {
+                if case .softLimitWarning(let message) = result {
+                    softLimitWarnings.append("BPFSL: \(message)")
+                }
+            }
+            let valueInInches = MeasurementValidator.toInches(bpfsl, from: gainsService.preferredUnit)
+            measurements[.bpfsl] = valueInInches
+        }
+
+        // Collect and validate MSEG
+        if let mseg = Double(msegValue), !msegValue.isEmpty {
+            let result = MeasurementValidator.validate(value: mseg, type: .mseg, unit: measurementUnit)
+            if result.isSoftWarning {
+                if case .softLimitWarning(let message) = result {
+                    softLimitWarnings.append("MSEG: \(message)")
+                }
+            }
+            let valueInInches = MeasurementValidator.toInches(mseg, from: gainsService.preferredUnit)
+            measurements[.mseg] = valueInInches
+        }
+
+        // If soft limit warnings exist, show confirmation alert
+        if !softLimitWarnings.isEmpty {
+            softLimitMessage = softLimitWarnings.joined(separator: "\n\n")
+            showingSoftLimitAlert = true
+            // Don't update yet - wait for user confirmation
+        } else {
+            // No warnings - update directly
+            viewModel.preMeasurements = measurements.isEmpty ? nil : measurements
+        }
+    }
+
+    private func updateViewModelMeasurements() {
+        // Called after user confirms soft limit warning
+        var measurements: [MeasurementType: Double] = [:]
+
+        if let bpel = Double(bpelValue), !bpelValue.isEmpty {
+            let valueInInches = MeasurementValidator.toInches(bpel, from: gainsService.preferredUnit)
+            measurements[.bpel] = valueInInches
+        }
+
+        if let bpfsl = Double(bpfslValue), !bpfslValue.isEmpty {
+            let valueInInches = MeasurementValidator.toInches(bpfsl, from: gainsService.preferredUnit)
+            measurements[.bpfsl] = valueInInches
+        }
+
+        if let mseg = Double(msegValue), !msegValue.isEmpty {
+            let valueInInches = MeasurementValidator.toInches(mseg, from: gainsService.preferredUnit)
+            measurements[.mseg] = valueInInches
+        }
+
+        viewModel.preMeasurements = measurements.isEmpty ? nil : measurements
+    }
+
+    private func clearMeasurements() {
+        withAnimation {
+            bpelValue = ""
+            bpfslValue = ""
+            msegValue = ""
+            bpelValidation = .valid
+            bpfslValidation = .valid
+            msegValidation = .valid
+            viewModel.preMeasurements = nil
+        }
+    }
+
     // MARK: - Helper Methods
-    
+
     private func intensityColor(for level: Int) -> Color {
         switch level {
         case 1: return Color("GrowthGreen")

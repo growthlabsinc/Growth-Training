@@ -328,25 +328,37 @@ struct GainsEntry: Identifiable, Codable, Equatable {
 enum MeasurementUnit: String, Codable, CaseIterable {
     case imperial = "imperial"
     case metric = "metric"
-    
+    case millimeters = "millimeters"
+
     var lengthSymbol: String {
         switch self {
         case .imperial: return "in"
         case .metric: return "cm"
+        case .millimeters: return "mm"
         }
     }
-    
+
     var volumeSymbol: String {
         switch self {
         case .imperial: return "in³"
         case .metric: return "cm³"
+        case .millimeters: return "mm³"
         }
     }
-    
+
     var displayName: String {
         switch self {
-        case .imperial: return "inch"
+        case .imperial: return "Inches"
+        case .metric: return "Centimeters"
+        case .millimeters: return "Millimeters"
+        }
+    }
+
+    var shortDisplayName: String {
+        switch self {
+        case .imperial: return "in"
         case .metric: return "cm"
+        case .millimeters: return "mm"
         }
     }
 }

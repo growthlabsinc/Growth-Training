@@ -72,6 +72,66 @@ struct MeasurementValidator {
         return inches * 2.54
     }
 
+    /// Converts millimeters to inches
+    /// - Parameter mm: Value in millimeters
+    /// - Returns: Value in inches
+    static func mmToInches(_ mm: Double) -> Double {
+        return mm / 25.4
+    }
+
+    /// Converts inches to millimeters
+    /// - Parameter inches: Value in inches
+    /// - Returns: Value in millimeters
+    static func inchesToMm(_ inches: Double) -> Double {
+        return inches * 25.4
+    }
+
+    /// Converts millimeters to centimeters
+    /// - Parameter mm: Value in millimeters
+    /// - Returns: Value in centimeters
+    static func mmToCm(_ mm: Double) -> Double {
+        return mm / 10.0
+    }
+
+    /// Converts centimeters to millimeters
+    /// - Parameter cm: Value in centimeters
+    /// - Returns: Value in millimeters
+    static func cmToMm(_ cm: Double) -> Double {
+        return cm * 10.0
+    }
+
+    /// Converts value from any unit to inches (for internal storage)
+    /// - Parameters:
+    ///   - value: The measurement value
+    ///   - unit: The unit of the measurement
+    /// - Returns: Value in inches
+    static func toInches(_ value: Double, from unit: MeasurementUnit) -> Double {
+        switch unit {
+        case .imperial:
+            return value
+        case .metric:
+            return cmToInches(value)
+        case .millimeters:
+            return mmToInches(value)
+        }
+    }
+
+    /// Converts value from inches to specified unit
+    /// - Parameters:
+    ///   - inches: The measurement value in inches
+    ///   - unit: The target unit
+    /// - Returns: Value in the target unit
+    static func fromInches(_ inches: Double, to unit: MeasurementUnit) -> Double {
+        switch unit {
+        case .imperial:
+            return inches
+        case .metric:
+            return inchesToCm(inches)
+        case .millimeters:
+            return inchesToMm(inches)
+        }
+    }
+
     // MARK: - Validation Methods
 
     /// Checks if value is within hard limits for the given measurement type
@@ -131,11 +191,11 @@ struct MeasurementValidator {
     /// - Parameters:
     ///   - value: Measurement value
     ///   - type: Type of measurement
-    ///   - unit: Unit of measurement (imperial or metric)
+    ///   - unit: Unit of measurement (imperial, metric, or millimeters)
     /// - Returns: MeasurementValidationResult indicating valid, soft warning, or hard error
     static func validate(value: Double, type: MeasurementType, unit: MeasurementUnit) -> MeasurementValidationResult {
-        // Convert to inches if metric
-        let valueInInches = unit == .metric ? cmToInches(value) : value
+        // Convert to inches for validation
+        let valueInInches = toInches(value, from: unit)
         return validate(value: valueInInches, type: type)
     }
 

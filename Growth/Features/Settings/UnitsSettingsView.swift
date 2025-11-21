@@ -12,7 +12,29 @@ struct UnitsSettingsView: View {
     @EnvironmentObject var themeManager: ThemeManager
     @AppStorage("temperatureUnit") private var temperatureUnit: String = "fahrenheit"
     @AppStorage("timeFormat") private var timeFormat: String = "12hour"
-    
+
+    private func getLengthUnitText(_ unit: MeasurementUnit) -> String {
+        switch unit {
+        case .imperial:
+            return "inches (in)"
+        case .metric:
+            return "centimeters (cm)"
+        case .millimeters:
+            return "millimeters (mm)"
+        }
+    }
+
+    private func getVolumeUnitText(_ unit: MeasurementUnit) -> String {
+        switch unit {
+        case .imperial:
+            return "cubic inches (in³)"
+        case .metric:
+            return "cubic centimeters (cm³)"
+        case .millimeters:
+            return "cubic millimeters (mm³)"
+        }
+    }
+
     var body: some View {
         Form {
             // Measurement Units Section
@@ -25,30 +47,31 @@ struct UnitsSettingsView: View {
                         Text(unit.displayName).tag(unit)
                     }
                 }
-                .pickerStyle(SegmentedPickerStyle())
-                
+                .pickerStyle(MenuPickerStyle())
+                .padding(.vertical, 4)
+
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
                         Image(systemName: "ruler")
                             .foregroundColor(Color("GrowthGreen"))
                             .frame(width: 20)
-                        Text("Length: \(gainsService.preferredUnit == .imperial ? "inches" : "centimeters")")
+                        Text("Length: \(getLengthUnitText(gainsService.preferredUnit))")
                             .font(AppTheme.Typography.gravityBook(13))
                     }
-                    
+
                     HStack {
                         Image(systemName: "circle")
                             .foregroundColor(Color("BrightTeal"))
                             .frame(width: 20)
-                        Text("Girth: \(gainsService.preferredUnit == .imperial ? "inches" : "centimeters")")
+                        Text("Girth: \(getLengthUnitText(gainsService.preferredUnit))")
                             .font(AppTheme.Typography.gravityBook(13))
                     }
-                    
+
                     HStack {
                         Image(systemName: "cube")
                             .foregroundColor(Color("MintGreen"))
                             .frame(width: 20)
-                        Text("Volume: \(gainsService.preferredUnit == .imperial ? "cubic inches" : "cubic cm")")
+                        Text("Volume: \(getVolumeUnitText(gainsService.preferredUnit))")
                             .font(AppTheme.Typography.gravityBook(13))
                     }
                 }
@@ -91,22 +114,25 @@ struct UnitsSettingsView: View {
                     title: "Length",
                     imperial: "1 inch",
                     metric: "2.54 cm",
+                    millimeters: "25.4 mm",
                     icon: "ruler",
                     color: Color("GrowthGreen")
                 )
-                
+
                 ConversionRow(
                     title: "Temperature",
                     imperial: "98.6°F",
                     metric: "37°C",
+                    millimeters: nil,
                     icon: "thermometer",
                     color: Color("ErrorColor")
                 )
-                
+
                 ConversionRow(
                     title: "Volume",
                     imperial: "1 in³",
                     metric: "16.39 cm³",
+                    millimeters: "16,387 mm³",
                     icon: "cube",
                     color: Color("MintGreen")
                 )
@@ -125,24 +151,37 @@ struct ConversionRow: View {
     let title: String
     let imperial: String
     let metric: String
+    let millimeters: String?
     let icon: String
     let color: Color
-    
+
     var body: some View {
         HStack {
             Image(systemName: icon)
                 .foregroundColor(color)
                 .frame(width: 25)
-            
+
             Text(title)
                 .font(AppTheme.Typography.gravitySemibold(14))
                 .frame(width: 80, alignment: .leading)
-            
+
             Spacer()
-            
-            Text("\(imperial) = \(metric)")
-                .font(AppTheme.Typography.gravityBook(13))
+
+            if let mm = millimeters {
+                // Show all three conversions for measurements
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text("\(imperial) = \(metric)")
+                        .font(AppTheme.Typography.gravityBook(11))
+                    Text("\(imperial) = \(mm)")
+                        .font(AppTheme.Typography.gravityBook(11))
+                }
                 .foregroundColor(Color("TextSecondaryColor"))
+            } else {
+                // Show just imperial/metric for non-measurements
+                Text("\(imperial) = \(metric)")
+                    .font(AppTheme.Typography.gravityBook(13))
+                    .foregroundColor(Color("TextSecondaryColor"))
+            }
         }
     }
 }
