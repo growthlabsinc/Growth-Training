@@ -115,7 +115,7 @@ struct GainsInputCard: View {
 
                 Picker("Unit", selection: $gainsService.preferredUnit) {
                     ForEach(MeasurementUnit.allCases, id: \.self) { unit in
-                        Text(unit.displayName).tag(unit)
+                        Text(unit.shortDisplayName).tag(unit)
                     }
                 }
                 .pickerStyle(SegmentedPickerStyle())
