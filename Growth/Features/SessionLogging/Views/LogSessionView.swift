@@ -702,7 +702,7 @@ struct LogSessionView: View {
 
         // Collect and validate BPEL
         if let bpel = Double(bpelValue), !bpelValue.isEmpty {
-            let result = MeasurementValidator.validate(value: bpel, type: .bpel, unit: measurementUnit)
+            let result = MeasurementValidator.validate(value: bpel, type: .bpel, unit: gainsService.preferredUnit)
             if result.isSoftWarning {
                 if case .softLimitWarning(let message) = result {
                     softLimitWarnings.append("BPEL: \(message)")
@@ -714,7 +714,7 @@ struct LogSessionView: View {
 
         // Collect and validate BPFSL
         if let bpfsl = Double(bpfslValue), !bpfslValue.isEmpty {
-            let result = MeasurementValidator.validate(value: bpfsl, type: .bpfsl, unit: measurementUnit)
+            let result = MeasurementValidator.validate(value: bpfsl, type: .bpfsl, unit: gainsService.preferredUnit)
             if result.isSoftWarning {
                 if case .softLimitWarning(let message) = result {
                     softLimitWarnings.append("BPFSL: \(message)")
@@ -726,7 +726,7 @@ struct LogSessionView: View {
 
         // Collect and validate MSEG
         if let mseg = Double(msegValue), !msegValue.isEmpty {
-            let result = MeasurementValidator.validate(value: mseg, type: .mseg, unit: measurementUnit)
+            let result = MeasurementValidator.validate(value: mseg, type: .mseg, unit: gainsService.preferredUnit)
             if result.isSoftWarning {
                 if case .softLimitWarning(let message) = result {
                     softLimitWarnings.append("MSEG: \(message)")
