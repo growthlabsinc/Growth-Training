@@ -101,6 +101,7 @@ struct PostSessionMeasurementView: View {
 struct MeasurementTag: View {
     let type: MeasurementType
     let value: Double
+    @ObservedObject private var gainsService = GainsService.shared
 
     var body: some View {
         HStack(spacing: 4) {
@@ -108,11 +109,11 @@ struct MeasurementTag: View {
                 .font(AppTheme.Typography.gravityBook(10))
                 .foregroundColor(Color("TextSecondaryColor"))
 
-            Text(String(format: "%.1f", value))
+            Text(MeasurementFormatter.formatFromInches(value, to: gainsService.preferredUnit, includeSymbol: false))
                 .font(AppTheme.Typography.gravitySemibold(12))
                 .foregroundColor(Color("GrowthGreen"))
 
-            Text(GainsService.shared.preferredUnit == .imperial ? "in" : "cm")
+            Text(gainsService.preferredUnit.lengthSymbol)
                 .font(AppTheme.Typography.gravityBook(10))
                 .foregroundColor(Color("TextSecondaryColor"))
         }

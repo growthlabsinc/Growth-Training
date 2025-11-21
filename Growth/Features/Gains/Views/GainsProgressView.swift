@@ -417,23 +417,44 @@ struct GainsProgressView: View {
     
     private func formatMeasurement(_ value: Double, isLength: Bool) -> String {
         // Value is already converted by displayLength/displayGirth methods
-        return String(format: "%.1f%@", value, gainsService.preferredUnit.lengthSymbol)
+        let decimalPlaces = MeasurementFormatter.decimalPlaces(for: gainsService.preferredUnit)
+        let format = "%.\(decimalPlaces)f%@"
+        return String(format: format, value, gainsService.preferredUnit.lengthSymbol)
     }
-    
+
     private func formatGain(_ gain: Double?, isLength: Bool) -> String? {
         guard let gain = gain, gain != 0 else { return nil }
-        let displayGain = gainsService.preferredUnit == .metric ? gain * 2.54 : gain
-        return String(format: "%+.1f", displayGain)
+        let displayGain = MeasurementValidator.fromInches(gain, to: gainsService.preferredUnit)
+        let decimalPlaces = MeasurementFormatter.decimalPlaces(for: gainsService.preferredUnit)
+        let format = "%+.\(decimalPlaces)f"
+        return String(format: format, displayGain)
     }
-    
+
     private func formatVolume(_ volume: Double) -> String {
-        let displayVolume = gainsService.preferredUnit == .metric ? volume * 16.387 : volume
+        // Volume is in cubic inches, convert to preferred unit
+        let displayVolume: Double
+        switch gainsService.preferredUnit {
+        case .imperial:
+            displayVolume = volume
+        case .metric:
+            displayVolume = volume * 16.387
+        case .millimeters:
+            displayVolume = volume * 16387.064
+        }
         return String(format: "%.0f%@", displayVolume, gainsService.preferredUnit.volumeSymbol)
     }
-    
+
     private func formatVolumeGain(_ gain: Double?) -> String? {
         guard let gain = gain, gain != 0 else { return nil }
-        let displayGain = gainsService.preferredUnit == .metric ? gain * 16.387 : gain
+        let displayGain: Double
+        switch gainsService.preferredUnit {
+        case .imperial:
+            displayGain = gain
+        case .metric:
+            displayGain = gain * 16.387
+        case .millimeters:
+            displayGain = gain * 16387.064
+        }
         return String(format: "%+.0f", displayGain)
     }
     

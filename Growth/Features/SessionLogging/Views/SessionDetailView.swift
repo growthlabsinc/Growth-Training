@@ -5,6 +5,7 @@ struct SessionDetailView: View {
     @StateObject private var viewModel: SessionDetailViewModel
     @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject var authViewModel: AuthViewModel
+    @ObservedObject private var gainsService = GainsService.shared
 
     init(sessionLog: SessionLog, growthProtocol: TrainingProtocol?) {
         _viewModel = StateObject(wrappedValue: SessionDetailViewModel(sessionLog: sessionLog, growthProtocol: growthProtocol))
@@ -35,6 +36,46 @@ struct SessionDetailView: View {
                         .font(AppTheme.Typography.bodyFont())
                         .foregroundColor(AppTheme.Colors.textSecondary)
                         .padding(.vertical, AppTheme.Layout.spacingS)
+                }
+            }
+
+            // Pre-Session Measurements Section
+            if let preMeasurements = viewModel.sessionLog.preMeasurements, !preMeasurements.isEmpty {
+                Section(header: Text("Pre-Session Measurements").font(AppTheme.Typography.headlineFont())) {
+                    ForEach(preMeasurements.sorted(by: { $0.key.displayName < $1.key.displayName }), id: \.key) { type, value in
+                        DetailRow(
+                            label: "\(type.fullName):",
+                            value: MeasurementFormatter.formatFromInches(value, to: gainsService.preferredUnit, includeSymbol: true)
+                        )
+                    }
+                }
+            }
+
+            // Post-Session Measurements Section
+            if let postMeasurements = viewModel.sessionLog.postMeasurements, !postMeasurements.isEmpty {
+                Section(header: Text("Post-Session Measurements").font(AppTheme.Typography.headlineFont())) {
+                    ForEach(postMeasurements.sorted(by: { $0.key.displayName < $1.key.displayName }), id: \.key) { type, value in
+                        DetailRow(
+                            label: "\(type.fullName):",
+                            value: MeasurementFormatter.formatFromInches(value, to: gainsService.preferredUnit, includeSymbol: true)
+                        )
+                    }
+                }
+            }
+
+            // Yield Percentages Section
+            if let yieldPercentages = viewModel.sessionLog.yieldPercentages, !yieldPercentages.isEmpty {
+                Section(header: Text("Session Yield").font(AppTheme.Typography.headlineFont())) {
+                    ForEach(yieldPercentages.sorted(by: { $0.key.displayName < $1.key.displayName }), id: \.key) { type, percentage in
+                        HStack {
+                            Text("\(type.fullName):")
+                                .font(AppTheme.Typography.bodyFont())
+                            Spacer()
+                            Text(MeasurementFormatter.formatPercentageChange(current: 100 + percentage, baseline: 100))
+                                .font(AppTheme.Typography.bodyFont())
+                                .foregroundColor(percentage > 0 ? Color("GrowthGreen") : Color("TextSecondaryColor"))
+                        }
+                    }
                 }
             }
 

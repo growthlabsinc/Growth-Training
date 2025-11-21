@@ -391,7 +391,7 @@ struct MeasurementTypeChart: View {
     }
 
     private func getYAxisLabel() -> String {
-        let unit = gainsService.preferredUnit == .imperial ? "inches" : "cm"
+        let unit = gainsService.preferredUnit.displayName.lowercased()
         return "\(selectedType.displayName) (\(unit))"
     }
 
@@ -418,14 +418,16 @@ struct MeasurementTypeChart: View {
 
     private func formatValue(_ value: Double?) -> String {
         guard let value = value else { return "--" }
-        let unit = gainsService.preferredUnit == .imperial ? "\"" : "cm"
-        return String(format: "%.2f%@", value, unit)
+        let decimalPlaces = MeasurementFormatter.decimalPlaces(for: gainsService.preferredUnit)
+        let format = "%.\(decimalPlaces)f%@"
+        return String(format: format, value, gainsService.preferredUnit.lengthSymbol)
     }
 
     private func formatGain(_ gain: Double?) -> String {
         guard let gain = gain else { return "--" }
-        let unit = gainsService.preferredUnit == .imperial ? "\"" : "cm"
-        return String(format: "%+.2f%@", gain, unit)
+        let decimalPlaces = MeasurementFormatter.decimalPlaces(for: gainsService.preferredUnit)
+        let format = "%+.\(decimalPlaces)f%@"
+        return String(format: format, gain, gainsService.preferredUnit.lengthSymbol)
     }
 
     private func formatPercentage(_ percentage: Double?) -> String {
