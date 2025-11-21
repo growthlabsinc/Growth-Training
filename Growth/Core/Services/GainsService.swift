@@ -260,6 +260,8 @@ class GainsService: ObservableObject {
             return String(format: "%.1f\"", inches)
         case .metric:
             return String(format: "%.1fcm", inches * 2.54)
+        case .millimeters:
+            return String(format: "%.0fmm", inches * 25.4)
         }
     }
 }
