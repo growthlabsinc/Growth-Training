@@ -301,6 +301,8 @@ struct GainsEntry: Identifiable, Codable, Equatable {
             return value
         case .metric:
             return value * 2.54 // inches to cm
+        case .millimeters:
+            return value * 25.4 // inches to mm
         }
     }
 
@@ -311,6 +313,8 @@ struct GainsEntry: Identifiable, Codable, Equatable {
             return value
         case .metric:
             return value * 2.54 // inches to cm
+        case .millimeters:
+            return value * 25.4 // inches to mm
         }
     }
 
@@ -320,6 +324,8 @@ struct GainsEntry: Identifiable, Codable, Equatable {
             return volume // cubic inches
         case .metric:
             return volume * 16.387 // cubic inches to cubic cm
+        case .millimeters:
+            return volume * 16387.064 // cubic inches to cubic mm
         }
     }
 }

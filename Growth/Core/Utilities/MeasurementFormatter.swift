@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 /// Utility class for formatting measurement values for display
 struct MeasurementFormatter {
