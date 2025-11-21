@@ -324,6 +324,8 @@ struct GainsInputCard: View {
             return String(format: "%.1f\"", value)
         case .metric:
             return String(format: "%.1fcm", value)
+        case .millimeters:
+            return String(format: "%.0fmm", value)
         }
     }
     
@@ -333,6 +335,8 @@ struct GainsInputCard: View {
             return range
         case .metric:
             return (range.lowerBound * 2.54)...(range.upperBound * 2.54)
+        case .millimeters:
+            return (range.lowerBound * 25.4)...(range.upperBound * 25.4)
         }
     }
     
