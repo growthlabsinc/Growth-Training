@@ -146,7 +146,7 @@ Routines reference exercises from the `growth_exercises` collection using these 
 
 ### Manual Methods (Stage 1)
 - `stage1_basic_manual_stretch` - 25 min, length-focused
-- `stage1_modified_jelq` - 20 min, girth/conditioning
+- `stage1_manual_clamping` - 15 min, girth/conditioning
 - `stage2_timed_pressure_hold` - 20 min, intermediate length (TPH)
 - `stage1_timed_squash` - 10 min, conditioning/EQ
 - `stage1_milking_eq` - 10 min, EQ/conditioning

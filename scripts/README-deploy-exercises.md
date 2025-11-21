@@ -9,7 +9,7 @@ This directory contains the deployment script for populating the Growth Training
 ### Purpose
 
 Deploys 16+ PE training exercises to the `growth_exercises` Firestore collection, including:
-- **Manual Methods** (5 exercises): Basic stretching, jelqing, pressure holds
+- **Manual Methods** (5 exercises): Basic stretching, manual clamping, pressure holds
 - **Device-Based Methods** (7 exercises): Pumping, extending, hanging, clamping
 - **Advanced Techniques** (3 exercises): Combination protocols for experienced users
 - **Conditioning & EQ** (1 exercise): Heat therapy and circulation work

@@ -54,6 +54,11 @@ struct DailyRoutineView: View {
     @State private var showTrialLimitAlert = false
     @State private var trialLimitMessage = ""
 
+    // Story 10.2: Pre-session measurement capture
+    @State private var showPreSessionMeasurementSheet = false
+    @State private var preMeasurements: [MeasurementType: Double]? = nil
+    @State private var pendingTimerStart = false
+
     init(schedule: DaySchedule, routinesViewModel: RoutinesViewModel, isEmbedded: Bool = false, onExit: (() -> Void)? = nil) {
         self.schedule = schedule
         self.routinesViewModel = routinesViewModel
@@ -64,7 +69,7 @@ struct DailyRoutineView: View {
     }
 
     var body: some View {
-        mainContent
+        mainContentWithSheets
             .onAppear {
                 // Sync completion state from PracticeTabViewModel's cache
                 syncCompletionStateFromCache()
@@ -93,13 +98,23 @@ struct DailyRoutineView: View {
                             
                             // Handle completion if there was elapsed time
                             if elapsedTime > 0 {
+                                // Prevent duplicate completion if already showing
+                                guard !completionViewModel.showCompletionPrompt && !isShowingCompletionPrompt else {
+                                    Logger.debug("⚠️ Completion prompt already showing, skipping duplicate trigger from notification")
+                                    return
+                                }
+
                                 // Get the current method from sessionViewModel
                                 if let currentMethod = sessionViewModel.currentMethod {
                                     let methodId = currentMethod.id ?? UUID().uuidString
                                     let methodName = currentMethod.title
-                                    
-                                    Logger.debug("🎯 Completing session for method: \(methodName)")
-                                    
+
+                                    Logger.debug("🎯 Completing session for method: \(methodName) from notification")
+
+                                    // Mark that we're handling completion
+                                    isShowingCompletionPrompt = true
+                                    hasHandledTimerCompletion = true
+
                                     // Complete the session - this should trigger the completion sheet
                                     completionViewModel.completeSession(
                                         methodId: methodId,
@@ -107,10 +122,9 @@ struct DailyRoutineView: View {
                                         startTime: startTime,
                                         variation: methodName
                                     )
-                                    
+
                                     // Reset timer configuration for next method
                                     hasConfiguredTimer = false
-                                    hasHandledTimerCompletion = false
                                 } else {
                                     Logger.warning("⚠️ No current method found for completion")
                                 }
@@ -127,16 +141,18 @@ struct DailyRoutineView: View {
                 notificationCancellable?.cancel()
             }
             .onReceive(timerService.$timerState) { newState in
-                
+
                 // Check if timer just completed (transitioned from running to paused with 0 remaining)
-                if timerService.timerMode == TimerMode.countdown && 
+                if timerService.timerMode == TimerMode.countdown &&
                    lastTimerState == TimerState.running &&
                    newState == TimerState.paused &&
-                   timerService.remainingTime <= 0 && 
+                   timerService.remainingTime <= 0 &&
                    timerService.elapsedTime > 0 &&
                    !hasHandledTimerCompletion &&
                    !isConfiguringTimer &&
-                   !completionViewModel.showCompletionPrompt {
+                   !completionViewModel.showCompletionPrompt &&
+                   !isShowingCompletionPrompt {
+                    Logger.debug("⏱️ Timer state handler: Timer completed, triggering handleTimerCompletion")
                     // Timer completed for current method
                     hasHandledTimerCompletion = true
                     // Don't set isShowingCompletionPrompt here - let handleTimerCompletion do it
@@ -149,7 +165,7 @@ struct DailyRoutineView: View {
                     hasHandledTimerCompletion = false
                     isShowingCompletionPrompt = false
                 }
-                
+
                 // Update last state
                 lastTimerState = newState
             }
@@ -161,7 +177,9 @@ struct DailyRoutineView: View {
                    timerService.elapsedTime > 0 &&
                    !hasHandledTimerCompletion &&
                    !isConfiguringTimer &&
-                   !completionViewModel.showCompletionPrompt {
+                   !completionViewModel.showCompletionPrompt &&
+                   !isShowingCompletionPrompt {
+                    Logger.debug("⏱️ Remaining time handler: Timer completed, triggering handleTimerCompletion")
                     hasHandledTimerCompletion = true
                     // Don't set isShowingCompletionPrompt here - let handleTimerCompletion do it
                     DispatchQueue.main.async {
@@ -212,16 +230,41 @@ struct DailyRoutineView: View {
                 }
             }
             .onChangeCompat(of: completionViewModel.showCompletionPrompt) { newValue in
+                Logger.debug("📋 DailyRoutineView: completionViewModel.showCompletionPrompt changed to: \(newValue)")
+                Logger.debug("  - previousCompletionPromptState: \(previousCompletionPromptState)")
                 if previousCompletionPromptState && !newValue {
+                    Logger.debug("  - Completion prompt was dismissed")
                     // Completion prompt was dismissed
                     isShowingCompletionPrompt = false
+                } else if !previousCompletionPromptState && newValue {
+                    Logger.debug("  - Completion prompt is now showing")
                 }
                 previousCompletionPromptState = newValue
             }
     }
 
     // MARK: - Main Content Views
-    
+
+    private var mainContentWithSheets: some View {
+        mainContent
+            .sheet(isPresented: $showPreSessionMeasurementSheet, onDismiss: {
+                // After measurement sheet dismisses, start the timer
+                if pendingTimerStart {
+                    pendingTimerStart = false
+                    actuallyStartTimer()
+                }
+            }) {
+                PreSessionMeasurementInputView(preMeasurements: Binding(
+                    get: { preMeasurements },
+                    set: { measurements in
+                        preMeasurements = measurements
+                        // Store for session logging
+                        completionViewModel.setPreSessionMeasurements(measurements)
+                    }
+                ))
+            }
+    }
+
     private var mainContent: some View {
         Group {
             if schedule.isRestDay {
@@ -239,6 +282,13 @@ struct DailyRoutineView: View {
         ))
         // Add completion sheet
         .sheet(isPresented: $completionViewModel.showCompletionPrompt) {
+            Logger.debug("📋 Completion sheet onDismiss called - sheet is being dismissed")
+            Logger.debug("  - isShowingCompletionPrompt: \(isShowingCompletionPrompt)")
+            Logger.debug("  - hasHandledTimerCompletion: \(hasHandledTimerCompletion)")
+            isShowingCompletionPrompt = false
+            hasHandledTimerCompletion = false
+        } content: {
+            // Note: Logger call moved to onAppear to avoid build expression error
             if let sessionLog = completionViewModel.sessionLog {
                 let sessionProgress = SessionProgress(
                     sessionType: .multiMethod,
@@ -254,37 +304,48 @@ struct DailyRoutineView: View {
                 SessionCompletionPromptView(
                     sessionProgress: sessionProgress,
                     onLog: {
+                        Logger.debug("✅ SessionCompletionPromptView onLog called")
                         // Mark the current method as completed when user logs the session
                         if let method = sessionViewModel.currentMethod,
                            let methodId = method.id {
                             let methodDuration = completionViewModel.elapsedTimeInSeconds
                             sessionViewModel.markMethodCompleted(methodId, duration: methodDuration)
+                            Logger.debug("  - Marked method completed: \(method.title)")
                         }
-                        
+
+                        Logger.debug("  - Calling completionViewModel.saveSession()")
                         // Save session
                         completionViewModel.saveSession()
                         
                         // Stop the timer first to ensure clean state
                         timerService.stop()
-                        
+
                         // Check if there are more methods to complete
                         if sessionViewModel.currentMethodIndex < sessionViewModel.totalMethods - 1 {
-                            // Move to next method after logging
+                            // Always move to next method after logging a session
                             sessionViewModel.goToNextMethod()
-                            
-                            // Configure timer for next method after a small delay to ensure clean state
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+
+                            // Only auto-start timer if auto-progression is enabled
+                            if sessionViewModel.autoProgressionEnabled {
+                                // Configure timer for next method after a small delay to ensure clean state
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                    if let nextMethod = sessionViewModel.currentMethod {
+                                        configureTimerForMethod(nextMethod)
+
+                                        // Check free tier limitation before auto-starting
+                                        if !entitlementManager.hasAnyPremiumAccess && hasCompletedSessionToday() {
+                                            // Don't auto-start for free tier users who have completed a session
+                                            showFreeTierAlert = true
+                                        } else if TimerCoordinator.shared.canStartTimer(type: "main") {
+                                            // Auto-start the timer for the next method
+                                            timerService.start()
+                                        }
+                                    }
+                                }
+                            } else {
+                                // Auto-progression disabled - configure timer but don't start it
                                 if let nextMethod = sessionViewModel.currentMethod {
                                     configureTimerForMethod(nextMethod)
-                                    
-                                    // Check free tier limitation before auto-starting
-                                    if !entitlementManager.hasAnyPremiumAccess && hasCompletedSessionToday() {
-                                        // Don't auto-start for free tier users who have completed a session
-                                        showFreeTierAlert = true
-                                    } else if TimerCoordinator.shared.canStartTimer(type: "main") {
-                                        // Auto-start the timer for the next method
-                                        timerService.start()
-                                    }
                                 }
                             }
                         } else {
@@ -293,6 +354,7 @@ struct DailyRoutineView: View {
                         }
                     },
                     onDismiss: {
+                        Logger.debug("❌ SessionCompletionPromptView onDismiss called")
                         completionViewModel.skipLogging()
                         
                         // Stop the timer and clear state when dismissing after completion
@@ -316,33 +378,45 @@ struct DailyRoutineView: View {
                         
                         // Stop the timer first to ensure clean state
                         timerService.stop()
-                        
+
                         // Check if there are more methods to complete
                         if sessionViewModel.currentMethodIndex < sessionViewModel.totalMethods - 1 {
-                            // Move to next method after logging
+                            // Always move to next method after logging partial progress
                             sessionViewModel.goToNextMethod()
-                            
-                            // Configure timer for next method after a small delay to ensure clean state
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+
+                            // Only auto-start timer if auto-progression is enabled
+                            if sessionViewModel.autoProgressionEnabled {
+                                // Configure timer for next method after a small delay to ensure clean state
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                    if let nextMethod = sessionViewModel.currentMethod {
+                                        configureTimerForMethod(nextMethod)
+
+                                        // Check free tier limitation before auto-starting
+                                        if !entitlementManager.hasAnyPremiumAccess && hasCompletedSessionToday() {
+                                            // Don't auto-start for free tier users who have completed a session
+                                            showFreeTierAlert = true
+                                        } else if TimerCoordinator.shared.canStartTimer(type: "main") {
+                                            // Auto-start the timer for the next method
+                                            timerService.start()
+                                        }
+                                    }
+                                }
+                            } else {
+                                // Auto-progression disabled - configure timer but don't start it
                                 if let nextMethod = sessionViewModel.currentMethod {
                                     configureTimerForMethod(nextMethod)
-                                    
-                                    // Check free tier limitation before auto-starting
-                                    if !entitlementManager.hasAnyPremiumAccess && hasCompletedSessionToday() {
-                                        // Don't auto-start for free tier users who have completed a session
-                                        showFreeTierAlert = true
-                                    } else if TimerCoordinator.shared.canStartTimer(type: "main") {
-                                        // Auto-start the timer for the next method
-                                        timerService.start()
-                                    }
                                 }
                             }
                         } else {
                             // All methods complete - dismiss
                             dismiss()
                         }
-                    } : nil
+                    } : nil,
+                    sessionCompletionViewModel: completionViewModel
                 )
+                .onAppear {
+                    Logger.debug("📋 Sheet content being created/shown")
+                }
             }
         }
         .navigationBarBackButtonHidden(true)
@@ -578,7 +652,7 @@ struct DailyRoutineView: View {
                             showFreeTierAlert = true
                             return
                         }
-                        
+
                         // Then check if we can start the timer
                         if !TimerCoordinator.shared.canStartTimer(type: "main") {
                             // Set error message
@@ -592,7 +666,9 @@ struct DailyRoutineView: View {
                             }
                             return
                         }
-                        timerService.start()
+                        // Story 10.2: Show pre-session measurement sheet first
+                        pendingTimerStart = true
+                        showPreSessionMeasurementSheet = true
                     }
                 }) {
                     ZStack {
@@ -860,28 +936,11 @@ struct DailyRoutineView: View {
                                 return
                             }
                             
-                            if let method = sessionViewModel.currentMethod {
-                                // Configure timer first
-                                configureTimerForMethod(method)
-                                
-                                // Check if timer can start through coordinator
-                                if TimerCoordinator.shared.canStartTimer(type: "main") {
-                                    // Start timer
-                                    timerService.start()
-                                    
-                                    // Update session tracking
-                                    updateSessionTracking(for: method)
-                                } else {
-                                    // Set error message
-                                    timerBlockedMessage = "Quick timer is already running"
-                                    // Haptic feedback
-                                    let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
-                                    impactFeedback.impactOccurred()
-                                    // Clear message after 3 seconds
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                                        timerBlockedMessage = ""
-                                    }
-                                }
+                            if sessionViewModel.currentMethod != nil {
+                                // Story 10.2: Show pre-session measurement sheet first
+                                pendingTimerStart = true
+                                showPreSessionMeasurementSheet = true
+                                // Timer will start in .onDismiss handler after sheet completes
                             }
                         }) {
                             HStack(spacing: 12) {
@@ -1305,13 +1364,20 @@ struct DailyRoutineView: View {
     }
     
     private func handleTimerCompletion() {
+        Logger.debug("⏰ DailyRoutineView.handleTimerCompletion called")
+        Logger.debug("  - showCompletionPrompt: \(completionViewModel.showCompletionPrompt)")
+        Logger.debug("  - isViewVisible: \(isViewVisible)")
+        Logger.debug("  - isShowingCompletionPrompt: \(isShowingCompletionPrompt)")
+
         // Prevent duplicate handling
         guard !completionViewModel.showCompletionPrompt else {
+            Logger.debug("  - Completion prompt already showing, returning")
             return
         }
-        
+
         // Check if view is still visible before showing sheet
         if !isViewVisible {
+            Logger.debug("  - View not visible, marking method completed but not showing sheet")
             // Still mark the method as completed for progress tracking
             if let method = sessionViewModel.currentMethod,
                let methodId = method.id {
@@ -1319,9 +1385,10 @@ struct DailyRoutineView: View {
             }
             return
         }
-        
+
         // Mark that we're showing the completion prompt immediately
         isShowingCompletionPrompt = true
+        Logger.debug("  - Setting isShowingCompletionPrompt = true")
         
         
         // Pause the timer (TimerService calls this when timer completes)
@@ -1415,41 +1482,20 @@ struct DailyRoutineView: View {
             
             // Show completion prompt if auto-progression is disabled or on last method
             if let currentMethod = sessionViewModel.currentMethod {
-                
+                Logger.debug("  - Preparing to show completion for method: \(currentMethod.title)")
+
                 // Call completeSession directly - it's already @MainActor
+                // This will set showCompletionPrompt = true, which triggers the sheet via the .sheet modifier
                 completionViewModel.completeSession(
                     methodId: currentMethod.id,
                     duration: capturedElapsedTime,
                     startTime: Date().addingTimeInterval(-capturedElapsedTime),
                     variation: currentMethod.title
                 )
-                
-                // Use global completion service to show the prompt
-                // Wait a bit for sessionLog to be populated after completeSession
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                    if let sessionLog = completionViewModel.sessionLog {
-                        let sessionProgress = SessionProgress(
-                            sessionType: .multiMethod,
-                            sessionId: sessionLog.id,
-                            methodName: sessionViewModel.currentMethod?.title ?? "Practice Session",
-                            startTime: sessionLog.startTime,
-                            endTime: sessionLog.endTime,
-                            totalMethods: sessionViewModel.totalMethods,
-                            completedMethods: sessionViewModel.methodsCompleted,
-                            attemptedMethods: sessionViewModel.methodsStarted
-                        )
-                        
-                        SessionCompletionService.shared.showCompletion(
-                            sessionProgress: sessionProgress,
-                            completionViewModel: completionViewModel,
-                            sessionViewModel: sessionViewModel,
-                            timerService: timerService,
-                            configureTimerForMethod: configureTimerForMethod,
-                            hasHandledTimerCompletion: $hasHandledTimerCompletion,
-                            isShowingCompletionPrompt: $isShowingCompletionPrompt
-                        )
-                    }
-                }
+
+                // DO NOT call SessionCompletionService here - it causes duplicate sheet presentation
+                // The sheet is already shown via the .sheet(isPresented: $completionViewModel.showCompletionPrompt) modifier
+                // The SessionProgress is created directly in the sheet's content builder
             }
             
             // Special handling for the last method
@@ -1461,6 +1507,37 @@ struct DailyRoutineView: View {
                 
                 // Don't mark as completed here - let the session logging handle it
                 // This prevents the practice view from showing completed state prematurely
+            }
+        }
+    }
+
+    // MARK: - Story 10.2: Timer Start Helper
+
+    /// Actually starts the timer after pre-session sheets are completed
+    private func actuallyStartTimer() {
+        guard let method = sessionViewModel.currentMethod else { return }
+
+        // Configure timer if needed
+        if timerService.timerState == .stopped {
+            configureTimerForMethod(method)
+        }
+
+        // Check if we can start the timer
+        if TimerCoordinator.shared.canStartTimer(type: "main") {
+            // Start timer
+            timerService.start()
+
+            // Update session tracking
+            updateSessionTracking(for: method)
+        } else {
+            // Set error message
+            timerBlockedMessage = "Quick timer is already running"
+            // Haptic feedback
+            let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+            impactFeedback.impactOccurred()
+            // Clear message after 3 seconds
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                timerBlockedMessage = ""
             }
         }
     }
@@ -1544,13 +1621,16 @@ private struct CompletionSheetModifier: ViewModifier {
                 SessionCompletionPromptView(
                     sessionProgress: sessionProgress,
                     onLog: {
+                        Logger.debug("✅ SessionCompletionPromptView onLog called")
                         // Mark the current method as completed when user logs the session
                         if let method = sessionViewModel.currentMethod,
                            let methodId = method.id {
                             let methodDuration = completionViewModel.elapsedTimeInSeconds
                             sessionViewModel.markMethodCompleted(methodId, duration: methodDuration)
+                            Logger.debug("  - Marked method completed: \(method.title)")
                         }
-                        
+
+                        Logger.debug("  - Calling completionViewModel.saveSession()")
                         // Save session
                         completionViewModel.saveSession()
                         
@@ -1587,6 +1667,7 @@ private struct CompletionSheetModifier: ViewModifier {
                         }
                     },
                     onDismiss: {
+                        Logger.debug("❌ SessionCompletionPromptView onDismiss called")
                         completionViewModel.skipLogging()
                         
                         // Stop the timer and clear state when dismissing after completion
@@ -1648,13 +1729,16 @@ private struct CompletionSheetModifier: ViewModifier {
                 SessionCompletionPromptView(
                     sessionProgress: sessionProgress,
                     onLog: {
+                        Logger.debug("✅ SessionCompletionPromptView onLog called")
                         // Mark the current method as completed when user logs the session
                         if let method = sessionViewModel.currentMethod,
                            let methodId = method.id {
                             let methodDuration = completionViewModel.elapsedTimeInSeconds
                             sessionViewModel.markMethodCompleted(methodId, duration: methodDuration)
+                            Logger.debug("  - Marked method completed: \(method.title)")
                         }
-                        
+
+                        Logger.debug("  - Calling completionViewModel.saveSession()")
                         // Save session
                         completionViewModel.saveSession()
                         
@@ -1691,6 +1775,7 @@ private struct CompletionSheetModifier: ViewModifier {
                         }
                     },
                     onDismiss: {
+                        Logger.debug("❌ SessionCompletionPromptView onDismiss called")
                         completionViewModel.skipLogging()
                         
                         // Stop the timer and clear state when dismissing after completion
