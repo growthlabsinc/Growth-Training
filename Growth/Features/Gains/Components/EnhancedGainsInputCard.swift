@@ -438,6 +438,8 @@ struct EnhancedGainsInputCard: View {
             return String(format: "%.1f\"", value)
         case .metric:
             return String(format: "%.1fcm", value)
+        case .millimeters:
+            return String(format: "%.0fmm", value)
         }
     }
 
@@ -505,7 +507,7 @@ struct MeasurementInputRow: View {
             Slider(
                 value: $value,
                 in: convertedRange(),
-                step: unit == .imperial ? 0.1 : 0.5
+                step: unit == .imperial ? 0.1 : (unit == .metric ? 0.5 : 1.0)
             )
             .tint(Color("GrowthGreen"))
         }
@@ -517,6 +519,8 @@ struct MeasurementInputRow: View {
             return String(format: "%.1f\"", value)
         case .metric:
             return String(format: "%.1fcm", value)
+        case .millimeters:
+            return String(format: "%.0fmm", value)
         }
     }
 
@@ -526,6 +530,8 @@ struct MeasurementInputRow: View {
             return range
         case .metric:
             return (range.lowerBound * 2.54)...(range.upperBound * 2.54)
+        case .millimeters:
+            return (range.lowerBound * 25.4)...(range.upperBound * 25.4)
         }
     }
 }
