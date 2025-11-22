@@ -34,11 +34,11 @@ struct MeasurementFormatter {
     static func stepIncrement(for unit: MeasurementUnit) -> Double {
         switch unit {
         case .imperial:
-            return 0.25  // Quarter inch increments
+            return 0.1   // Tenth of an inch increments
         case .metric:
-            return 0.5   // Half centimeter increments
+            return 0.1   // Tenth of a centimeter increments
         case .millimeters:
-            return 5.0   // 5mm increments
+            return 1.0   // 1mm increments
         }
     }
 
