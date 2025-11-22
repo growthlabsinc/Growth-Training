@@ -1,0 +1,53 @@
+# What's New - Developer Release Notes
+## Version 2.X.X - Session Logging & Measurement Tracking Update
+
+### Critical Bug Fixes
+
+#### Session Completion Sheet Auto-Dismiss Issue (RESOLVED)
+- **Issue**: Session completion prompt was auto-dismissing immediately after timer completion due to duplicate sheet presentation attempts
+- **Root Cause**: Competing sheet presentation mechanisms - both direct binding and delayed service call were attempting to present the same sheet
+- **Fix**: Removed redundant `SessionCompletionService.shared.showCompletion()` call, maintaining single presentation through SwiftUI sheet modifier
+- **Impact**: Users can now properly log sessions with post-workout measurements
+
+#### Pre/Post Session Measurement Capture (Story 10.2)
+- **Implementation**: Added comprehensive measurement capture flow before and after sessions
+- **Supported Types**: BPEL, BPFSL, MSEG measurements with imperial/metric unit support
+- **Data Model**: Extended `SessionLog` with optional `preMeasurements` and `postMeasurements` fields
+- **Performance**: Fixed TextField validation hang by switching from `.onChange` to `onCommit` handlers
+
+### Technical Changes
+
+#### View Architecture Updates
+- `DailyRoutineView.swift`: Fixed timer completion flow to properly trigger completion sheet
+- `SessionCompletionPromptView.swift`: Added ScrollView wrapper for keyboard handling
+- `PreSessionMeasurementInputView.swift`: Optimized for performance and user preference units
+- `SessionCompletionViewModel.swift`: Removed automatic sheet dismissal logic that was interfering with presentation
+
+#### State Management Improvements
+- Added proper guard conditions to prevent race conditions in timer completion handlers
+- Implemented `isShowingCompletionPrompt` flag to track sheet presentation state
+- Fixed auto-progression logic to only activate when explicitly enabled by user
+
+### Testing Requirements
+- Verify completion sheet appears after timer reaches 0
+- Confirm sheet stays visible until user interaction
+- Test pre/post measurement capture flow
+- Validate session logs are saved to Firestore with measurements
+- Check auto-progression setting behavior
+
+### Known Issues Resolved
+- Session completion sheet immediately dismissing without user interaction
+- "Attempt to present...while presentation in progress" errors
+- Timer completion not triggering log prompt
+- Manual log button becoming unresponsive
+- Session data not persisting to Firebase
+
+### Firebase Schema Changes
+- `sessionLogs` collection documents now include:
+  - `preMeasurements: Map<String, Double>` (optional)
+  - `postMeasurements: Map<String, Double>` (optional)
+
+### Deployment Notes
+- No Firebase Functions updates required
+- No breaking changes to existing session logs
+- Backward compatible with sessions logged before update

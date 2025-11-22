@@ -1,0 +1,31 @@
+# What's New - App Store Description
+## Version 2.X.X
+
+### Session Logging Fixed! 🎯
+We heard you - session logging is now working perfectly. No more lost progress!
+
+### What We Fixed:
+• **Session completion now works every time** - The log prompt stays on screen until you're ready
+• **Track your measurements** - Record pre and post-session measurements to monitor your progress
+• **Manual logging restored** - The "+Log Session" button is responsive again
+• **Smoother experience** - Fixed freezing issues when entering measurements
+
+### New Features:
+• **Measurement Tracking** - Optional pre and post-session measurements for detailed progress tracking
+• **Better Progress Insights** - See your gains over time with comprehensive measurement history
+• **Improved Stability** - Enhanced timer completion handling for reliable session logging
+
+### Bug Fixes:
+• Fixed issue where completion screen would disappear immediately after finishing a routine
+• Resolved problem preventing session logging after completing exercises
+• Fixed unresponsive "Log Session" button
+• Eliminated keyboard lag when entering measurements
+• Corrected auto-progression settings not respecting user preferences
+
+We appreciate your patience and feedback. Your sessions will now log reliably, ensuring you never lose track of your hard work and progress!
+
+### Coming Soon:
+More detailed analytics and progress visualization features to help you reach your goals faster.
+
+---
+*Thank you for being part of the Growth Training community! Your feedback helps us improve.*

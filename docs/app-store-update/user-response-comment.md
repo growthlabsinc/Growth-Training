@@ -1,0 +1,38 @@
+# Response to User Review - Session Logging Issue
+
+## Reply to: "Just completed a basic stretch routine and it won't log it..."
+
+Thank you for reporting this issue, and we sincerely apologize for the frustration it caused. We understand how important it is to track your progress, and losing session data is unacceptable.
+
+**Good news - this exact issue has been fixed in our latest update!**
+
+### What was happening:
+You experienced a critical bug where the session completion screen was immediately dismissing after your timer finished. This happened so quickly that it appeared as if no logging option was offered at all. The same bug was also affecting the manual "+Log Session" button, making it unresponsive.
+
+### What we fixed in this update:
+1. **Session completion screen now stays visible** - After completing any routine (including basic stretch), the logging prompt will remain on screen until you choose to either log the session or dismiss it.
+
+2. **Manual logging is fully functional** - The "+Log Session" button is now responsive and working correctly.
+
+3. **Your progress is never lost** - Even if you navigate away, you can still manually log your completed session.
+
+### How to ensure it works:
+1. Update to the latest version of Growth Training
+2. Complete your routine as normal
+3. When the timer finishes, you'll see the completion screen
+4. Choose to log your session with optional measurements
+5. Your progress will be saved automatically
+
+### Additional improvements:
+- Added optional measurement tracking for better progress monitoring
+- Fixed keyboard freezing when entering data
+- Improved overall stability of the timer and logging system
+
+We truly appreciate you taking the time to report this issue. User feedback like yours helps us identify and fix critical problems quickly. Please update the app and let us know if you experience any other issues.
+
+Your training progress matters to us, and we're committed to ensuring the app works flawlessly for your fitness journey.
+
+---
+*The Growth Training Team*
+
+P.S. - If you continue to experience any issues after updating, please reach out to our support team directly through the app's Settings > Help & Support section for immediate assistance.

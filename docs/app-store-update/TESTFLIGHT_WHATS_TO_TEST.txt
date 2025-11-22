@@ -1,0 +1,29 @@
+NEW IN THIS BUILD: Millimeters Support
+
+WHAT TO TEST:
+
+1. UNIT SELECTION
+   • Settings → Units & Measurements
+   • Try switching between in/cm/mm
+   • Verify choice persists after restart
+
+2. MEASUREMENT INPUT
+   • Gains → Track Measurements
+   • Check keyboard type:
+     - in/cm = decimal keyboard
+     - mm = number pad (no decimals)
+   • Slider increments: 0.1in, 0.1cm, 1mm
+
+3. UNIT CONVERSION
+   • Set value in mm, switch to inches
+   • Should convert properly (152mm = 6.0in)
+   • Switch back should restore original value
+
+4. DISPLAY FORMATTING
+   • Inches: 6.25" (2 decimals)
+   • Centimeters: 15.8cm (1 decimal)
+   • Millimeters: 152mm (whole numbers)
+
+REPORT: Wrong conversions, truncated text, crashes, or values not persisting.
+
+Full testing guide: docs/app-store-update/TESTFLIGHT_TESTING_NOTES.md

@@ -1,0 +1,90 @@
+GROWTH TRAINING APP STORE UPDATE v2.1.0
+ALL CLEAN TEXT - NO SPECIAL CHARACTERS
+========================================
+
+1. WHAT'S NEW (For App Store Connect)
+--------------------------------------
+Session logging is fixed. Your progress now saves correctly every time.
+
+What we fixed:
+
+Session completion screen now stays visible until you interact with it
+
+Manual Log Session button is working again
+
+No more lost sessions after completing routines
+
+Fixed freezing when entering measurements
+
+Auto progression now respects your settings
+
+New features:
+
+Track measurements before and after sessions
+
+Monitor your progress with detailed measurement history
+
+Improved timer completion handling
+
+Better session data persistence
+
+Thank you for your patience. This update ensures your hard work is always recorded.
+
+
+2. PROMOTIONAL TEXT (170 chars max)
+------------------------------------
+Critical fix: Sessions now log correctly! Completion screen stays visible, manual logging works, and you can track measurements. Your progress is safe.
+
+
+3. PUBLIC REVIEW RESPONSE
+--------------------------
+UPDATE AVAILABLE: Thank you for reporting this. Version 2.1.0 fixes this exact issue - the completion screen now stays visible and sessions log correctly. The manual log button also works properly now. Please update and let us know if you need any assistance. We appreciate your patience!
+
+
+4. PRIVATE SUPPORT EMAIL RESPONSE
+----------------------------------
+Dear User,
+
+Thank you for your feedback. We've released version 2.1.0 which specifically addresses the session logging issue you experienced. The completion screen will no longer disappear, and the manual log button is fully functional.
+
+Please update to the latest version and your sessions will log correctly. If you have any questions, please don't hesitate to reach out.
+
+Best regards,
+The Growth Training Team
+
+
+5. EXPEDITED REVIEW REQUEST TEXT
+---------------------------------
+Issue Type: Critical Bug
+Description: Users cannot log completed workout sessions, resulting in lost progress data
+User Impact: High - Core functionality broken
+Fix: Prevents completion screen from auto-dismissing
+Testing: Comprehensive testing completed across all session types
+
+
+6. VERSION NUMBER
+-----------------
+2.1.0
+
+
+7. BUILD NOTES
+--------------
+Fixed:
+- DailyRoutineView.swift: Removed duplicate sheet presentation
+- SessionCompletionViewModel.swift: Fixed auto-dismiss logic
+- PreSessionMeasurementInputView.swift: Performance optimization
+- SessionCompletionPromptView.swift: Added ScrollView for keyboard
+
+
+8. SHORT DESCRIPTION UPDATE
+----------------------------
+Fixed session logging!
+
+
+9. KEYWORDS TO ADD
+------------------
+session tracking
+workout log
+measurement tracking
+progress monitoring
+timer fix

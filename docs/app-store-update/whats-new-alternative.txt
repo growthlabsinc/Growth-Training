@@ -1,0 +1,16 @@
+Session logging is fixed! Your progress now saves correctly every time.
+
+WHAT WE FIXED:
+* Session completion screen now stays visible until you interact with it
+* Manual Log Session button is working again
+* No more lost sessions after completing routines
+* Fixed freezing when entering measurements
+* Auto progression now respects your settings
+
+NEW FEATURES:
+* Track measurements before and after sessions
+* Monitor your progress with detailed measurement history
+* Improved timer completion handling
+* Better session data persistence
+
+Thank you for your patience. This update ensures your hard work is always recorded.
