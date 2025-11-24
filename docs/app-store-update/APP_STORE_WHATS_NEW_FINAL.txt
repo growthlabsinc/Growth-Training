@@ -1,0 +1,24 @@
+NEW: Millimeters Support 📏
+
+Based on your feedback, we've added millimeters (mm) as a third measurement unit option!
+
+• Track in inches, centimeters, or millimeters
+• Automatic conversion when switching units
+• Clean whole numbers for mm (152mm instead of 15.2cm)
+• Smart keyboard types for each unit
+
+BUG FIXES 🐛
+
+• Session completion sheet now stays open until you submit
+• Fixed text truncation in unit selector
+• Sliders now start at middle of range (not maximum)
+• Unit conversion properly updates values
+
+IMPROVEMENTS ✨
+
+• Better time period selector display
+• Smoother unit switching experience
+• Improved formatting consistency
+• More precise slider increments (0.1in, 0.1cm, 1mm)
+
+We're constantly improving based on your feedback. Keep the suggestions coming!

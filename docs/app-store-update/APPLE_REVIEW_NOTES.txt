@@ -1,0 +1,104 @@
+===================================
+REVIEW NOTES FOR APPLE REVIEW TEAM
+Version 2.1.0 Submission
+===================================
+
+SUMMARY OF CHANGES
+------------------
+This update adds millimeters measurement support and fixes several UI/UX bugs reported by users. No changes to app functionality, permissions, or business model.
+
+NEW FEATURES
+------------
+1. Millimeters Measurement Unit
+   - Added "millimeters (mm)" as third unit option in Settings → Units & Measurements
+   - Joins existing inches and centimeters options
+   - All measurements stored internally as inches (no data model changes)
+   - Automatic conversion between all three units
+   - Smart keyboard selection: number pad for mm (whole numbers), decimal pad for in/cm
+
+TECHNICAL IMPLEMENTATION
+------------------------
+- Extended MeasurementUnit enum with .millimeters case
+- Created MeasurementFormatter utility for consistent formatting
+- Updated conversion logic in MeasurementValidator class
+- Modified UI components: input cards, charts, statistics views
+- Comprehensive test coverage with automated validation scripts
+
+BUG FIXES
+---------
+1. Session Completion Sheet Auto-Dismissal
+   - Issue: Sheet dismissed before users could enter measurements
+   - Fix: Sheet persists until explicit user action (submit or dismiss)
+
+2. Unit Selector Text Truncation
+   - Issue: "Centimeters" and "Millimeters" truncated in segmented picker
+   - Fix: Changed to short labels ("in", "cm", "mm")
+
+3. Measurement Slider Defaults
+   - Issue: Sliders initialized at maximum value
+   - Fix: Now initialize at middle of valid range
+
+4. Unit Conversion Accuracy
+   - Issue: Values didn't convert when switching units (e.g., 111mm → 111in)
+   - Fix: Proper conversion tracking and value transformation
+
+BACKWARD COMPATIBILITY
+----------------------
+✓ All existing user data preserved (stored as inches internally)
+✓ No breaking changes to data model
+✓ Users on previous versions see no impact
+✓ Graceful defaults for new unit preference
+
+PRIVACY & PERMISSIONS
+---------------------
+✓ No new permissions requested
+✓ No changes to data collection practices
+✓ No third-party tracking or analytics added
+✓ Measurement data remains locally stored or user-synced via Firebase
+
+TESTING PERFORMED
+-----------------
+✓ Automated conversion tests (100% pass rate)
+✓ Unit persistence validation
+✓ UI validation across all measurement views
+✓ Edge case testing for conversion accuracy
+✓ Backward compatibility with existing data
+
+WHAT TO TEST
+------------
+1. Navigate to Settings → Units & Measurements
+2. Select each unit option (inches, centimeters, millimeters)
+3. Go to Gains → Track Measurements
+4. Enter measurement values in each unit
+5. Switch between units and verify conversion accuracy
+6. Complete a practice session and verify completion sheet behavior
+7. Check Progress → Stats → Time period selector display
+
+EXPECTED BEHAVIOR
+-----------------
+- All three unit options selectable and functional
+- Measurements convert accurately: 152mm = 6.0in = 15.2cm
+- Number pad appears for mm input, decimal pad for in/cm
+- Completion sheet stays open until user action
+- No crashes, no data loss, smooth unit switching
+
+NO CHANGES TO
+-------------
+✗ In-app purchases or subscription logic
+✗ App permissions or capabilities
+✗ Data collection or privacy practices
+✗ Core app functionality or features
+✗ Third-party integrations or SDKs
+
+SUPPORT CONTACT
+---------------
+For any questions during review:
+- In-app feedback system available
+- GitHub issues: [repository link if applicable]
+- Developer contact available in App Store Connect
+
+RELEASE TYPE
+------------
+Standard release - no expedited review needed
+
+Thank you for reviewing Growth Training v2.1.0!
