@@ -1,7 +1,8 @@
 # App Store Submission Metadata
 
-**Status:** Ready for Submission (Completed in Story 10.4)  
-**Last Updated:** June 11, 2025
+**Status:** ✅ READY FOR SUBMISSION (Verified in Story 10.4)
+**Last Updated:** November 24, 2025
+**App Version:** 2.1.0 (Millimeters Support + Compliance Updates)
 
 This document contains all metadata required for App Store Connect submission.
 
