@@ -30,7 +30,9 @@
   - AC3: A documented internal procedure exists for handling deletion requests.
   - AC4: Successful deletion removes user's Auth record and all their associated Firestore documents.
 
-### Story 10.3: Refine and Finalize In-App Disclaimers, Privacy Policy, and Terms of Use
+### Story 10.3: Refine and Finalize In-App Disclaimers, Privacy Policy, and Terms of Use ✅ DONE
+- **Status:** Complete
+- **Completed:** 2025-11-24
 - **User Story / Goal:** As a User, I want to have access to clear, comprehensive, and accurate legal information (disclaimers, privacy policy, terms) within the app at all times.
 - **Detailed Requirements:**
   - Work with Legal/Content team to finalize the text for:
@@ -81,6 +83,7 @@
 
 ## Change Log
 
-| Date       | Version | Description     | Author   |
-| :--------- | :------ | :-------------- | :------- |
-| 2025-05-08 | 0.1     | Initial Draft   | 2 - PM   |
+| Date       | Version | Description                          | Author   |
+| :--------- | :------ | :----------------------------------- | :------- |
+| 2025-11-24 | 0.2     | Story 10.3 marked as DONE            | Sarah PO |
+| 2025-05-08 | 0.1     | Initial Draft                        | 2 - PM   |
