@@ -17,18 +17,26 @@
   - AC3: All app-to-server communication is over HTTPS (TLS 1.2+).
   - AC4: Encryption measures are documented.
 
-### Story 10.2: User Data Deletion Request Handling (Basic MVP)
-- **User Story / Goal:** As a User, I want to be able to request the deletion of my account and associated data, respecting my privacy rights (e.g., GDPR Right to Erasure).
+### Story 10.2: Pre-Session Measurement Capture UI ✅ DONE
+- **Status:** Complete
+- **Completed:** 2025-11-24
+- **User Story / Goal:** As a Growth Training user, I want to optionally record pre-session measurements (BPEL, BPFSL, MSEG) before starting a practice session, so that I can track yield/temporary gains after my session.
 - **Detailed Requirements:**
-  - Provide a mechanism within app settings for a user to request account and data deletion.
-  - For MVP, this might generate a support request to a manual backend process. Clearly state the expected timeframe for deletion.
-  - (Backend) Define a procedure for admins to securely delete a user's Firebase Auth record and their associated data in Firestore (e.g., `user` profile, `sessionLogs`). This needs to be thorough.
-  - Ensure this process is documented for internal use.
+  - Pre-session measurement prompt appears when starting timer-based sessions (skippable)
+  - Measurement input supports BPEL, BPFSL, MSEG with hard/soft limit validation
+  - Hard limit validation: 3.0-11.0" BPEL/BPFSL, 3.0-8.0" MSEG
+  - Soft limit validation: 4.0-10.0" BPEL/BPFSL, 3.5-6.5" MSEG with confirmation
+  - Pre-measurements stored in memory during session, persisted to Firestore on completion
+  - Manual session logging also supports optional pre-measurement entry
 - **Acceptance Criteria (ACs):**
-  - AC1: User can find and use an option in settings to request data deletion.
-  - AC2: Request clearly informs the user about the process and timeframe.
-  - AC3: A documented internal procedure exists for handling deletion requests.
-  - AC4: Successful deletion removes user's Auth record and all their associated Firestore documents.
+  - AC1: Pre-session measurement prompt appears when user starts timer-based session (can be skipped)
+  - AC2: Measurement input supports BPEL, BPFSL, MSEG only (Growth app primary metrics)
+  - AC3: Hard limit validation rejects values outside acceptable ranges
+  - AC4: Soft limit validation shows confirmation dialog for values outside typical range
+  - AC5: Pre-measurements stored in memory during session, persisted to SessionLog when session completes
+  - AC6: User can skip pre-session measurements without blocking session start
+  - AC7: Manual session logging (LogSessionView) also supports optional pre-measurement entry
+  - AC8: Existing timer and session logging flows remain fully functional
 
 ### Story 10.3: Refine and Finalize In-App Disclaimers, Privacy Policy, and Terms of Use ✅ DONE
 - **Status:** Complete
@@ -85,5 +93,6 @@
 
 | Date       | Version | Description                          | Author   |
 | :--------- | :------ | :----------------------------------- | :------- |
+| 2025-11-24 | 0.3     | Story 10.2 marked as DONE            | Sarah PO |
 | 2025-11-24 | 0.2     | Story 10.3 marked as DONE            | Sarah PO |
 | 2025-05-08 | 0.1     | Initial Draft                        | 2 - PM   |
