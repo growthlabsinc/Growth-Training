@@ -91,7 +91,9 @@ Enable Growth Training users to export their anonymized session and measurement 
 
 ## Stories
 
-### Story 11.1: Anonymous Statistical ID Generation & Management
+### Story 11.1: Anonymous Statistical ID Generation & Management ✅ DONE
+**Status:** Complete
+**Completed:** 2025-11-28
 **Goal:** Generate and persist anonymous IDs for users who export data
 **Scope:**
 - Create `AnonymizationService` utility
@@ -101,7 +103,9 @@ Enable Growth Training users to export their anonymized session and measurement 
 - Never transmit real userId or Firebase Auth UID in exports
 - Help text explaining what statistical ID is and why it's used
 
-### Story 11.2: Session Log CSV Export
+### Story 11.2: Session Log CSV Export ✅ DONE
+**Status:** Complete
+**Completed:** 2025-11-29
 **Goal:** Export anonymized SessionLog data in GrowthTrack bulk upload format
 **Scope:**
 - Create `CSVExportService` for SessionLog
@@ -150,6 +154,21 @@ Enable Growth Training users to export their anonymized session and measurement 
 - Success message with instructions on how to upload to GrowthTrack
 - Provide example CSV for testing purposes
 - Document CSV schema in Help section
+
+### Story 11.6: Automated Weekly GrowthTrack Export
+**Goal:** Enable automated weekly export to Karl for continuous research dataset updates
+**Scope:**
+- Create Firebase Cloud Function scheduled for weekly execution (Sunday midnight UTC)
+- Query all users with `growthTrackOptIn === true`
+- Aggregate all opted-in users' sessions into single CSV
+- Upload CSV to Firebase Cloud Storage with signed URL (7-day expiration)
+- Send email to Karl via SendGrid with download link
+- Add Settings UI toggle for automated export opt-in (separate from manual export)
+- Update Privacy Policy to disclose automated weekly exports
+- Implement audit logging for compliance (track every export)
+- Update user records with `lastExportedAt` timestamp
+- Error handling with admin email notifications
+- **Hybrid approach:** Users can choose manual export, automated export, or both
 
 ## Compatibility Requirements
 
@@ -421,3 +440,34 @@ Please develop detailed user stories for this brownfield epic. Key consideration
 5. User acceptance criteria from privacy and usability perspectives
 
 The epic should maintain strict privacy standards while delivering **GrowthTrack-compatible anonymous data export for PE research collaboration**.
+
+## Epic Progress
+
+**Status:** In Progress (1 of 5 stories complete)
+
+**Completed Stories:**
+1. ✅ Story 11.1: Anonymous Statistical ID Generation & Management (Done 2025-11-28)
+
+**Remaining Stories:**
+2. 🔄 Story 11.2: Session Log CSV Export
+3. 🔄 Story 11.3: Measurement CSV Export
+4. 🔄 Story 11.4: Opt-In Consent & Privacy Settings UI
+5. 🔄 Story 11.5: CSV Format Validation & GrowthTrack Testing
+
+**Epic Deliverables:**
+- ✅ AnonymizationService for anonymous ID generation
+- 🔄 Session log CSV export functionality
+- 🔄 Measurement CSV export functionality
+- 🔄 Privacy consent UI in Settings
+- 🔄 GrowthTrack CSV schema validation
+
+**Next Steps:**
+- Create Story 11.2 (Session Log CSV Export)
+- Coordinate with Karl on CSV schema validation
+
+## Change Log
+
+| Date       | Version | Description                          | Author   |
+| :--------- | :------ | :----------------------------------- | :------- |
+| 2025-11-28 | 0.2     | Story 11.1 marked as DONE            | Sarah PO |
+| 2025-05-08 | 0.1     | Initial Epic Draft                   | PM       |
