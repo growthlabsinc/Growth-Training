@@ -235,53 +235,7 @@ Users can now optionally log measurements **before** starting a practice session
 
 ---
 
-## For App Store Users
-
-### What's New in 1.1.3
-
-**📊 Smarter Progress Tracking**
-
-Track your yield (temporary post-session gains) with pre-session measurements.
-
-• Optional pre-session measurement prompt
-• Automatic yield calculation shown in session history
-• See exactly how much your session contributed
-• Better understand what's working for you
-
-**🔒 Enhanced Privacy & Security**
-
-Your data, your control. New privacy features give you more transparency and control.
-
-• Export all your data anytime (Settings → Export Data)
-• Permanently delete account and all data
-• View Privacy Policy and Terms in-app
-• Improved data encryption and security
-• GDPR and HIPAA compliant
-
-**✨ Performance Improvements**
-
-• 15% faster app launch
-• Smoother scrolling in session history
-• Better memory usage
-• Optimized Firebase queries
-
-**🐛 Bug Fixes**
-
-• Fixed session completion sheet behavior
-• Improved time period selector display
-• Better empty state messaging
-• Various UI polish and refinements
-
----
-
-**Privacy First**
-We take your privacy seriously. This update includes enhanced compliance features and gives you full control over your data. Learn more in Settings → Privacy & Legal.
-
----
-
-### Character-Limited Versions
-
-#### App Store "What's New" (4000 character limit)
+## For App Store Users - Copy/Paste Ready (334 characters)
 
 ```
 Track Session Effectiveness 📊
