@@ -284,44 +284,20 @@ We take your privacy seriously. This update includes enhanced compliance feature
 #### App Store "What's New" (4000 character limit)
 
 ```
-SMARTER PROGRESS TRACKING 📊
+Track Session Effectiveness 📊
+• Pre-session measurements with yield calculation
+• See what techniques work best
 
-Track your yield with pre-session measurements.
+Enhanced Privacy 🔒
+• Export all your data
+• Delete account permanently
+• GDPR compliant
 
-• Optional pre-session measurement prompt
-• Automatic yield calculation ((post-pre)/pre × 100%)
-• See session effectiveness at a glance
-• Better understand what's working
+Performance ⚡
+• 15% faster launch
+• Better responsiveness
 
-ENHANCED PRIVACY & SECURITY 🔒
-
-Your data, your control.
-
-• Export all your data anytime
-• Permanently delete account + all data
-• View Privacy Policy & Terms in-app
-• Improved encryption & security
-• GDPR & HIPAA compliant
-
-PERFORMANCE IMPROVEMENTS ✨
-
-• 15% faster app launch
-• Smoother session history scrolling
-• Better memory usage
-• Optimized database queries
-
-BUG FIXES 🐛
-
-• Fixed completion sheet behavior
-• Improved time period selector
-• Better empty states
-• UI polish & refinements
-
----
-
-Privacy First: This update gives you full transparency and control. Learn more in Settings → Privacy & Legal.
-
-We're constantly improving based on your feedback. Keep it coming!
+We're constantly improving based on your feedback!
 ```
 
 #### TestFlight Beta Notes
