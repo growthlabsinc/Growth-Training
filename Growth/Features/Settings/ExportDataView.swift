@@ -20,6 +20,20 @@ struct ExportDataView: View {
     @State private var showError = false
     @State private var errorMessage = ""
     @State private var exportProgress: Double = 0
+
+    // GrowthTrack Export States
+    @State private var isExportingSessions = false
+    @State private var isExportingMeasurements = false
+    @State private var growthTrackExportProgress: Double = 0
+
+    // Privacy & Research States
+    @State private var anonymousId: String = ""
+    @State private var showRegenerateConfirmation = false
+    @State private var showRegenerateSuccess = false
+    @State private var isRateLimited = false
+    @State private var timeRemaining: TimeInterval = 0
+    @State private var isPrivacyExpanded = false
+    @State private var isPrivacyInfoExpanded = false
     
     enum DataType: String, CaseIterable {
         case gains = "Growth Measurements"
@@ -125,6 +139,141 @@ struct ExportDataView: View {
                 .padding(.vertical, 4)
             }
             
+            // Privacy & Research Section
+            Section(header: Text("Privacy & Research")
+                .font(AppTheme.Typography.gravitySemibold(13))
+                .foregroundColor(Color("TextColor"))) {
+
+                // Anonymous Statistical ID DisclosureGroup
+                DisclosureGroup(isExpanded: $isPrivacyExpanded) {
+                    VStack(alignment: .leading, spacing: 12) {
+                        // Anonymous ID Display
+                        HStack {
+                            Text(anonymousId)
+                                .font(.system(.body, design: .monospaced))
+                                .foregroundColor(Color("TextColor"))
+                            Spacer()
+                            Image(systemName: "info.circle")
+                                .foregroundColor(Color("GrowthGreen"))
+                                .font(.caption)
+                        }
+
+                        // What is this? Help text
+                        Text("This ID is used instead of your account when exporting data for GrowthTrack research. It cannot be traced back to you.")
+                            .font(AppTheme.Typography.gravityBook(12))
+                            .foregroundColor(Color("TextSecondaryColor"))
+
+                        // Rate limit status
+                        if isRateLimited {
+                            Text("Can regenerate in \(formatTimeRemaining(timeRemaining))")
+                                .font(AppTheme.Typography.gravityBook(12))
+                                .foregroundColor(Color("TextSecondaryColor"))
+                        }
+
+                        // Regenerate Button
+                        Button(action: {
+                            showRegenerateConfirmation = true
+                        }) {
+                            HStack {
+                                Image(systemName: "arrow.clockwise")
+                                    .foregroundColor(isRateLimited ? Color("TextSecondaryColor") : .orange)
+                                Text("Regenerate Anonymous ID")
+                                    .font(AppTheme.Typography.gravityBook(14))
+                                    .foregroundColor(isRateLimited ? Color("TextSecondaryColor") : Color("TextColor"))
+                                Spacer()
+                            }
+                        }
+                        .disabled(isRateLimited)
+                        .padding(.top, 4)
+                    }
+                    .padding(.vertical, 8)
+                } label: {
+                    HStack {
+                        Image(systemName: "person.crop.circle.badge.questionmark")
+                            .foregroundColor(Color("GrowthGreen"))
+                            .frame(width: 25, height: 25)
+                        Text("Anonymous Statistical ID")
+                            .font(AppTheme.Typography.gravityBook(14))
+                            .foregroundColor(Color("TextColor"))
+                    }
+                }
+
+                // How Your Privacy is Protected DisclosureGroup
+                DisclosureGroup(isExpanded: $isPrivacyInfoExpanded) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        privacyGuaranteeRow(icon: "hand.raised.fill", text: "No personal information in exports")
+                        privacyGuaranteeRow(icon: "eye.slash.fill", text: "Anonymous ID cannot be traced back to you")
+                        privacyGuaranteeRow(icon: "arrow.triangle.2.circlepath", text: "You can break data linkage anytime by regenerating ID")
+                        privacyGuaranteeRow(icon: "iphone", text: "All data stays on your device until you choose to share")
+                        privacyGuaranteeRow(icon: "pencil.slash", text: "Personal notes and goals are never included in exports")
+                    }
+                    .padding(.vertical, 8)
+                } label: {
+                    HStack {
+                        Image(systemName: "shield.checkered")
+                            .foregroundColor(Color("GrowthGreen"))
+                            .frame(width: 25, height: 25)
+                        Text("How Your Privacy is Protected")
+                            .font(AppTheme.Typography.gravityBook(14))
+                            .foregroundColor(Color("TextColor"))
+                    }
+                }
+            }
+            .listRowBackground(Color("FormSectionBackground"))
+
+            // GrowthTrack CSV Export Section
+            Section(header: Text("GrowthTrack Research Export").font(AppTheme.Typography.gravitySemibold(13))) {
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Export anonymized data for PE research contribution")
+                        .font(AppTheme.Typography.gravityBook(12))
+                        .foregroundColor(Color("TextSecondaryColor"))
+
+                    // Export Session Logs Button
+                    Button(action: exportSessionLogsCSV) {
+                        HStack {
+                            Image(systemName: "clock.arrow.2.circlepath")
+                                .foregroundColor(Color("GrowthGreen"))
+                            Text("Export Session Logs (GrowthTrack)")
+                                .font(AppTheme.Typography.gravityBook(14))
+                            Spacer()
+                            if isExportingSessions {
+                                ProgressView()
+                                    .scaleEffect(0.7)
+                            } else {
+                                Image(systemName: "chevron.right")
+                                    .foregroundColor(Color("TextSecondaryColor"))
+                                    .font(.caption)
+                            }
+                        }
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    .disabled(isExportingSessions || isExportingMeasurements)
+
+                    // Export Measurements Button
+                    Button(action: exportMeasurementsCSV) {
+                        HStack {
+                            Image(systemName: "ruler")
+                                .foregroundColor(Color("GrowthGreen"))
+                            Text("Export Measurements (GrowthTrack)")
+                                .font(AppTheme.Typography.gravityBook(14))
+                            Spacer()
+                            if isExportingMeasurements {
+                                ProgressView()
+                                    .scaleEffect(0.7)
+                            } else {
+                                Image(systemName: "chevron.right")
+                                    .foregroundColor(Color("TextSecondaryColor"))
+                                    .font(.caption)
+                            }
+                        }
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    .disabled(isExportingSessions || isExportingMeasurements)
+                }
+            }
+
             // Export Button Section
             Section {
                 Button(action: startExport) {
@@ -160,6 +309,69 @@ struct ExportDataView: View {
             Button("OK") { }
         } message: {
             Text(errorMessage)
+        }
+        .alert("Regenerate Anonymous ID?", isPresented: $showRegenerateConfirmation) {
+            Button("Cancel", role: .cancel) { }
+            Button("Regenerate", role: .destructive) {
+                regenerateAnonymousId()
+            }
+        } message: {
+            Text("This will break the link between your future exports and past exports in GrowthTrack. Your previous contributions will still exist but won't be connected to new data.")
+        }
+        .alert("Success", isPresented: $showRegenerateSuccess) {
+            Button("OK") { }
+        } message: {
+            Text("Your Anonymous ID has been regenerated. Future exports will use the new ID.")
+        }
+        .onAppear {
+            loadPrivacyData()
+        }
+    }
+
+    // MARK: - Privacy Helper Views
+
+    @ViewBuilder
+    private func privacyGuaranteeRow(icon: String, text: String) -> some View {
+        HStack(alignment: .top, spacing: 10) {
+            Image(systemName: icon)
+                .foregroundColor(Color("GrowthGreen"))
+                .frame(width: 20)
+            Text(text)
+                .font(AppTheme.Typography.gravityBook(12))
+                .foregroundColor(Color("TextSecondaryColor"))
+        }
+    }
+
+    // MARK: - Privacy Methods
+
+    private func loadPrivacyData() {
+        // Load anonymous ID
+        anonymousId = AnonymizationService.shared.getOrCreateAnonymousId()
+
+        // Check rate limit status
+        isRateLimited = !AnonymizationService.shared.canRegenerateId()
+        timeRemaining = AnonymizationService.shared.timeUntilCanRegenerate()
+    }
+
+    private func regenerateAnonymousId() {
+        let newId = AnonymizationService.shared.regenerateAnonymousId()
+        anonymousId = newId
+
+        // Update rate limit status
+        isRateLimited = !AnonymizationService.shared.canRegenerateId()
+        timeRemaining = AnonymizationService.shared.timeUntilCanRegenerate()
+
+        // Show success alert
+        showRegenerateSuccess = true
+    }
+
+    private func formatTimeRemaining(_ seconds: TimeInterval) -> String {
+        let hours = Int(seconds) / 3600
+        let minutes = (Int(seconds) % 3600) / 60
+        if hours > 0 {
+            return "\(hours)h \(minutes)m"
+        } else {
+            return "\(minutes)m"
         }
     }
     
@@ -567,6 +779,64 @@ struct ExportDataView: View {
             return displayFormatter.string(from: date)
         }
         return dateString
+    }
+
+    // MARK: - GrowthTrack Export Methods
+
+    private func exportSessionLogsCSV() {
+        isExportingSessions = true
+        growthTrackExportProgress = 0
+
+        Task {
+            do {
+                let csvService = CSVExportService.shared
+                let fileURL = try await csvService.exportSessionLogsCSV { progress in
+                    await MainActor.run {
+                        growthTrackExportProgress = progress
+                    }
+                }
+
+                await MainActor.run {
+                    exportedFileURL = fileURL
+                    isExportingSessions = false
+                    showShareSheet = true
+                }
+            } catch {
+                await MainActor.run {
+                    errorMessage = error.localizedDescription
+                    showError = true
+                    isExportingSessions = false
+                }
+            }
+        }
+    }
+
+    private func exportMeasurementsCSV() {
+        isExportingMeasurements = true
+        growthTrackExportProgress = 0
+
+        Task {
+            do {
+                let csvService = CSVExportService.shared
+                let fileURL = try await csvService.exportMeasurementsCSV { progress in
+                    await MainActor.run {
+                        growthTrackExportProgress = progress
+                    }
+                }
+
+                await MainActor.run {
+                    exportedFileURL = fileURL
+                    isExportingMeasurements = false
+                    showShareSheet = true
+                }
+            } catch {
+                await MainActor.run {
+                    errorMessage = error.localizedDescription
+                    showError = true
+                    isExportingMeasurements = false
+                }
+            }
+        }
     }
 }
 

@@ -15,8 +15,10 @@ import FirebaseAuth
 import GoogleSignIn
 import SwiftUI
 import Foundation
+import AppsFlyerLib
+import AppTrackingTransparency
 
-class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate, MessagingDelegate {
+class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate, MessagingDelegate, AppsFlyerLibDelegate {
     
     // Configure Firebase as early as possible
     override init() {
@@ -38,6 +40,31 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
 
         // Set up Firebase Messaging delegate after Firebase is configured
         Messaging.messaging().delegate = self
+
+        // MARK: - AppsFlyer SDK Initialization
+        // Configure AppsFlyer SDK with dev key and app ID
+        // App ID: id6752875980 (Growth Training)
+        // Dev Key: YyUis7FZ7wyt7j6dMPn9BB
+        AppsFlyerLib.shared().appsFlyerDevKey = "YyUis7FZ7wyt7j6dMPn9BB"
+        AppsFlyerLib.shared().appleAppID = "6752875980"
+        AppsFlyerLib.shared().delegate = self
+
+        // Enable debug mode in DEBUG builds
+        #if DEBUG
+        AppsFlyerLib.shared().isDebug = true
+        #endif
+
+        // Wait for ATT authorization before sending data (iOS 14.5+)
+        // Gives user 60 seconds to respond to ATT prompt
+        AppsFlyerLib.shared().waitForATTUserAuthorization(timeoutInterval: 60)
+
+        // Register for SceneDelegate support to start AppsFlyer on app become active
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(startAppsFlyer),
+            name: UIApplication.didBecomeActiveNotification,
+            object: nil
+        )
         
         // Initialize Firebase-dependent services
         _ = NotificationsManager.shared
@@ -237,17 +264,97 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
     }
     
     // MARK: - Firebase Messaging Setup
-    
+
     private func setupFirebaseMessaging() {
         // Set messaging delegate for FCM token refresh and other events
         Messaging.messaging().delegate = self
-        
+
         // Manually enable auto initialization of FCM
         Messaging.messaging().isAutoInitEnabled = true
-        
+
         // Print FCM token if already available
         if let token = Messaging.messaging().fcmToken {
             Logger.debug("FCM token is already available: \(token)")
         }
+    }
+
+    // MARK: - AppsFlyer SDK Methods
+
+    /// Start AppsFlyer SDK when app becomes active
+    /// Called via NotificationCenter observer for SceneDelegate support
+    @objc func startAppsFlyer() {
+        AppsFlyerLib.shared().start()
+        Logger.info("✅ AppsFlyer SDK started")
+
+        // Request ATT authorization on first launch (iOS 14.5+)
+        requestATTAuthorization()
+    }
+
+    /// Request App Tracking Transparency authorization
+    private func requestATTAuthorization() {
+        if #available(iOS 14.5, *) {
+            // Only request if status is not determined yet
+            if ATTrackingManager.trackingAuthorizationStatus == .notDetermined {
+                ATTrackingManager.requestTrackingAuthorization { status in
+                    switch status {
+                    case .authorized:
+                        Logger.info("✅ ATT: User authorized tracking")
+                    case .denied:
+                        Logger.info("❌ ATT: User denied tracking")
+                    case .notDetermined:
+                        Logger.info("⏳ ATT: Status not determined")
+                    case .restricted:
+                        Logger.info("🚫 ATT: Tracking restricted")
+                    @unknown default:
+                        Logger.info("❓ ATT: Unknown status")
+                    }
+                }
+            }
+        }
+    }
+
+    // MARK: - AppsFlyerLibDelegate
+
+    /// Called when conversion data is received from AppsFlyer
+    func onConversionDataSuccess(_ conversionInfo: [AnyHashable : Any]) {
+        Logger.info("📊 AppsFlyer Conversion Data Success:")
+
+        // Check if this is a non-organic install
+        if let status = conversionInfo["af_status"] as? String {
+            if status == "Non-organic" {
+                // Non-organic install - user came from an ad
+                if let mediaSource = conversionInfo["media_source"] as? String,
+                   let campaign = conversionInfo["campaign"] as? String {
+                    Logger.info("   Media Source: \(mediaSource)")
+                    Logger.info("   Campaign: \(campaign)")
+                }
+            } else {
+                // Organic install
+                Logger.info("   Organic install")
+            }
+        }
+
+        // Log deep link data if available
+        if let deepLinkValue = conversionInfo["deep_link_value"] as? String {
+            Logger.info("   Deep Link Value: \(deepLinkValue)")
+        }
+    }
+
+    /// Called when conversion data fetch fails
+    func onConversionDataFail(_ error: Error) {
+        Logger.error("❌ AppsFlyer Conversion Data Failed: \(error.localizedDescription)")
+    }
+
+    /// Called when app is opened via deep link
+    func onAppOpenAttribution(_ attributionData: [AnyHashable : Any]) {
+        Logger.info("🔗 AppsFlyer App Open Attribution:")
+        for (key, value) in attributionData {
+            Logger.debug("   \(key): \(value)")
+        }
+    }
+
+    /// Called when app open attribution fails
+    func onAppOpenAttributionFailure(_ error: Error) {
+        Logger.error("❌ AppsFlyer App Open Attribution Failed: \(error.localizedDescription)")
     }
 } 
